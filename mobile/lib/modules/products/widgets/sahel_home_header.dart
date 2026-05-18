@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../cart/cart_service.dart';
 
 class SahelHomeHeader extends StatelessWidget {
   const SahelHomeHeader({
@@ -51,15 +53,10 @@ class SahelHomeHeader extends StatelessWidget {
                       ],
                     ),
                   ),
-                  _HeaderIconButton(
-                    icon: Icons.search,
-                    onTap: () => _stub(context, 'Search coming soon'),
-                  ),
-                  const SizedBox(width: 10),
-                  _HeaderIconButton(
-                    icon: Icons.shopping_bag_outlined,
-                    onTap: () => _stub(context, 'Cart coming soon'),
-                  ),
+                  Obx(() {
+                    final count = Get.find<CartService>().totalItemCountForHomeCartIcon;
+                    return _CartHeaderButton(itemCount: count);
+                  }),
                 ],
               ),
               const SizedBox(height: 20),
@@ -120,10 +117,60 @@ class SahelHomeHeader extends StatelessWidget {
       ),
     );
   }
+}
 
-  void _stub(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), behavior: SnackBarBehavior.floating),
+class _CartHeaderButton extends StatelessWidget {
+  const _CartHeaderButton({required this.itemCount});
+
+  final int itemCount;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.white.withValues(alpha: 0.12),
+      shape: const CircleBorder(),
+      child: InkWell(
+        onTap: () => Get.toNamed('/cart'),
+        customBorder: const CircleBorder(),
+        child: SizedBox(
+          width: 40,
+          height: 40,
+          child: Stack(
+            clipBehavior: Clip.none,
+            alignment: Alignment.center,
+            children: [
+              const Icon(
+                Icons.shopping_bag_outlined,
+                color: AppColors.gold,
+                size: 20,
+              ),
+              if (itemCount > 0)
+                Positioned(
+                  right: 4,
+                  top: 4,
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+                    decoration: const BoxDecoration(
+                      color: AppColors.gold,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Text(
+                      itemCount > 99 ? '99+' : '$itemCount',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.montserrat(
+                        fontSize: 9,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.headerBrown,
+                        height: 1,
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
@@ -134,30 +181,6 @@ class _goldLine extends StatelessWidget {
     return Container(
       height: 1,
       color: AppColors.gold.withValues(alpha: 0.35),
-    );
-  }
-}
-
-class _HeaderIconButton extends StatelessWidget {
-  const _HeaderIconButton({required this.icon, required this.onTap});
-
-  final IconData icon;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.white.withValues(alpha: 0.12),
-      shape: const CircleBorder(),
-      child: InkWell(
-        onTap: onTap,
-        customBorder: const CircleBorder(),
-        child: SizedBox(
-          width: 40,
-          height: 40,
-          child: Icon(icon, color: AppColors.gold, size: 20),
-        ),
-      ),
     );
   }
 }

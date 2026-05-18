@@ -3,12 +3,12 @@ import { fetchOrders, type OrderListRow } from "../services/order.service";
 import { playNewOrderChime } from "../utils/newOrderChime";
 
 const POLL_INTERVAL_MS = 4000;
-const DEFAULT_TITLE = "Live orders | Snack Admin";
+const DEFAULT_TITLE = "Live orders | Cosmetics Admin";
 
-const LIVE_HIDDEN_STATUSES = new Set(["delivered", "cancelled"]);
+const LIVE_HIDDEN_STATUSES = new Set(["DELIVERED", "CANCELLED"]);
 
 function isLiveOrder(order: OrderListRow): boolean {
-  return !LIVE_HIDDEN_STATUSES.has(String(order.status).trim().toLowerCase());
+  return !LIVE_HIDDEN_STATUSES.has(String(order.status).trim().toUpperCase());
 }
 
 function filterLiveOrders(orders: OrderListRow[]): OrderListRow[] {
@@ -16,9 +16,9 @@ function filterLiveOrders(orders: OrderListRow[]): OrderListRow[] {
 }
 
 function pruneHighlightsToOrders(
-  highlighted: Set<number>,
+  highlighted: Set<string>,
   visibleOrders: OrderListRow[]
-): Set<number> {
+): Set<string> {
   const visibleIds = new Set(visibleOrders.map((o) => o.id));
   return new Set([...highlighted].filter((id) => visibleIds.has(id)));
 }
@@ -36,10 +36,10 @@ export function useLiveOrdersPoll(options: UseLiveOrdersPollOptions = {}) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [lastFetchedAt, setLastFetchedAt] = useState<Date | null>(null);
-  const [highlightedIds, setHighlightedIds] = useState<Set<number>>(() => new Set());
-  const [pulsingIds, setPulsingIds] = useState<Set<number>>(() => new Set());
+  const [highlightedIds, setHighlightedIds] = useState<Set<string>>(() => new Set());
+  const [pulsingIds, setPulsingIds] = useState<Set<string>>(() => new Set());
 
-  const seenIdsRef = useRef<Set<number>>(new Set());
+  const seenIdsRef = useRef<Set<string>>(new Set());
   const baselineReadyRef = useRef(false);
   const pollingRef = useRef(false);
 
@@ -110,12 +110,14 @@ export function useLiveOrdersPoll(options: UseLiveOrdersPollOptions = {}) {
           typeof Notification !== "undefined" &&
           Notification.permission === "granted"
         ) {
-          const pendingCount = newLiveOrders.filter((o) => o.status === "pending").length;
+          const pendingCount = newLiveOrders.filter(
+            (o) => o.status.toUpperCase() === "PENDING"
+          ).length;
           const body =
             pendingCount > 0
               ? `${newLiveOrders.length} new order(s), ${pendingCount} pending`
               : `${newLiveOrders.length} new order(s)`;
-          new Notification("New order", { body, tag: "snack-live-orders" });
+          new Notification("New order", { body, tag: "cosmetics-live-orders" });
         }
       } else {
         newOrders.forEach((o) => seenIdsRef.current.add(o.id));
@@ -165,7 +167,7 @@ export function useLiveOrdersPoll(options: UseLiveOrdersPollOptions = {}) {
   }, [updateDocumentTitle]);
 
   const dismissHighlight = useCallback(
-    (orderId: number) => {
+    (orderId: string) => {
       setHighlightedIds((prev) => {
         if (!prev.has(orderId)) return prev;
         const next = new Set(prev);
@@ -184,7 +186,7 @@ export function useLiveOrdersPoll(options: UseLiveOrdersPollOptions = {}) {
   );
 
   const updateOrderInList = useCallback(
-    (orderId: number, patch: Partial<OrderListRow>) => {
+    (orderId: string, patch: Partial<OrderListRow>) => {
       if (patch.status && !isLiveOrder({ status: patch.status } as OrderListRow)) {
         dismissHighlight(orderId);
       }

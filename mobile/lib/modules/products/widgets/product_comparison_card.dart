@@ -5,6 +5,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/product_image.dart';
 import '../../../core/widgets/save_product_button.dart';
 import '../models/product_comparison.dart';
+import 'product_add_button.dart';
 
 class ProductComparisonCard extends StatelessWidget {
   const ProductComparisonCard({
@@ -355,7 +356,7 @@ class _ProductSide extends StatelessWidget {
             ),
           ],
             const Spacer(),
-            _AddButton(style: tierStyle),
+            ProductAddButton(product: product),
           ],
         ),
       ),
@@ -390,52 +391,6 @@ class _VersionPill extends StatelessWidget {
           fontWeight: FontWeight.w700,
           letterSpacing: 0.5,
           color: fg,
-        ),
-      ),
-    );
-  }
-}
-
-class _AddButton extends StatelessWidget {
-  const _AddButton({required this.style});
-
-  final _TierStyle style;
-
-  @override
-  Widget build(BuildContext context) {
-    final (bg, fg) = switch (style) {
-      _TierStyle.original => (AppColors.textDark, AppColors.gold),
-      _TierStyle.second => (AppColors.secondPurple, Colors.white),
-      _TierStyle.premium => (AppColors.headerBrown, AppColors.gold),
-    };
-
-    return SizedBox(
-      width: double.infinity,
-      height: 32,
-      child: TextButton(
-        onPressed: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Added to cart (coming soon)'),
-              behavior: SnackBarBehavior.floating,
-            ),
-          );
-        },
-        style: TextButton.styleFrom(
-          backgroundColor: bg,
-          foregroundColor: fg,
-          padding: EdgeInsets.zero,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-        ),
-        child: Text(
-          '+ ADD',
-          style: GoogleFonts.montserrat(
-            fontSize: 10,
-            fontWeight: FontWeight.w700,
-            letterSpacing: 0.5,
-          ),
         ),
       ),
     );

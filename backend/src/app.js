@@ -11,6 +11,7 @@ const categoryRoutes = require('./modules/category/category.routes');
 const productRoutes = require('./modules/product/product.routes');
 const cartRoutes = require('./modules/cart/cart.routes');
 const orderRoutes = require('./modules/order/order.routes');
+const adminOrderRoutes = require('./modules/order/admin.order.routes');
 const uploadRoutes = require('./modules/upload/upload.routes');
 
 function createApp() {
@@ -44,6 +45,7 @@ function createApp() {
   app.use('/api/products', productRoutes);
   app.use('/api/cart', cartRoutes);
   app.use('/api/orders', orderRoutes);
+  app.use('/api/admin/orders', adminOrderRoutes);
   app.use('/api/uploads', uploadRoutes);
 
   app.use(errorHandler);

@@ -14,6 +14,17 @@ class SavedView extends GetView<SavedController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+       appBar: AppBar(
+        title: Text(
+          'Saved',
+          style: GoogleFonts.playfairDisplay(
+            fontWeight: FontWeight.w600,
+            color: AppColors.gold,
+          ),
+        ),
+        backgroundColor: AppColors.headerBrown,
+        foregroundColor: AppColors.gold,
+      ),
       backgroundColor: AppColors.cream,
       body: SafeArea(
         child: Obx(() {
@@ -46,19 +57,19 @@ class SavedView extends GetView<SavedController> {
             child: CustomScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
               slivers: [
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
-                    child: Text(
-                      'Saved',
-                      style: GoogleFonts.playfairDisplay(
-                        fontSize: 28,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.headerBrown,
-                      ),
-                    ),
-                  ),
-                ),
+                // SliverToBoxAdapter(
+                //   child: Padding(
+                //     padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+                //     child: Text(
+                //       'Saved',
+                //       style: GoogleFonts.playfairDisplay(
+                //         fontSize: 28,
+                //         fontWeight: FontWeight.w600,
+                //         color: AppColors.headerBrown,
+                //       ),
+                //     ),
+                //   ),
+                // ),
                 SliverList(
                   delegate: SliverChildBuilderDelegate(
                     (context, index) => _ProductGridRow(products: rows[index]),

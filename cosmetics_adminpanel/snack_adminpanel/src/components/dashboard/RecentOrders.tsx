@@ -14,7 +14,7 @@ function statusColor(status: string): "success" | "warning" | "error" | "primary
   const s = status.toLowerCase();
   if (s === "completed" || s === "delivered") return "success";
   if (s === "cancelled") return "error";
-  if (s === "pending") return "warning";
+  if (s === "pending" || s === "paid") return "warning";
   return "primary";
 }
 
@@ -76,17 +76,17 @@ export default function RecentOrders() {
                         to={`/orders/${o.id}`}
                         className="font-medium text-brand-500 hover:text-brand-600"
                       >
-                        #{o.id}
+                        #{o.id.length > 8 ? o.id.slice(0, 8) : o.id}
                       </Link>
                     </TableCell>
                     <TableCell className="px-3 py-2 text-sm text-gray-800 dark:text-gray-200">
-                      {o.customer_name}
+                      {o.customerName}
                     </TableCell>
                     <TableCell className="px-3 py-2 text-sm">
                       <Badge color={statusColor(o.status)}>{o.status}</Badge>
                     </TableCell>
                     <TableCell className="px-3 py-2 text-sm text-gray-800 dark:text-gray-200">
-                      {formatMoney(o.total_amount)}
+                      {formatMoney(o.totalAmount)}
                     </TableCell>
                   </TableRow>
                 ))

@@ -26,6 +26,11 @@ const navItems: NavItem[] = [
       { name: "Products", path: "/products", pro: false },
     ],
   },
+  {
+    name: "Sales",
+    icon: <BoxCubeIcon />,
+    subItems: [{ name: "Orders", path: "/orders", pro: false }],
+  },
 ];
 
 const othersItems: NavItem[] = [];

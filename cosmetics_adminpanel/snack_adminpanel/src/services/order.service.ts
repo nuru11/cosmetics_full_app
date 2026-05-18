@@ -1,68 +1,78 @@
 import api from "../lib/api";
 
-/** Must match server `ALLOWED_ORDER_STATUSES` in orderController.js */
 export const ORDER_STATUS_VALUES = [
-  "pending",
-  "confirmed",
-  "preparing",
-  "out_for_delivery",
-  "delivered",
-  "cancelled",
+  "PENDING",
+  "PAID",
+  "SHIPPED",
+  "DELIVERED",
+  "CANCELLED",
 ] as const;
 
 export type OrderStatusValue = (typeof ORDER_STATUS_VALUES)[number];
 
 export function orderStatusLabel(value: string): string {
   const map: Record<string, string> = {
-    pending: "Pending",
-    confirmed: "Confirmed",
-    preparing: "Preparing",
-    out_for_delivery: "Out for delivery",
-    delivered: "Delivered",
-    cancelled: "Cancelled",
+    PENDING: "Pending",
+    PAID: "Paid",
+    SHIPPED: "Shipped",
+    DELIVERED: "Delivered",
+    CANCELLED: "Cancelled",
   };
   return map[value] ?? value;
 }
 
-export interface OrderListRow {
-  id: number;
-  customer_name: string;
-  phone: string;
-  notes: string;
-  area: string | null;
-  sub_city: string | null;
-  building: string | null;
-  client_device_id?: string | null;
-  total_amount: string | number;
+interface ApiProduct {
+  id: string;
+  productName?: string;
+}
+
+interface ApiOrderItem {
+  id: string;
+  productId: string;
+  quantity: number;
+  unitPrice: string | number;
+  lineTotal: string | number;
+  product?: ApiProduct | null;
+}
+
+interface ApiOrder {
+  id: string;
+  userId?: string | null;
+  clientDeviceId?: string | null;
   status: string;
-  /** When the order was placed (from orders.created_at). */
-  order_created_at?: string;
-  created_at: string;
+  totalAmount: string | number;
+  customerName?: string | null;
+  phone?: string | null;
+  city?: string | null;
+  shippingAddress?: { name?: string; phone?: string; city?: string } | null;
+  createdAt: string;
+  updatedAt?: string;
+  items?: ApiOrderItem[];
 }
 
-/** Order placed-at timestamp — never user account created_at. */
-export function getOrderPlacedAt(order: Pick<OrderListRow, "order_created_at" | "created_at">): string {
-  return order.order_created_at ?? order.created_at ?? "";
-}
-
-function normalizeOrderRow(row: OrderListRow): OrderListRow {
-  const placedAt = getOrderPlacedAt(row);
-  return {
-    ...row,
-    order_created_at: placedAt,
-    created_at: placedAt,
-  };
+export interface OrderListRow {
+  id: string;
+  customerName: string;
+  phone: string;
+  city: string | null;
+  clientDeviceId: string | null;
+  totalAmount: string | number;
+  status: string;
+  createdAt: string;
 }
 
 export interface OrderItemRow {
-  id: number;
-  product_id: number;
+  id: string;
+  productId: string;
   quantity: number;
-  unit_price: string | number;
-  product_name: string;
+  unitPrice: string | number;
+  lineTotal: string | number;
+  productName: string;
 }
 
 export interface OrderDetail extends OrderListRow {
+  userId: string | null;
+  shippingAddress: { name?: string; phone?: string; city?: string } | null;
   items: OrderItemRow[];
 }
 
@@ -73,23 +83,67 @@ export interface OrdersListResult {
   offset: number;
 }
 
-export async function fetchOrders(params?: {
-  limit?: number;
-  offset?: number;
-}): Promise<OrdersListResult> {
-  const { data } = await api.get<{ data: OrdersListResult }>("/orders", { params });
+function mapOrderItem(item: ApiOrderItem): OrderItemRow {
   return {
-    ...data.data,
-    orders: data.data.orders.map(normalizeOrderRow),
+    id: item.id,
+    productId: item.productId,
+    quantity: item.quantity,
+    unitPrice: item.unitPrice,
+    lineTotal: item.lineTotal,
+    productName: item.product?.productName ?? "—",
   };
 }
 
-export async function fetchOrderById(id: number): Promise<OrderDetail> {
-  const { data } = await api.get<{ data: OrderDetail }>(`/orders/${id}`);
-  return normalizeOrderRow(data.data);
+function mapOrderListRow(o: ApiOrder): OrderListRow {
+  return {
+    id: o.id,
+    customerName: o.customerName ?? "—",
+    phone: o.phone ?? "—",
+    city: o.city ?? null,
+    clientDeviceId: o.clientDeviceId ?? null,
+    totalAmount: o.totalAmount,
+    status: o.status,
+    createdAt: o.createdAt,
+  };
 }
 
-export async function patchOrderStatus(id: number, status: string): Promise<OrderDetail> {
-  const { data } = await api.patch<{ data: OrderDetail }>(`/orders/${id}`, { status });
-  return normalizeOrderRow(data.data);
+function mapOrderDetail(o: ApiOrder): OrderDetail {
+  return {
+    ...mapOrderListRow(o),
+    userId: o.userId ?? null,
+    shippingAddress: o.shippingAddress ?? null,
+    items: (o.items ?? []).map(mapOrderItem),
+  };
+}
+
+export async function fetchOrders(params?: {
+  limit?: number;
+  offset?: number;
+  status?: string;
+}): Promise<OrdersListResult> {
+  const { data } = await api.get<{
+    orders: ApiOrder[];
+    total: number;
+    limit: number;
+    offset: number;
+  }>("/admin/orders", { params });
+
+  return {
+    orders: data.orders.map(mapOrderListRow),
+    total: data.total,
+    limit: data.limit,
+    offset: data.offset,
+  };
+}
+
+export async function fetchOrderById(id: string): Promise<OrderDetail> {
+  const { data } = await api.get<{ order: ApiOrder }>(`/admin/orders/${id}`);
+  return mapOrderDetail(data.order);
+}
+
+export async function patchOrderStatus(id: string, status: string): Promise<OrderDetail> {
+  const { data } = await api.patch<{ order: ApiOrder }>(`/admin/orders/${id}`, {
+    status,
+  });
+  return mapOrderDetail(data.order);
 }

@@ -30,6 +30,11 @@ function requireAuth(req, res, next) {
   next();
 }
 
+/** Continues without 401 when no token; use with verifyJwt (optional Bearer). */
+function optionalAuth(req, res, next) {
+  next();
+}
+
 function requireAdmin(req, res, next) {
   if (req.admin && req.admin.status === 'ACTIVE') {
     next();
@@ -45,4 +50,4 @@ function requireAdmin(req, res, next) {
   res.status(403).json({ error: 'Admin only' });
 }
 
-module.exports = { attachUser, requireAuth, requireAdmin };
+module.exports = { attachUser, requireAuth, optionalAuth, requireAdmin };

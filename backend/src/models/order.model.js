@@ -9,8 +9,13 @@ module.exports = (sequelize, DataTypes) => {
       },
       userId: {
         type: DataTypes.STRING(36),
-        allowNull: false,
+        allowNull: true,
         field: 'user_id',
+      },
+      clientDeviceId: {
+        type: DataTypes.STRING(64),
+        allowNull: true,
+        field: 'client_device_id',
       },
       status: {
         type: DataTypes.ENUM('PENDING', 'PAID', 'SHIPPED', 'DELIVERED', 'CANCELLED'),
@@ -26,6 +31,19 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.JSON,
         allowNull: true,
         field: 'shipping_address',
+      },
+      customerName: {
+        type: DataTypes.STRING(120),
+        allowNull: true,
+        field: 'customer_name',
+      },
+      phone: {
+        type: DataTypes.STRING(20),
+        allowNull: true,
+      },
+      city: {
+        type: DataTypes.STRING(120),
+        allowNull: true,
       },
       createdAt: {
         type: DataTypes.DATE,
@@ -43,7 +61,11 @@ module.exports = (sequelize, DataTypes) => {
     {
       tableName: 'orders',
       timestamps: true,
-      indexes: [{ fields: ['user_id'] }, { fields: ['status'] }],
+      indexes: [
+        { fields: ['user_id'] },
+        { fields: ['client_device_id'] },
+        { fields: ['status'] },
+      ],
     }
   );
 };

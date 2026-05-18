@@ -6,7 +6,6 @@ import PageMeta from "../../components/common/PageMeta";
 import { Table, TableBody, TableCell, TableHeader, TableRow } from "../../components/ui/table";
 import {
   fetchOrderById,
-  getOrderPlacedAt,
   ORDER_STATUS_VALUES,
   orderStatusLabel,
   patchOrderStatus,
@@ -21,9 +20,13 @@ function formatMoney(v: string | number): string {
   return n.toFixed(2);
 }
 
+function shortId(id: string): string {
+  return id.length > 8 ? id.slice(0, 8) : id;
+}
+
 export default function OrderDetailPage() {
   const { id } = useParams<{ id: string }>();
-  const orderId = Number(id);
+  const orderId = id?.trim() ?? "";
   const [order, setOrder] = useState<OrderDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -32,7 +35,7 @@ export default function OrderDetailPage() {
   const timeAgoNow = useMemo(() => new Date(), [timeAgoTick]);
 
   useEffect(() => {
-    if (!Number.isInteger(orderId) || orderId < 1) {
+    if (!orderId) {
       setError("Invalid order id");
       setLoading(false);
       return;
@@ -76,10 +79,16 @@ export default function OrderDetailPage() {
   return (
     <>
       <PageMeta
-        title={order ? `Order #${order.id} | Snack Admin` : "Order | Snack Admin"}
+        title={
+          order
+            ? `Order #${shortId(order.id)} | Cosmetics Admin`
+            : "Order | Cosmetics Admin"
+        }
         description="Order details and line items"
       />
-      <PageBreadcrumb pageTitle={order ? `Order #${order.id}` : "Order"} />
+      <PageBreadcrumb
+        pageTitle={order ? `Order #${shortId(order.id)}` : "Order"}
+      />
       <div className="mb-4">
         <Link
           to="/orders"
@@ -99,48 +108,41 @@ export default function OrderDetailPage() {
         )}
         {order && (
           <>
-            <ComponentCard title="Customer & delivery" desc="Contact and delivery details from checkout.">
+            <ComponentCard
+              title="Customer & delivery"
+              desc="Contact and delivery details from checkout."
+            >
               <div className="px-6 pb-6 grid gap-3 text-sm sm:grid-cols-2">
                 <div>
                   <span className="text-gray-500 dark:text-gray-400">Name</span>
-                  <p className="font-medium text-gray-800 dark:text-white/90">{order.customer_name}</p>
+                  <p className="font-medium text-gray-800 dark:text-white/90">
+                    {order.customerName}
+                  </p>
                 </div>
                 <div>
                   <span className="text-gray-500 dark:text-gray-400">Phone</span>
-                  <p className="font-medium text-gray-800 dark:text-white/90">{order.phone}</p>
+                  <p className="font-medium text-gray-800 dark:text-white/90">
+                    {order.phone}
+                  </p>
+                </div>
+                <div>
+                  <span className="text-gray-500 dark:text-gray-400">City</span>
+                  <p className="font-medium text-gray-800 dark:text-white/90">
+                    {order.city ?? "—"}
+                  </p>
                 </div>
                 <div className="sm:col-span-2">
                   <span className="text-gray-500 dark:text-gray-400">Device ID (app)</span>
                   <p className="font-mono text-xs break-all text-gray-800 dark:text-white/90">
-                    {order.client_device_id ?? "—"}
+                    {order.clientDeviceId ?? "—"}
                   </p>
                 </div>
-                <div className="sm:col-span-2">
-                  <span className="text-gray-500 dark:text-gray-400">Delivery notes</span>
-                  <p className="font-medium whitespace-pre-wrap text-gray-800 dark:text-white/90">
-                    {order.notes}
-                  </p>
-                </div>
-                {(order.area || order.sub_city || order.building) && (
-                  <div className="sm:col-span-2 flex flex-wrap gap-6">
-                    {order.area && (
-                      <div>
-                        <span className="text-gray-500 dark:text-gray-400">Area</span>
-                        <p className="font-medium text-gray-800 dark:text-white/90">{order.area}</p>
-                      </div>
-                    )}
-                    {order.sub_city && (
-                      <div>
-                        <span className="text-gray-500 dark:text-gray-400">Sub-city</span>
-                        <p className="font-medium text-gray-800 dark:text-white/90">{order.sub_city}</p>
-                      </div>
-                    )}
-                    {order.building && (
-                      <div>
-                        <span className="text-gray-500 dark:text-gray-400">Building</span>
-                        <p className="font-medium text-gray-800 dark:text-white/90">{order.building}</p>
-                      </div>
-                    )}
+                {order.userId && (
+                  <div className="sm:col-span-2">
+                    <span className="text-gray-500 dark:text-gray-400">User account</span>
+                    <p className="font-mono text-xs break-all text-gray-800 dark:text-white/90">
+                      {order.userId}
+                    </p>
                   </div>
                 )}
                 <div>
@@ -163,22 +165,24 @@ export default function OrderDetailPage() {
                     ))}
                   </select>
                   {statusSaving && (
-                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Saving…</p>
+                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                      Saving…
+                    </p>
                   )}
                 </div>
                 <div>
                   <span className="text-gray-500 dark:text-gray-400">Created</span>
                   <p
                     className="font-medium text-gray-800 dark:text-white/90"
-                    title={formatAbsoluteDateTime(getOrderPlacedAt(order))}
+                    title={formatAbsoluteDateTime(order.createdAt)}
                   >
-                    {formatTimeAgo(getOrderPlacedAt(order), timeAgoNow)}
+                    {formatTimeAgo(order.createdAt, timeAgoNow)}
                   </p>
                 </div>
                 <div>
                   <span className="text-gray-500 dark:text-gray-400">Total</span>
                   <p className="text-lg font-semibold text-gray-900 dark:text-white">
-                    {formatMoney(order.total_amount)}
+                    {formatMoney(order.totalAmount)}
                   </p>
                 </div>
               </div>
@@ -204,27 +208,22 @@ export default function OrderDetailPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody className="divide-y divide-gray-200 dark:divide-gray-800">
-                    {order.items.map((line) => {
-                      const unit = Number(line.unit_price);
-                      const qty = Number(line.quantity);
-                      const lineTotal = (Number.isNaN(unit) ? 0 : unit) * (Number.isNaN(qty) ? 0 : qty);
-                      return (
-                        <TableRow key={line.id}>
-                          <TableCell className="px-5 py-4 text-sm text-gray-800 dark:text-white/90">
-                            {line.product_name}
-                          </TableCell>
-                          <TableCell className="px-5 py-4 text-sm text-right text-gray-600 dark:text-gray-400">
-                            {line.quantity}
-                          </TableCell>
-                          <TableCell className="px-5 py-4 text-sm text-right text-gray-600 dark:text-gray-400">
-                            {formatMoney(line.unit_price)}
-                          </TableCell>
-                          <TableCell className="px-5 py-4 text-sm text-right font-medium text-gray-800 dark:text-white/90">
-                            {lineTotal.toFixed(2)}
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
+                    {order.items.map((line) => (
+                      <TableRow key={line.id}>
+                        <TableCell className="px-5 py-4 text-sm text-gray-800 dark:text-white/90">
+                          {line.productName}
+                        </TableCell>
+                        <TableCell className="px-5 py-4 text-sm text-right text-gray-600 dark:text-gray-400">
+                          {line.quantity}
+                        </TableCell>
+                        <TableCell className="px-5 py-4 text-sm text-right text-gray-600 dark:text-gray-400">
+                          {formatMoney(line.unitPrice)}
+                        </TableCell>
+                        <TableCell className="px-5 py-4 text-sm text-right font-medium text-gray-800 dark:text-white/90">
+                          {formatMoney(line.lineTotal)}
+                        </TableCell>
+                      </TableRow>
+                    ))}
                   </TableBody>
                 </Table>
               </div>

@@ -9,6 +9,8 @@ import NotAuthorized from "./pages/OtherPage/NotAuthorized";
 import Home from "./pages/Dashboard/Home";
 import ProductsPage from "./pages/Products/ProductsPage";
 import CategoriesPage from "./pages/Categories/CategoriesPage";
+import OrdersPage from "./pages/Orders/OrdersPage";
+import OrderDetailPage from "./pages/Orders/OrderDetailPage";
 
 export default function App() {
   return (
@@ -21,6 +23,8 @@ export default function App() {
             <Route index element={<Home />} />
             <Route path="/products" element={<ProductsPage />} />
             <Route path="/categories" element={<CategoriesPage />} />
+            <Route path="/orders" element={<OrdersPage />} />
+            <Route path="/orders/:id" element={<OrderDetailPage />} />
             <Route path="/not-authorized" element={<NotAuthorized />} />
           </Route>
         </Route>

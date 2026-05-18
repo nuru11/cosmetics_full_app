@@ -13,7 +13,6 @@ import {
 import { useTimeAgoTick } from "../../hooks/useTimeAgoTick";
 import { formatAbsoluteDateTime, formatTimeAgo } from "../../utils/formatTimeAgo";
 import {
-  getOrderPlacedAt,
   ORDER_STATUS_VALUES,
   orderStatusLabel,
   patchOrderStatus,
@@ -26,9 +25,8 @@ function formatMoney(v: string | number): string {
   return n.toFixed(2);
 }
 
-function formatNotesPreview(notes: string): string {
-  const t = notes?.trim();
-  return t || "—";
+function shortId(id: string): string {
+  return id.length > 8 ? id.slice(0, 8) : id;
 }
 
 function formatLastFetched(d: Date | null): string {
@@ -45,7 +43,7 @@ function rowHighlightClass(
     return "cursor-pointer hover:bg-gray-50 dark:hover:bg-white/5";
   }
   const pulse = isPulsing ? " animate-pulse" : "";
-  const isPending = order.status === "pending";
+  const isPending = order.status.toUpperCase() === "PENDING";
   if (isPending) {
     return `cursor-pointer border-l-4 border-emerald-500 bg-emerald-50/90 dark:bg-emerald-500/15${pulse}`;
   }
@@ -56,7 +54,7 @@ export default function LiveOrdersPage() {
   const navigate = useNavigate();
   const [soundEnabled, setSoundEnabled] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
-  const [updatingId, setUpdatingId] = useState<number | null>(null);
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
 
   const {
     orders,
@@ -82,7 +80,7 @@ export default function LiveOrdersPage() {
     setNotificationsEnabled(granted);
   }
 
-  async function handleStatusChange(orderId: number, nextStatus: string, prev: OrderListRow) {
+  async function handleStatusChange(orderId: string, nextStatus: string, prev: OrderListRow) {
     if (nextStatus === prev.status) return;
     setUpdatingId(orderId);
     setError(null);
@@ -195,7 +193,7 @@ export default function LiveOrdersPage() {
                     isHeader
                     className="px-5 py-3 text-left text-sm font-medium min-w-[10rem] max-w-[240px]"
                   >
-                    Notes
+                    City
                   </TableCell>
                   <TableCell isHeader className="px-5 py-3 text-right text-sm font-medium">
                     Total
@@ -233,37 +231,36 @@ export default function LiveOrdersPage() {
                       >
                         <TableCell className="px-5 py-4 text-sm text-gray-800 dark:text-white/90">
                           <span className="inline-flex items-center gap-2">
-                            #{o.id}
+                            #{shortId(o.id)}
                             {isHighlighted && (
-                              <Badge color={o.status === "pending" ? "success" : "warning"} size="sm">
+                              <Badge color={o.status.toUpperCase() === "PENDING" ? "success" : "warning"} size="sm">
                                 NEW
                               </Badge>
                             )}
                           </span>
                         </TableCell>
                         <TableCell className="px-5 py-4 text-sm font-medium text-gray-800 dark:text-white/90">
-                          {o.customer_name}
+                          {o.customerName}
                         </TableCell>
                         <TableCell className="px-5 py-4 text-sm text-gray-600 dark:text-gray-400">
                           {o.phone}
                         </TableCell>
                         <TableCell
                           className="px-5 py-4 text-sm text-gray-600 dark:text-gray-400 min-w-[10rem] max-w-[240px]"
-                          title={o.notes?.trim() || undefined}
                         >
                           <span className="line-clamp-2 break-words">
-                            {formatNotesPreview(o.notes)}
+                            {o.city ?? "—"}
                           </span>
                         </TableCell>
                         <TableCell className="px-5 py-4 text-sm text-right text-gray-800 dark:text-white/90">
-                          {formatMoney(o.total_amount)}
+                          {formatMoney(o.totalAmount)}
                         </TableCell>
                         <TableCell className="px-5 py-4">
                           <div
                             className="flex flex-wrap items-center gap-2"
                             onClick={(e: MouseEvent) => e.stopPropagation()}
                           >
-                            {o.status === "pending" && (
+                            {o.status.toUpperCase() === "PENDING" && (
                               <Badge color="warning" size="sm">
                                 Pending
                               </Badge>
@@ -289,9 +286,9 @@ export default function LiveOrdersPage() {
                         </TableCell>
                         <TableCell
                           className="px-5 py-4 text-sm text-gray-600 dark:text-gray-400"
-                          title={formatAbsoluteDateTime(getOrderPlacedAt(o))}
+                          title={formatAbsoluteDateTime(o.createdAt)}
                         >
-                          {formatTimeAgo(getOrderPlacedAt(o), timeAgoNow)}
+                          {formatTimeAgo(o.createdAt, timeAgoNow)}
                         </TableCell>
                       </TableRow>
                     );

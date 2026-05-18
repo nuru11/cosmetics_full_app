@@ -1,7 +1,7 @@
 class ApiConfig {
   static const String baseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'http://192.168.1.9:3000/api',
+    defaultValue: 'http://192.168.1.17:3000/api',
   );
 
   static const String defaultProductImageUrl =

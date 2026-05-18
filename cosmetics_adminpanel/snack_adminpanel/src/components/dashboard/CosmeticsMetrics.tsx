@@ -1,25 +1,29 @@
 import { useEffect, useState } from "react";
-import { fetchAdminProducts } from "../../services/product.service";
 import { fetchCategories } from "../../services/category.service";
+import { fetchOrders } from "../../services/order.service";
+import { fetchAdminProducts } from "../../services/product.service";
 
 export default function CosmeticsMetrics() {
   const [productCount, setProductCount] = useState<number | null>(null);
   const [categoryCount, setCategoryCount] = useState<number | null>(null);
+  const [orderCount, setOrderCount] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
       try {
-        const [products, categories] = await Promise.all([
+        const [products, categories, ordersPage] = await Promise.all([
           fetchAdminProducts(),
           fetchCategories(false),
+          fetchOrders({ limit: 1, offset: 0 }),
         ]);
         if (cancelled) return;
         setProductCount(products.length);
         setCategoryCount(categories.length);
+        setOrderCount(ordersPage.total);
       } catch {
-        if (!cancelled) setError("Could not load catalog stats.");
+        if (!cancelled) setError("Could not load dashboard stats.");
       }
     })();
     return () => {
@@ -28,9 +32,10 @@ export default function CosmeticsMetrics() {
   }, []);
 
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-6">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 md:gap-6">
       <MetricCard label="Products" value={productCount} error={error} />
       <MetricCard label="Categories" value={categoryCount} error={error} />
+      <MetricCard label="Orders" value={orderCount} error={error} />
     </div>
   );
 }

@@ -5,9 +5,13 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/app_colors.dart';
 import '../products/products_binding.dart';
 import '../products/products_view.dart';
+import '../orders/orders_binding.dart';
+import '../orders/orders_controller.dart';
+import '../orders/orders_view.dart';
+import '../profile/profile_binding.dart';
+import '../profile/profile_view.dart';
 import '../saved/saved_binding.dart';
 import '../saved/saved_view.dart';
-import 'placeholder_tab.dart';
 
 class MainShell extends StatefulWidget {
   const MainShell({super.key});
@@ -19,6 +23,13 @@ class MainShell extends StatefulWidget {
 class _MainShellState extends State<MainShell> {
   int _index = 0;
 
+  void _onTabSelected(int index) {
+    setState(() => _index = index);
+    if (index == 2) {
+      OrdersController.refreshIfRegistered();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,20 +37,14 @@ class _MainShellState extends State<MainShell> {
         index: _index,
         children: [
           const ProductsView(),
-          const PlaceholderTab(
-            title: 'Search',
-            message: 'Search coming soon',
-          ),
           const SavedView(),
-          const PlaceholderTab(
-            title: 'Profile',
-            message: 'Profile coming soon',
-          ),
+          const OrdersView(),
+          const ProfileView(),
         ],
       ),
       bottomNavigationBar: _SahelBottomNav(
         currentIndex: _index,
-        onTap: (i) => setState(() => _index = i),
+        onTap: _onTabSelected,
       ),
     );
   }
@@ -50,6 +55,8 @@ class MainShellBinding extends Bindings {
   void dependencies() {
     ProductsBinding().dependencies();
     SavedBinding().dependencies();
+    OrdersBinding().dependencies();
+    ProfileBinding().dependencies();
   }
 }
 
@@ -65,15 +72,17 @@ class _SahelBottomNav extends StatelessWidget {
   static const _items = [
     _NavItem(icon: Icons.home_outlined, activeIcon: Icons.home, label: 'HOME'),
     _NavItem(
-      icon: Icons.search_outlined,
-      activeIcon: Icons.search,
-      label: 'SEARCH',
-    ),
-    _NavItem(
       icon: Icons.favorite_border,
       activeIcon: Icons.favorite,
       label: 'SAVED',
       activeColor: Colors.red,
+    ),
+    _NavItem(
+      icon: Icons.receipt_long_outlined,
+      activeIcon: Icons.receipt_long,
+      label: 'ORDERS',
+      activeColor: AppColors.headerBrown,
+      showTopBarWhenSelected: true,
     ),
     _NavItem(
       icon: Icons.person_outline,
@@ -114,6 +123,17 @@ class _SahelBottomNav extends StatelessWidget {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
+                      Container(
+                        width: 20,
+                        height: 3,
+                        margin: const EdgeInsets.only(bottom: 4),
+                        decoration: BoxDecoration(
+                          color: selected && item.showTopBarWhenSelected
+                              ? AppColors.headerBrown
+                              : Colors.transparent,
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
                       Icon(
                         selected ? item.activeIcon : item.icon,
                         size: 22,
@@ -158,10 +178,12 @@ class _NavItem {
     required this.activeIcon,
     required this.label,
     this.activeColor,
+    this.showTopBarWhenSelected = false,
   });
 
   final IconData icon;
   final IconData activeIcon;
   final String label;
   final Color? activeColor;
+  final bool showTopBarWhenSelected;
 }

@@ -1,5 +1,5 @@
 import { fetchOrders } from "./order.service";
-import { fetchProducts } from "./product.service";
+import { fetchAdminProducts } from "./product.service";
 
 export interface SnackOverview {
   productCount: number;
@@ -15,15 +15,15 @@ export interface SnackOverview {
  */
 export async function getSnackOverview(): Promise<SnackOverview> {
   const [products, ordersPage] = await Promise.all([
-    fetchProducts(),
+    fetchAdminProducts(),
     fetchOrders({ limit: 200, offset: 0 }),
   ]);
 
   const orders = ordersPage.orders;
-  const pendingInRecentBatch = orders.filter((o) => o.status === "pending").length;
+  const pendingInRecentBatch = orders.filter((o) => o.status === "PENDING").length;
   let revenueRecentOrders = 0;
   for (const o of orders) {
-    const n = Number(o.total_amount);
+    const n = Number(o.totalAmount);
     if (!Number.isNaN(n)) revenueRecentOrders += n;
   }
 
