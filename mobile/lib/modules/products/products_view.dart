@@ -10,7 +10,7 @@ import 'widgets/category_nav_bar.dart';
 import 'widgets/category_section_header.dart';
 import 'widgets/product_comparison_card.dart';
 import 'widgets/product_grid_card.dart';
-import 'widgets/sahel_home_header.dart';
+import 'widgets/alemmart_home_header.dart';
 
 class ProductsView extends GetView<ProductsController> {
   const ProductsView({super.key});
@@ -18,18 +18,18 @@ class ProductsView extends GetView<ProductsController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.cream,
+      backgroundColor: AppColors.brandWhite,
       body: Obx(() {
         if (controller.isLoading.value && controller.products.isEmpty) {
           return const Center(
-            child: CircularProgressIndicator(color: AppColors.gold),
+            child: CircularProgressIndicator(color: AppColors.brandBlue),
           );
         }
 
         if (controller.error.value != null && controller.products.isEmpty) {
           return Column(
             children: [
-              SahelHomeHeader(productCount: 0),
+              AlemmartHomeHeader(productCount: 0),
               Expanded(
                 child: _ErrorState(
                   message: controller.error.value!,
@@ -41,14 +41,14 @@ class ProductsView extends GetView<ProductsController> {
         }
 
         return RefreshIndicator(
-          color: AppColors.gold,
+          color: AppColors.brandBlue,
           onRefresh: controller.refresh,
           child: CustomScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             slivers: [
               SliverToBoxAdapter(
                 child: Obx(
-                  () => SahelHomeHeader(
+                  () => AlemmartHomeHeader(
                     productCount: controller.productCount.value,
                   ),
                 ),
@@ -192,8 +192,8 @@ class _ErrorState extends StatelessWidget {
             FilledButton.icon(
               onPressed: onRetry,
               style: FilledButton.styleFrom(
-                backgroundColor: AppColors.headerBrown,
-                foregroundColor: AppColors.gold,
+                backgroundColor: AppColors.brandBlue,
+                foregroundColor: AppColors.brandWhite,
               ),
               icon: const Icon(Icons.refresh),
               label: const Text('Retry'),

@@ -12,10 +12,10 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         field: 'cart_id',
       },
-      productId: {
+      variantId: {
         type: DataTypes.STRING(36),
         allowNull: false,
-        field: 'product_id',
+        field: 'variant_id',
       },
       quantity: {
         type: DataTypes.INTEGER,
@@ -40,8 +40,8 @@ module.exports = (sequelize, DataTypes) => {
       timestamps: true,
       indexes: [
         { fields: ['cart_id'] },
-        { fields: ['product_id'] },
-        { unique: true, fields: ['cart_id', 'product_id'] },
+        { fields: ['variant_id'] },
+        { unique: true, fields: ['cart_id', 'variant_id'] },
       ],
     }
   );

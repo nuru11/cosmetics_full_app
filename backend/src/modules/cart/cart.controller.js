@@ -8,8 +8,8 @@ const cartController = {
 
   async addItem(req, res) {
     const body = req.body || {};
-    if (!body.productId) {
-      res.status(400).json({ error: 'Missing required field: productId' });
+    if (!body.variantId) {
+      res.status(400).json({ error: 'Missing required field: variantId' });
       return;
     }
 
@@ -35,7 +35,7 @@ const cartController = {
     try {
       const cart = await cartService.updateItemQuantity(
         req.userId,
-        req.params.productId,
+        req.params.variantId,
         quantity
       );
       res.json({ cart });
@@ -49,7 +49,7 @@ const cartController = {
   },
 
   async removeItem(req, res) {
-    const cart = await cartService.removeItem(req.userId, req.params.productId);
+    const cart = await cartService.removeItem(req.userId, req.params.variantId);
     res.json({ cart });
   },
 

@@ -103,8 +103,13 @@ class OrderCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Container(
-              color: AppColors.cardHeaderBeige,
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: const BoxDecoration(
+                color: AppColors.brandWhite,
+                border: Border(
+                  bottom: BorderSide(color: AppColors.dividerGrey),
+                ),
+              ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -112,7 +117,7 @@ class OrderCard extends StatelessWidget {
                     formatOrderShortId(order.id),
                     style: GoogleFonts.montserrat(
                       fontWeight: FontWeight.w700,
-                      color: AppColors.headerBrown,
+                      color: AppColors.brandBlack,
                     ),
                   ),
                   OrderStatusBadge(status: order.status),
@@ -150,7 +155,7 @@ class OrderCard extends StatelessWidget {
                     style: GoogleFonts.playfairDisplay(
                       fontSize: 24,
                       fontWeight: FontWeight.w700,
-                      color: AppColors.headerBrown,
+                      color: AppColors.brandBlack,
                     ),
                   ),
                   if (order.items.isNotEmpty) ...[
@@ -172,7 +177,7 @@ class OrderCard extends StatelessWidget {
                               height: 5,
                               margin: const EdgeInsets.only(top: 6, right: 8),
                               decoration: const BoxDecoration(
-                                color: AppColors.gold,
+                                color: AppColors.brandBlue,
                                 shape: BoxShape.circle,
                               ),
                             ),
@@ -181,7 +186,7 @@ class OrderCard extends StatelessWidget {
                                 '${item.quantity}× ${item.productName ?? item.productId}',
                                 style: GoogleFonts.montserrat(
                                   fontSize: 13,
-                                  color: AppColors.headerBrown,
+                                  color: AppColors.brandBlack,
                                 ),
                               ),
                             ),
@@ -227,7 +232,7 @@ class OrderListEmptyState extends StatelessWidget {
               style: GoogleFonts.playfairDisplay(
                 fontSize: 22,
                 fontWeight: FontWeight.w600,
-                color: AppColors.headerBrown,
+                color: AppColors.brandBlack,
               ),
             ),
             const SizedBox(height: 8),
@@ -273,8 +278,8 @@ class OrderListErrorState extends StatelessWidget {
             FilledButton(
               onPressed: onRetry,
               style: FilledButton.styleFrom(
-                backgroundColor: AppColors.headerBrown,
-                foregroundColor: AppColors.gold,
+                backgroundColor: AppColors.brandBlue,
+                foregroundColor: AppColors.brandWhite,
               ),
               child: const Text('Retry'),
             ),

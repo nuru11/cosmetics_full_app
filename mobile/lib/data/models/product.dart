@@ -1,10 +1,8 @@
-import 'dart:convert';
-
 import 'category.dart';
+import 'product_variant.dart';
 
 typedef ProductGender = String;
 typedef ProductStatus = String;
-typedef ProductVersion = String;
 
 class Product {
   const Product({
@@ -12,18 +10,16 @@ class Product {
     required this.productName,
     required this.categoryId,
     required this.categoryName,
-    required this.price,
     required this.gender,
     required this.status,
-    required this.productVersion,
-    required this.stock,
-    required this.productImages,
+    required this.variants,
     this.productDescription,
     this.brand,
-    this.color,
-    this.size,
-    this.sku,
     this.category,
+    this.displayPrice,
+    this.displayPriceMax,
+    this.displayImage,
+    this.variantCount,
   });
 
   final String id;
@@ -32,19 +28,38 @@ class Product {
   final String categoryId;
   final String categoryName;
   final Category? category;
-  final double price;
   final ProductGender gender;
   final String? brand;
   final ProductStatus status;
-  final ProductVersion productVersion;
-  final String? color;
-  final String? size;
-  final int stock;
-  final String? sku;
-  final List<String> productImages;
+  final List<ProductVariant> variants;
+  final double? displayPrice;
+  final double? displayPriceMax;
+  final String? displayImage;
+  final int? variantCount;
 
-  String? get primaryImage =>
-      productImages.isNotEmpty ? productImages.first : null;
+  ProductVariant? get defaultVariant =>
+      variants.isNotEmpty ? variants.first : null;
+
+  ProductVariant? get firstInStockVariant {
+    for (final variant in variants) {
+      if (variant.stock > 0) return variant;
+    }
+    return defaultVariant;
+  }
+
+  double get price => displayPrice ?? defaultVariant?.price ?? 0;
+
+  int get stock => variants.fold<int>(0, (sum, v) => sum + v.stock);
+
+  String? get primaryImage => displayImage ?? defaultVariant?.primaryImage;
+
+  List<String> get productImages {
+    final selected = defaultVariant;
+    if (selected != null && selected.variantImages.isNotEmpty) {
+      return selected.variantImages;
+    }
+    return const [];
+  }
 
   factory Product.fromJson(Map<String, dynamic> json) {
     final categoryJson = json['category'];
@@ -55,9 +70,13 @@ class Product {
       categoryName = category.name;
     }
 
-    final productImages = _parseImages(
-      json['productImages'] ?? json['product_images'],
-    );
+    final variantsJson = json['variants'];
+    final variants = variantsJson is List
+        ? variantsJson
+            .whereType<Map>()
+            .map((e) => ProductVariant.fromJson(Map<String, dynamic>.from(e)))
+            .toList()
+        : <ProductVariant>[];
 
     return Product(
       id: json['id'] as String,
@@ -67,46 +86,22 @@ class Product {
       categoryId: (json['categoryId'] ?? json['category_id']) as String,
       categoryName: categoryName,
       category: category,
-      price: _parsePrice(json['price']),
       gender: json['gender'] as String? ?? 'UNISEX',
       brand: json['brand'] as String?,
       status: json['status'] as String? ?? 'ACTIVE',
-      productVersion: (json['productVersion'] ?? json['product_version'] as String?)
-              ?.toString()
-              .toUpperCase() ??
-          'ORIGINAL',
-      color: json['color'] as String?,
-      size: json['size'] as String?,
-      stock: json['stock'] as int? ?? 0,
-      sku: json['sku'] as String?,
-      productImages: productImages,
+      variants: variants,
+      displayPrice: _parseOptionalPrice(json['displayPrice'] ?? json['display_price']),
+      displayPriceMax:
+          _parseOptionalPrice(json['displayPriceMax'] ?? json['display_price_max']),
+      displayImage: (json['displayImage'] ?? json['display_image']) as String?,
+      variantCount: json['variantCount'] as int? ?? json['variant_count'] as int?,
     );
   }
 
-  static double _parsePrice(dynamic value) {
+  static double? _parseOptionalPrice(dynamic value) {
+    if (value == null) return null;
     if (value is num) return value.toDouble();
-    if (value is String) return double.tryParse(value) ?? 0;
-    return 0;
-  }
-
-  static List<String> _parseImages(dynamic value) {
-    if (value == null) return [];
-    if (value is List) {
-      return value.map((e) => e.toString()).where((s) => s.isNotEmpty).toList();
-    }
-    if (value is String) {
-      final trimmed = value.trim();
-      if (trimmed.isEmpty || trimmed == '[]') return [];
-      try {
-        final decoded = jsonDecode(trimmed);
-        if (decoded is List) {
-          return decoded
-              .map((e) => e.toString())
-              .where((s) => s.isNotEmpty)
-              .toList();
-        }
-      } catch (_) {}
-    }
-    return [];
+    if (value is String) return double.tryParse(value);
+    return null;
   }
 }

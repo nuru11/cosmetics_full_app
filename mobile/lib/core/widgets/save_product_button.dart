@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../theme/app_colors.dart';
 import '../../modules/saved/wishlist_service.dart';
 
 void showSavedFeedback({required bool saved}) {
@@ -16,15 +17,15 @@ void showSavedFeedback({required bool saved}) {
 class SaveProductIconButton extends StatelessWidget {
   const SaveProductIconButton({
     super.key,
-    required this.productId,
+    required this.variantId,
     this.iconSize = 20,
-    this.savedColor = Colors.red,
+    this.savedColor = AppColors.brandBlue,
     this.unsavedColor,
     this.padding = EdgeInsets.zero,
     this.constraints = const BoxConstraints(minWidth: 32, minHeight: 32),
   });
 
-  final String productId;
+  final String variantId;
   final double iconSize;
   final Color savedColor;
   final Color? unsavedColor;
@@ -33,6 +34,10 @@ class SaveProductIconButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (variantId.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
     if (!Get.isRegistered<WishlistService>()) {
       return IconButton(
         onPressed: null,
@@ -46,11 +51,11 @@ class SaveProductIconButton extends StatelessWidget {
     final wishlist = Get.find<WishlistService>();
 
     return Obx(() {
-      final ids = wishlist.savedIds;
-      final saved = ids.contains(productId);
+      final ids = wishlist.savedVariantIds;
+      final saved = ids.contains(variantId);
       return IconButton(
         onPressed: () async {
-          final nowSaved = await wishlist.toggle(productId);
+          final nowSaved = await wishlist.toggle(variantId);
           showSavedFeedback(saved: nowSaved);
         },
         icon: Icon(

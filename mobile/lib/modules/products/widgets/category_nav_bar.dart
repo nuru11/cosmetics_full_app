@@ -81,7 +81,7 @@ class _CategoryChip extends StatelessWidget {
                   fontSize: 9,
                   fontWeight: FontWeight.w600,
                   letterSpacing: 0.5,
-                  color: isSelected ? AppColors.textDark : AppColors.textMuted,
+                  color: isSelected ? AppColors.brandBlack : AppColors.textMuted,
                 ),
               ),
               const SizedBox(height: 6),
@@ -89,7 +89,7 @@ class _CategoryChip extends StatelessWidget {
                 height: 2,
                 width: 40,
                 decoration: BoxDecoration(
-                  color: isSelected ? AppColors.gold : Colors.transparent,
+                  color: isSelected ? AppColors.brandBlue : Colors.transparent,
                   borderRadius: BorderRadius.circular(1),
                 ),
               ),

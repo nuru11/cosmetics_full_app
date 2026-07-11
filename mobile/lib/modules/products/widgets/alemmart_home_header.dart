@@ -5,8 +5,8 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../cart/cart_service.dart';
 
-class SahelHomeHeader extends StatelessWidget {
-  const SahelHomeHeader({
+class AlemmartHomeHeader extends StatelessWidget {
+  const AlemmartHomeHeader({
     super.key,
     required this.productCount,
   });
@@ -16,7 +16,7 @@ class SahelHomeHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: AppColors.headerBrown,
+      color: AppColors.brandBlue,
       child: SafeArea(
         bottom: false,
         child: Padding(
@@ -27,34 +27,53 @@ class SahelHomeHeader extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Text(
-                          'Sahel',
-                          style: GoogleFonts.playfairDisplay(
-                            fontSize: 36,
-                            fontStyle: FontStyle.italic,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.gold,
-                            height: 1.1,
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.asset(
+                            'assets/app_logo/logo.png',
+                            width: 44,
+                            height: 44,
+                            fit: BoxFit.cover,
                           ),
                         ),
-                        const SizedBox(height: 2),
-                        Text(
-                          'BEAUTY & LUXURY',
-                          style: GoogleFonts.montserrat(
-                            fontSize: 10,
-                            fontWeight: FontWeight.w500,
-                            letterSpacing: 2.5,
-                            color: AppColors.gold.withValues(alpha: 0.85),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Alemmart',
+                                style: GoogleFonts.montserrat(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppColors.brandWhite,
+                                  height: 1.1,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                'BEAUTY & LUXURY',
+                                style: GoogleFonts.montserrat(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w500,
+                                  letterSpacing: 2.5,
+                                  color: AppColors.brandWhite.withValues(
+                                    alpha: 0.85,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],
                     ),
                   ),
                   Obx(() {
-                    final count = Get.find<CartService>().totalItemCountForHomeCartIcon;
+                    final count =
+                        Get.find<CartService>().totalItemCountForHomeCartIcon;
                     return _CartHeaderButton(itemCount: count);
                   }),
                 ],
@@ -66,49 +85,35 @@ class SahelHomeHeader extends StatelessWidget {
                   fontSize: 10,
                   fontWeight: FontWeight.w500,
                   letterSpacing: 2,
-                  color: AppColors.gold.withValues(alpha: 0.9),
+                  color: AppColors.brandWhite.withValues(alpha: 0.9),
                 ),
               ),
               const SizedBox(height: 12),
-              RichText(
+              Text(
+                'Original & 2nd Side by Side',
                 textAlign: TextAlign.center,
-                text: TextSpan(
-                  style: GoogleFonts.playfairDisplay(
-                    fontSize: 26,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.white,
-                    height: 1.25,
-                  ),
-                  children: [
-                    const TextSpan(text: 'Original & '),
-                    TextSpan(
-                      text: '2nd',
-                      style: GoogleFonts.playfairDisplay(
-                        fontSize: 26,
-                        fontStyle: FontStyle.italic,
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.gold,
-                      ),
-                    ),
-                    const TextSpan(text: ' Side by Side'),
-                  ],
+                style: GoogleFonts.playfairDisplay(
+                  fontSize: 26,
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.brandWhite,
+                  height: 1.25,
                 ),
               ),
               const SizedBox(height: 14),
               Row(
                 children: [
-                  Expanded(child: _goldLine()),
+                  Expanded(child: _headerLine()),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 12),
                     child: Text(
                       '• $productCount products •',
                       style: GoogleFonts.montserrat(
                         fontSize: 11,
-                        color: AppColors.gold.withValues(alpha: 0.8),
+                        color: AppColors.brandWhite.withValues(alpha: 0.8),
                       ),
                     ),
                   ),
-                  Expanded(child: _goldLine()),
+                  Expanded(child: _headerLine()),
                 ],
               ),
             ],
@@ -127,7 +132,7 @@ class _CartHeaderButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Colors.white.withValues(alpha: 0.12),
+      color: AppColors.brandWhite.withValues(alpha: 0.15),
       shape: const CircleBorder(),
       child: InkWell(
         onTap: () => Get.toNamed('/cart'),
@@ -141,7 +146,7 @@ class _CartHeaderButton extends StatelessWidget {
             children: [
               const Icon(
                 Icons.shopping_bag_outlined,
-                color: AppColors.gold,
+                color: AppColors.brandWhite,
                 size: 20,
               ),
               if (itemCount > 0)
@@ -150,9 +155,12 @@ class _CartHeaderButton extends StatelessWidget {
                   top: 4,
                   child: Container(
                     padding: const EdgeInsets.all(4),
-                    constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+                    constraints: const BoxConstraints(
+                      minWidth: 16,
+                      minHeight: 16,
+                    ),
                     decoration: const BoxDecoration(
-                      color: AppColors.gold,
+                      color: AppColors.brandWhite,
                       shape: BoxShape.circle,
                     ),
                     child: Text(
@@ -161,7 +169,7 @@ class _CartHeaderButton extends StatelessWidget {
                       style: GoogleFonts.montserrat(
                         fontSize: 9,
                         fontWeight: FontWeight.w700,
-                        color: AppColors.headerBrown,
+                        color: AppColors.brandBlue,
                         height: 1,
                       ),
                     ),
@@ -175,12 +183,12 @@ class _CartHeaderButton extends StatelessWidget {
   }
 }
 
-class _goldLine extends StatelessWidget {
+class _headerLine extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
       height: 1,
-      color: AppColors.gold.withValues(alpha: 0.35),
+      color: AppColors.brandWhite.withValues(alpha: 0.35),
     );
   }
 }

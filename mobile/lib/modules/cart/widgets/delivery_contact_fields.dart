@@ -95,7 +95,7 @@ class DeliveryContactField extends StatelessWidget {
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: AppColors.gold, width: 2),
+          borderSide: const BorderSide(color: AppColors.brandBlue, width: 2),
         ),
       ),
     );

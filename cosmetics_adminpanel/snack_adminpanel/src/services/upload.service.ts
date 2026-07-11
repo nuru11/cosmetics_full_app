@@ -1,7 +1,7 @@
 import api from "../lib/api";
 
 function apiOrigin(): string {
-  const base = api.defaults.baseURL || "http://localhost:3000/api";
+  const base = api.defaults.baseURL || "https://alemmartapi.alemmart.com/api";
   return base.replace(/\/api\/?$/, "");
 }
 

@@ -16,28 +16,28 @@ void main() {
   test('saveLines round-trips cart lines', () async {
     final storage = await CartStorage.create();
     await storage.saveLines([
-      const CartLine(productId: 'a', quantity: 2),
-      const CartLine(productId: 'b', quantity: 1),
+      const CartLine(variantId: 'a', quantity: 2),
+      const CartLine(variantId: 'b', quantity: 1),
     ]);
     final loaded = storage.loadLines();
     expect(loaded.length, 2);
-    expect(loaded[0].productId, 'a');
+    expect(loaded[0].variantId, 'a');
     expect(loaded[0].quantity, 2);
-    expect(loaded[1].productId, 'b');
+    expect(loaded[1].variantId, 'b');
   });
 
   test('loadLines filters invalid entries', () async {
     final storage = await CartStorage.create();
     await storage.saveLines([
-      const CartLine(productId: '', quantity: 1),
-      const CartLine(productId: 'ok', quantity: 0),
+      const CartLine(variantId: '', quantity: 1),
+      const CartLine(variantId: 'ok', quantity: 0),
     ]);
     expect(storage.loadLines(), isEmpty);
   });
 
   test('saveLines empty clears cart', () async {
     final storage = await CartStorage.create();
-    await storage.saveLines([const CartLine(productId: 'x', quantity: 1)]);
+    await storage.saveLines([const CartLine(variantId: 'x', quantity: 1)]);
     await storage.saveLines([]);
     expect(storage.loadLines(), isEmpty);
   });

@@ -25,10 +25,17 @@ const productController = {
 
   async create(req, res) {
     const body = req.body || {};
-    if (!body.productName || body.price == null || !body.categoryId) {
+    if (!body.productName || !body.categoryId) {
       res.status(400).json({
         error: 'Missing required fields',
-        required: ['productName', 'price', 'categoryId'],
+        required: ['productName', 'categoryId', 'variants'],
+      });
+      return;
+    }
+
+    if (!Array.isArray(body.variants) || body.variants.length === 0) {
+      res.status(400).json({
+        error: 'At least one variant is required',
       });
       return;
     }

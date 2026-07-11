@@ -7,13 +7,13 @@ class OrderRepository {
   final OrderApi _api;
 
   Future<Order> placeOrder({
-    required List<({String productId, int quantity})> items,
+    required List<({String variantId, int quantity})> items,
     required String customerName,
     required String phone,
     required String city,
   }) {
     final payload = items
-        .map((e) => {'productId': e.productId, 'quantity': e.quantity})
+        .map((e) => {'variantId': e.variantId, 'quantity': e.quantity})
         .toList();
     return _api.checkout(
       items: payload,

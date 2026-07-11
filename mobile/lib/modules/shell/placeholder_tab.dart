@@ -16,7 +16,7 @@ class PlaceholderTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.cream,
+      backgroundColor: AppColors.brandWhite,
       body: SafeArea(
         child: Center(
           child: Padding(
@@ -29,7 +29,7 @@ class PlaceholderTab extends StatelessWidget {
                   style: GoogleFonts.playfairDisplay(
                     fontSize: 28,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.headerBrown,
+                    color: AppColors.brandBlack,
                   ),
                 ),
                 const SizedBox(height: 12),

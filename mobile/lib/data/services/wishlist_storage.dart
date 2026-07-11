@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
-const wishlistStorageKey = 'saved_product_ids';
+const wishlistStorageKey = 'saved_variant_ids_v1';
 
 class WishlistStorage {
   WishlistStorage(this._prefs);
@@ -14,7 +14,7 @@ class WishlistStorage {
     return WishlistStorage(prefs);
   }
 
-  /// Newest saved IDs first.
+  /// Newest saved variant IDs first.
   List<String> loadIds() {
     final raw = _prefs.getString(wishlistStorageKey);
     if (raw == null || raw.isEmpty) return [];

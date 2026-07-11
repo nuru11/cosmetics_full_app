@@ -4,22 +4,46 @@ export type ProductGender = "MALE" | "FEMALE" | "UNISEX";
 export type ProductStatus = "ACTIVE" | "INACTIVE" | "UNAVAILABLE";
 export type ProductVersion = "ORIGINAL" | "TWO_LEVEL" | "PREMIUM";
 
+export interface ProductVariantRow {
+  id: string;
+  variantDescription: string | null;
+  price: string | number;
+  stock: number;
+  sku: string | null;
+  color: string | null;
+  size: string | null;
+  productVersion: ProductVersion;
+  variantImages: string[];
+  sortOrder: number;
+}
+
 export interface ProductRow {
   id: string;
   productName: string;
   productDescription: string | null;
   categoryId: string;
   categoryName: string;
-  price: string | number;
   gender: ProductGender;
   brand: string | null;
   status: ProductStatus;
-  productVersion: ProductVersion;
-  color: string | null;
-  size: string | null;
-  stock: number;
-  sku: string | null;
-  productImages: string[];
+  variants: ProductVariantRow[];
+  variantCount: number;
+  displayPrice: number | null;
+  displayPriceMax: number | null;
+  displayImage: string | null;
+}
+
+interface ApiVariant {
+  id: string;
+  variantDescription?: string | null;
+  price: string | number;
+  stock?: number;
+  sku?: string | null;
+  color?: string | null;
+  size?: string | null;
+  productVersion?: ProductVersion;
+  variantImages?: string[] | null;
+  sortOrder?: number;
 }
 
 interface ApiProduct {
@@ -28,35 +52,53 @@ interface ApiProduct {
   productDescription?: string | null;
   categoryId: string;
   category?: { id: string; name: string; slug?: string } | null;
-  price: string | number;
   gender?: ProductGender;
   brand?: string | null;
   status?: ProductStatus;
-  productVersion?: ProductVersion;
-  color?: string | null;
-  size?: string | null;
-  stock?: number;
-  sku?: string | null;
-  productImages?: string[] | null;
+  variants?: ApiVariant[];
+  variantCount?: number;
+  displayPrice?: number | string | null;
+  displayPriceMax?: number | string | null;
+  displayImage?: string | null;
+}
+
+function mapVariant(v: ApiVariant): ProductVariantRow {
+  return {
+    id: v.id,
+    variantDescription: v.variantDescription ?? null,
+    price: v.price,
+    stock: v.stock ?? 0,
+    sku: v.sku ?? null,
+    color: v.color ?? null,
+    size: v.size ?? null,
+    productVersion: v.productVersion ?? "ORIGINAL",
+    variantImages: Array.isArray(v.variantImages) ? v.variantImages : [],
+    sortOrder: v.sortOrder ?? 0,
+  };
+}
+
+function parseNumber(value: number | string | null | undefined): number | null {
+  if (value == null) return null;
+  const n = typeof value === "number" ? value : Number(value);
+  return Number.isFinite(n) ? n : null;
 }
 
 function mapProduct(p: ApiProduct): ProductRow {
+  const variants = (p.variants ?? []).map(mapVariant);
   return {
     id: p.id,
     productName: p.productName,
     productDescription: p.productDescription ?? null,
     categoryId: p.categoryId,
     categoryName: p.category?.name ?? "—",
-    price: p.price,
     gender: p.gender ?? "UNISEX",
     brand: p.brand ?? null,
     status: p.status ?? "ACTIVE",
-    productVersion: p.productVersion ?? "ORIGINAL",
-    color: p.color ?? null,
-    size: p.size ?? null,
-    stock: p.stock ?? 0,
-    sku: p.sku ?? null,
-    productImages: Array.isArray(p.productImages) ? p.productImages : [],
+    variants,
+    variantCount: p.variantCount ?? variants.length,
+    displayPrice: parseNumber(p.displayPrice),
+    displayPriceMax: parseNumber(p.displayPriceMax),
+    displayImage: p.displayImage ?? null,
   };
 }
 
@@ -67,20 +109,27 @@ export async function fetchAdminProducts(): Promise<ProductRow[]> {
   return (data.products ?? []).map(mapProduct);
 }
 
+export interface ProductVariantInput {
+  id?: string;
+  variantDescription?: string | null;
+  price: number | string;
+  stock?: number;
+  sku?: string | null;
+  color?: string | null;
+  size?: string | null;
+  productVersion?: ProductVersion;
+  variantImages?: string[];
+  sortOrder?: number;
+}
+
 export interface ProductInput {
   productName: string;
   productDescription?: string | null;
   categoryId: string;
-  price: number | string;
   gender?: ProductGender;
   brand?: string | null;
   status?: ProductStatus;
-  productVersion?: ProductVersion;
-  color?: string | null;
-  size?: string | null;
-  stock?: number;
-  sku?: string | null;
-  productImages?: string[];
+  variants: ProductVariantInput[];
 }
 
 export async function createProduct(input: ProductInput): Promise<ProductRow> {

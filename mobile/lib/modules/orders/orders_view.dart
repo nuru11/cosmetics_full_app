@@ -12,7 +12,7 @@ class OrdersView extends GetView<OrdersController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.cream,
+      backgroundColor: AppColors.brandWhite,
       appBar: AppBar(
         centerTitle: false,
         elevation: 0,
@@ -22,16 +22,16 @@ class OrdersView extends GetView<OrdersController> {
           style: GoogleFonts.playfairDisplay(
             fontSize: 24,
             fontWeight: FontWeight.w600,
-            color: AppColors.gold,
+            color: AppColors.brandWhite,
           ),
         ),
-        backgroundColor: AppColors.headerBrown,
-        foregroundColor: AppColors.gold,
+        backgroundColor: AppColors.brandBlue,
+        foregroundColor: AppColors.brandWhite,
       ),
       body: Obx(() {
         if (controller.isLoading.value && controller.orders.isEmpty) {
           return const Center(
-            child: CircularProgressIndicator(color: AppColors.gold),
+            child: CircularProgressIndicator(color: AppColors.brandBlue),
           );
         }
 
@@ -50,7 +50,7 @@ class OrdersView extends GetView<OrdersController> {
         }
 
         return RefreshIndicator(
-          color: AppColors.gold,
+          color: AppColors.brandBlue,
           onRefresh: controller.loadOrders,
           child: ListView.separated(
             physics: const AlwaysScrollableScrollPhysics(),

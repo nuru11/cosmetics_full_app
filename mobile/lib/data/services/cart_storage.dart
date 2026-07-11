@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/cart_line.dart';
 
-const cartStorageKey = 'cart_lines';
+const cartStorageKey = 'cart_lines_v2';
 
 class CartStorage {
   CartStorage(this._prefs);
@@ -25,7 +25,7 @@ class CartStorage {
       return decoded
           .whereType<Map>()
           .map((e) => CartLine.fromJson(Map<String, dynamic>.from(e)))
-          .where((line) => line.productId.isNotEmpty && line.quantity > 0)
+          .where((line) => line.variantId.isNotEmpty && line.quantity > 0)
           .toList();
     } catch (_) {
       return [];
@@ -34,7 +34,7 @@ class CartStorage {
 
   Future<void> saveLines(List<CartLine> lines) async {
     final valid = lines
-        .where((l) => l.productId.isNotEmpty && l.quantity > 0)
+        .where((l) => l.variantId.isNotEmpty && l.quantity > 0)
         .map((l) => l.toJson())
         .toList();
     await _prefs.setString(cartStorageKey, jsonEncode(valid));

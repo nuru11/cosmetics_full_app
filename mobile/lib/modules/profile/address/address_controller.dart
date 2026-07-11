@@ -55,8 +55,8 @@ class AddressController extends GetxController {
         'Saved',
         'Delivery details updated.',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: AppColors.headerBrown,
-        colorText: AppColors.gold,
+        backgroundColor: AppColors.brandBlue,
+        colorText: AppColors.brandWhite,
         margin: const EdgeInsets.all(16),
         duration: const Duration(seconds: 2),
       );

@@ -12,10 +12,10 @@ cartRoutes.get('/', (req, res, next) =>
 cartRoutes.post('/items', (req, res, next) =>
   cartController.addItem(req, res).catch(next)
 );
-cartRoutes.patch('/items/:productId', (req, res, next) =>
+cartRoutes.patch('/items/:variantId', (req, res, next) =>
   cartController.updateItem(req, res).catch(next)
 );
-cartRoutes.delete('/items/:productId', (req, res, next) =>
+cartRoutes.delete('/items/:variantId', (req, res, next) =>
   cartController.removeItem(req, res).catch(next)
 );
 cartRoutes.delete('/', (req, res, next) =>

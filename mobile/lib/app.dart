@@ -18,7 +18,7 @@ class CosmeticsApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      title: 'Sahel',
+      title: 'Alemmart',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
       initialRoute: '/',

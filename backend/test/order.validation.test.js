@@ -22,14 +22,14 @@ test('validateContact rejects missing phone', () => {
   );
 });
 
-test('validateItems normalizes product ids', () => {
+test('validateItems normalizes variant ids', () => {
   const items = validateItems([
-    { productId: 'abc', quantity: 2 },
-    { product_id: 'def', quantity: 1 },
+    { variantId: 'abc', quantity: 2 },
+    { variant_id: 'def', quantity: 1 },
   ]);
   assert.deepEqual(items, [
-    { productId: 'abc', quantity: 2 },
-    { productId: 'def', quantity: 1 },
+    { variantId: 'abc', quantity: 2 },
+    { variantId: 'def', quantity: 1 },
   ]);
 });
 

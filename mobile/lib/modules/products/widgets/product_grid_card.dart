@@ -5,6 +5,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/product_image.dart';
 import '../../../core/widgets/save_product_button.dart';
 import '../../../data/models/product.dart';
+import '../../../data/models/product_variant.dart';
 import '../models/product_comparison.dart';
 import 'product_add_button.dart';
 
@@ -12,17 +13,34 @@ class ProductGridCard extends StatelessWidget {
   const ProductGridCard({
     super.key,
     required this.product,
+    this.highlightVariant,
     this.onTap,
   });
 
   final Product product;
+  final ProductVariant? highlightVariant;
   final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    final versionKey = product.productVersion.toUpperCase();
-    final label = ProductVersionSlot.labelFor(versionKey);
-    final pillColors = _pillColors(versionKey);
+    final displayVariant = highlightVariant ?? product.defaultVariant;
+    final versionKey =
+        displayVariant?.productVersion.toUpperCase() ?? 'ORIGINAL';
+    final label = highlightVariant != null
+        ? highlightVariant!.displayLabel
+        : displayVariant != null && product.variants.length > 1
+            ? '${product.variants.length} options'
+            : ProductVersionSlot.labelFor(versionKey);
+    final pillStyle = _pillStyle(versionKey);
+    final priceLabel = highlightVariant != null
+        ? '\$${highlightVariant!.price.toStringAsFixed(0)}'
+        : product.displayPriceMax != null &&
+                product.displayPrice != null &&
+                product.displayPriceMax != product.displayPrice
+            ? 'From \$${product.displayPrice!.toStringAsFixed(0)}'
+            : '\$${product.price.toStringAsFixed(0)}';
+    final imageUrl = highlightVariant?.primaryImage ?? product.primaryImage;
+    final favoriteVariantId = displayVariant?.id ?? '';
 
     return Material(
       color: AppColors.cardWhite,
@@ -49,7 +67,7 @@ class ProductGridCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         ProductImage(
-                          imageUrl: product.primaryImage,
+                          imageUrl: imageUrl,
                           width: double.infinity,
                           height: 100,
                           borderRadius: BorderRadius.circular(8),
@@ -83,7 +101,10 @@ class ProductGridCard extends StatelessWidget {
                             vertical: 3,
                           ),
                           decoration: BoxDecoration(
-                            color: pillColors.$1,
+                            color: pillStyle.$1,
+                            border: pillStyle.$3 != null
+                                ? Border.all(color: pillStyle.$3!)
+                                : null,
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
@@ -92,13 +113,13 @@ class ProductGridCard extends StatelessWidget {
                               fontSize: 8,
                               fontWeight: FontWeight.w700,
                               letterSpacing: 0.4,
-                              color: pillColors.$2,
+                              color: pillStyle.$2,
                             ),
                           ),
                         ),
                         const SizedBox(height: 6),
                         Text(
-                          '\$${product.price.toStringAsFixed(0)}',
+                          priceLabel,
                           style: GoogleFonts.playfairDisplay(
                             fontSize: 16,
                             fontWeight: FontWeight.w700,
@@ -109,41 +130,47 @@ class ProductGridCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  ProductAddButton(product: product),
+                  ProductAddButton(
+                    product: product,
+                    variant: displayVariant,
+                    useBrandPalette: true,
+                  ),
                 ],
               ),
             ),
-            Positioned(
-              top: 14,
-              right: 14,
-              child: Material(
-                color: AppColors.cardWhite.withValues(alpha: 0.92),
-                shape: const CircleBorder(),
-                child: SaveProductIconButton(
-                  productId: product.id,
-                  iconSize: 18,
-                  padding: const EdgeInsets.all(6),
-                  constraints: const BoxConstraints(
-                    minWidth: 28,
-                    minHeight: 28,
+            if (favoriteVariantId.isNotEmpty)
+              Positioned(
+                top: 14,
+                right: 14,
+                child: Material(
+                  color: AppColors.cardWhite.withValues(alpha: 0.92),
+                  shape: const CircleBorder(),
+                  child: SaveProductIconButton(
+                    variantId: favoriteVariantId,
+                    iconSize: 18,
+                    savedColor: AppColors.brandBlue,
+                    padding: const EdgeInsets.all(6),
+                    constraints: const BoxConstraints(
+                      minWidth: 28,
+                      minHeight: 28,
+                    ),
                   ),
                 ),
               ),
-            ),
           ],
         ),
       ),
     );
   }
 
-  (Color bg, Color fg) _pillColors(String versionKey) {
+  (Color bg, Color fg, Color? border) _pillStyle(String versionKey) {
     switch (versionKey) {
       case 'ORIGINAL':
-        return (AppColors.textDark, AppColors.gold);
+        return (AppColors.brandBlack, AppColors.brandWhite, null);
       case 'PREMIUM':
-        return (AppColors.headerBrown, AppColors.gold);
+        return (AppColors.brandBlue, AppColors.brandWhite, null);
       default:
-        return (AppColors.secondPurple, Colors.white);
+        return (AppColors.brandWhite, AppColors.brandBlue, AppColors.brandBlue);
     }
   }
 }

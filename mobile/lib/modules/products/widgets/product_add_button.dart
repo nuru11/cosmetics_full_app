@@ -3,23 +3,40 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../data/models/product.dart';
+import '../../../data/models/product_variant.dart';
 import '../../cart/cart_actions.dart';
 
 class ProductAddButton extends StatelessWidget {
-  const ProductAddButton({super.key, required this.product});
+  const ProductAddButton({
+    super.key,
+    required this.product,
+    this.variant,
+    this.useBrandPalette = true,
+  });
 
   final Product product;
+  final ProductVariant? variant;
+  final bool useBrandPalette;
 
   @override
   Widget build(BuildContext context) {
-    final (bg, fg) = _colorsForVersion(product.productVersion);
+    final selected =
+        variant ?? product.firstInStockVariant ?? product.defaultVariant;
+    if (selected == null) {
+      return const SizedBox.shrink();
+    }
+
+    final (bg, fg, border) = _colorsForVersion(
+      selected.productVersion,
+      useBrandPalette: useBrandPalette,
+    );
 
     return SizedBox(
       width: double.infinity,
       height: 32,
       child: TextButton(
         onPressed: () async {
-          final added = await addProductToCart(product);
+          final added = await addVariantToCart(product, selected);
           if (!context.mounted) return;
           if (added) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -34,6 +51,7 @@ class ProductAddButton extends StatelessWidget {
           backgroundColor: bg,
           foregroundColor: fg,
           padding: EdgeInsets.zero,
+          side: border != null ? BorderSide(color: border) : null,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
           ),
@@ -50,14 +68,28 @@ class ProductAddButton extends StatelessWidget {
     );
   }
 
-  static (Color bg, Color fg) _colorsForVersion(String versionKey) {
+  static (Color bg, Color fg, Color? border) _colorsForVersion(
+    String versionKey, {
+    required bool useBrandPalette,
+  }) {
+    if (!useBrandPalette) {
+      switch (versionKey.toUpperCase()) {
+        case 'ORIGINAL':
+          return (AppColors.textDark, AppColors.gold, null);
+        case 'PREMIUM':
+          return (AppColors.headerBrown, AppColors.gold, null);
+        default:
+          return (AppColors.secondPurple, Colors.white, null);
+      }
+    }
+
     switch (versionKey.toUpperCase()) {
       case 'ORIGINAL':
-        return (AppColors.textDark, AppColors.gold);
+        return (AppColors.brandBlack, AppColors.brandWhite, null);
       case 'PREMIUM':
-        return (AppColors.headerBrown, AppColors.gold);
+        return (AppColors.brandBlue, AppColors.brandWhite, null);
       default:
-        return (AppColors.secondPurple, Colors.white);
+        return (AppColors.brandWhite, AppColors.brandBlue, AppColors.brandBlue);
     }
   }
 }

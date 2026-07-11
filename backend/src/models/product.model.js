@@ -12,12 +12,6 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         field: 'category_id',
       },
-      productImages: {
-        type: DataTypes.JSON,
-        allowNull: true,
-        defaultValue: [],
-        field: 'product_images',
-      },
       productName: {
         type: DataTypes.STRING(200),
         allowNull: false,
@@ -27,10 +21,6 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.TEXT,
         allowNull: true,
         field: 'product_description',
-      },
-      price: {
-        type: DataTypes.DECIMAL(12, 2),
-        allowNull: false,
       },
       gender: {
         type: DataTypes.ENUM('MALE', 'FEMALE', 'UNISEX'),
@@ -46,33 +36,9 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         defaultValue: 'ACTIVE',
       },
-      productVersion: {
-        type: DataTypes.ENUM('ORIGINAL', 'TWO_LEVEL', 'PREMIUM'),
-        allowNull: false,
-        defaultValue: 'ORIGINAL',
-        field: 'product_version',
-      },
-      color: {
-        type: DataTypes.STRING(80),
-        allowNull: true,
-      },
-      size: {
-        type: DataTypes.STRING(80),
-        allowNull: true,
-      },
-      stock: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        defaultValue: 0,
-      },
       slug: {
         type: DataTypes.STRING(220),
         allowNull: false,
-        unique: true,
-      },
-      sku: {
-        type: DataTypes.STRING(80),
-        allowNull: true,
         unique: true,
       },
       createdAt: {
@@ -94,7 +60,6 @@ module.exports = (sequelize, DataTypes) => {
       indexes: [
         { fields: ['category_id'] },
         { fields: ['slug'] },
-        { fields: ['sku'] },
         { fields: ['status'] },
         { fields: ['gender'] },
         { fields: ['brand'] },

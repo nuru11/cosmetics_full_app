@@ -12,14 +12,17 @@ class CartView extends GetView<CartController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.cream,
+      backgroundColor: AppColors.brandWhite,
       appBar: AppBar(
         title: Text(
           'Your bag',
-          style: GoogleFonts.playfairDisplay(fontWeight: FontWeight.w600, color: AppColors.gold),
+          style: GoogleFonts.playfairDisplay(
+            fontWeight: FontWeight.w600,
+            color: AppColors.brandWhite,
+          ),
         ),
-        backgroundColor: AppColors.headerBrown,
-        foregroundColor: AppColors.gold,
+        backgroundColor: AppColors.brandBlue,
+        foregroundColor: AppColors.brandWhite,
       ),
       body: Obx(() {
         if (controller.isEmpty && !controller.isLoading.value) {
@@ -28,7 +31,7 @@ class CartView extends GetView<CartController> {
 
         if (controller.isLoading.value && controller.entries.isEmpty) {
           return const Center(
-            child: CircularProgressIndicator(color: AppColors.gold),
+            child: CircularProgressIndicator(color: AppColors.brandBlue),
           );
         }
 
@@ -42,7 +45,7 @@ class CartView extends GetView<CartController> {
         final entries = controller.entries;
         if (entries.isEmpty && controller.isLoading.value) {
           return const Center(
-            child: CircularProgressIndicator(color: AppColors.gold),
+            child: CircularProgressIndicator(color: AppColors.brandBlue),
           );
         }
 
@@ -54,7 +57,7 @@ class CartView extends GetView<CartController> {
           children: [
             Expanded(
               child: RefreshIndicator(
-                color: AppColors.gold,
+                color: AppColors.brandBlue,
                 onRefresh: controller.loadCatalog,
                 child: ListView.separated(
                   physics: const AlwaysScrollableScrollPhysics(),
@@ -100,8 +103,8 @@ class CartView extends GetView<CartController> {
           FilledButton(
             onPressed: () => Navigator.pop(ctx, true),
             style: FilledButton.styleFrom(
-              backgroundColor: AppColors.headerBrown,
-              foregroundColor: AppColors.gold,
+              backgroundColor: AppColors.brandBlue,
+              foregroundColor: AppColors.brandWhite,
             ),
             child: const Text('Clear'),
           ),
@@ -130,6 +133,7 @@ class _CartLineCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final product = entry.product;
+    final variant = entry.variant;
     return Material(
       color: AppColors.cardWhite,
       borderRadius: BorderRadius.circular(12),
@@ -144,7 +148,7 @@ class _CartLineCard extends StatelessWidget {
               ClipRRect(
                 borderRadius: BorderRadius.circular(8),
                 child: ProductImage(
-                  imageUrl: product.primaryImage,
+                  imageUrl: variant.primaryImage ?? product.primaryImage,
                   width: 72,
                   height: 72,
                 ),
@@ -164,20 +168,30 @@ class _CartLineCard extends StatelessWidget {
                         color: AppColors.textDark,
                       ),
                     ),
+                    const SizedBox(height: 2),
+                    Text(
+                      entry.variantLabel,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.montserrat(
+                        fontSize: 12,
+                        color: AppColors.textMuted,
+                      ),
+                    ),
                     const SizedBox(height: 4),
                     Text(
-                      '\$${product.price.toStringAsFixed(2)}',
+                      '\$${variant.price.toStringAsFixed(2)}',
                       style: GoogleFonts.montserrat(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.headerBrown,
+                        color: AppColors.brandBlack,
                       ),
                     ),
-                    if (entry.quantity > product.stock)
+                    if (entry.quantity > variant.stock)
                       Padding(
                         padding: const EdgeInsets.only(top: 4),
                         child: Text(
-                          'Only ${product.stock} in stock',
+                          'Only ${variant.stock} in stock',
                           style: GoogleFonts.montserrat(
                             fontSize: 11,
                             color: Colors.red.shade700,
@@ -204,7 +218,7 @@ class _CartLineCard extends StatelessWidget {
                         _QtyButton(
                           icon: Icons.add,
                           onPressed: onIncrement,
-                          enabled: entry.quantity < product.stock,
+                          enabled: entry.quantity < variant.stock,
                         ),
                         const Spacer(),
                         IconButton(
@@ -240,7 +254,7 @@ class _QtyButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: AppColors.cream,
+      color: AppColors.dividerGrey,
       borderRadius: BorderRadius.circular(8),
       child: InkWell(
         onTap: enabled ? onPressed : null,
@@ -321,7 +335,7 @@ class _CartFooter extends StatelessWidget {
                   style: GoogleFonts.playfairDisplay(
                     fontSize: 24,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.headerBrown,
+                    color: AppColors.brandBlack,
                   ),
                 ),
               ],
@@ -330,8 +344,8 @@ class _CartFooter extends StatelessWidget {
             FilledButton(
               onPressed: onCheckout,
               style: FilledButton.styleFrom(
-                backgroundColor: AppColors.headerBrown,
-                foregroundColor: AppColors.gold,
+                backgroundColor: AppColors.brandBlue,
+                foregroundColor: AppColors.brandWhite,
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
@@ -386,7 +400,7 @@ class _EmptyCartState extends StatelessWidget {
               style: GoogleFonts.playfairDisplay(
                 fontSize: 22,
                 fontWeight: FontWeight.w600,
-                color: AppColors.headerBrown,
+                color: AppColors.brandBlack,
               ),
             ),
             const SizedBox(height: 12),
@@ -402,8 +416,8 @@ class _EmptyCartState extends StatelessWidget {
             FilledButton(
               onPressed: () => Get.back(),
               style: FilledButton.styleFrom(
-                backgroundColor: AppColors.headerBrown,
-                foregroundColor: AppColors.gold,
+                backgroundColor: AppColors.brandBlue,
+                foregroundColor: AppColors.brandWhite,
               ),
               child: const Text('Continue shopping'),
             ),
@@ -449,8 +463,8 @@ class _CatalogErrorState extends StatelessWidget {
             FilledButton.icon(
               onPressed: onRetry,
               style: FilledButton.styleFrom(
-                backgroundColor: AppColors.headerBrown,
-                foregroundColor: AppColors.gold,
+                backgroundColor: AppColors.brandBlue,
+                foregroundColor: AppColors.brandWhite,
               ),
               icon: const Icon(Icons.refresh),
               label: const Text('Retry'),

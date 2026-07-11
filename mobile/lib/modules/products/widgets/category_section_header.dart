@@ -31,7 +31,7 @@ class CategorySectionHeader extends StatelessWidget {
               fontSize: 16,
               fontWeight: FontWeight.w700,
               letterSpacing: 0.5,
-              color: AppColors.textDark,
+              color: AppColors.brandBlack,
             ),
           ),
           const SizedBox(width: 12),

@@ -3,8 +3,9 @@ import 'dart:async';
 import 'package:get/get.dart';
 
 import '../../data/models/product.dart';
-import '../products/models/product_comparison.dart';
+import '../../data/models/product_variant.dart';
 import '../products/products_controller.dart';
+import 'saved_entry.dart';
 import 'wishlist_service.dart';
 
 class SavedController extends GetxController {
@@ -13,9 +14,9 @@ class SavedController extends GetxController {
   final WishlistService _wishlist;
   final ProductsController _products;
 
-  final rows = <List<Product>>[].obs;
+  final rows = <List<SavedEntry>>[].obs;
 
-  bool get hasSavedIds => _wishlist.savedIds.isNotEmpty;
+  bool get hasSavedIds => _wishlist.savedVariantIds.isNotEmpty;
 
   bool get isCatalogLoading =>
       _products.isLoading.value && _products.products.isEmpty;
@@ -25,39 +26,51 @@ class SavedController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    ever(_wishlist.savedIds, (_) => _rebuild());
+    ever(_wishlist.savedVariantIds, (_) => _rebuild());
     ever(_products.products, (_) => _rebuild());
     ever(_products.categories, (_) => _rebuild());
     ever(_products.isLoading, (_) => _rebuild());
     _rebuild();
   }
 
+  Map<String, ({Product product, ProductVariant variant})> _variantIndex() {
+    final index = <String, ({Product product, ProductVariant variant})>{};
+    for (final product in _products.products) {
+      for (final variant in product.variants) {
+        index[variant.id] = (product: product, variant: variant);
+      }
+    }
+    return index;
+  }
+
   void _rebuild() {
     if (!_products.isLoading.value &&
         _products.error.value == null &&
         _products.products.isNotEmpty) {
-      final catalogIds = _products.products.map((p) => p.id).toSet();
-      unawaited(_wishlist.pruneToValidIds(catalogIds));
+      final variantIds = _products.products
+          .expand((p) => p.variants)
+          .map((v) => v.id)
+          .toSet();
+      unawaited(_wishlist.pruneToValidIds(variantIds));
     }
 
-    final order = _wishlist.savedIds;
-    final rank = <String, int>{
-      for (var i = 0; i < order.length; i++) order[i]: i,
-    };
+    final order = _wishlist.savedVariantIds;
+    final byVariantId = _variantIndex();
 
-    final saved = _products.products
-        .where((p) => _wishlist.isSaved(p.id))
-        .toList()
-      ..sort(
-        (a, b) => (rank[a.id] ?? order.length).compareTo(rank[b.id] ?? order.length),
-      );
+    final saved = <SavedEntry>[];
+    for (final variantId in order) {
+      final match = byVariantId[variantId];
+      if (match != null) {
+        saved.add(SavedEntry(product: match.product, variant: match.variant));
+      }
+    }
 
     if (saved.isEmpty) {
       rows.clear();
       return;
     }
 
-    rows.assignAll(chunkProductsIntoPairs(saved));
+    rows.assignAll(chunkSavedEntriesIntoPairs(saved));
   }
 
   @override

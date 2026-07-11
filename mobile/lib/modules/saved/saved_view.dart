@@ -3,9 +3,9 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../core/theme/app_colors.dart';
-import '../../data/models/product.dart';
 import '../products/widgets/product_grid_card.dart';
 import 'saved_controller.dart';
+import 'saved_entry.dart';
 import 'wishlist_service.dart';
 
 class SavedView extends GetView<SavedController> {
@@ -14,26 +14,26 @@ class SavedView extends GetView<SavedController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-       appBar: AppBar(
+      appBar: AppBar(
         title: Text(
           'Saved',
           style: GoogleFonts.playfairDisplay(
             fontWeight: FontWeight.w600,
-            color: AppColors.gold,
+            color: AppColors.brandWhite,
           ),
         ),
-        backgroundColor: AppColors.headerBrown,
-        foregroundColor: AppColors.gold,
+        backgroundColor: AppColors.brandBlue,
+        foregroundColor: AppColors.brandWhite,
       ),
-      backgroundColor: AppColors.cream,
+      backgroundColor: AppColors.brandWhite,
       body: SafeArea(
         child: Obx(() {
           final wishlist = Get.find<WishlistService>();
-          final hasSaved = wishlist.savedIds.isNotEmpty;
+          final hasSaved = wishlist.savedVariantIds.isNotEmpty;
 
           if (controller.isCatalogLoading && hasSaved) {
             return const Center(
-              child: CircularProgressIndicator(color: AppColors.gold),
+              child: CircularProgressIndicator(color: AppColors.brandBlue),
             );
           }
 
@@ -52,27 +52,14 @@ class SavedView extends GetView<SavedController> {
 
           final rows = controller.rows;
           return RefreshIndicator(
-            color: AppColors.gold,
+            color: AppColors.brandBlue,
             onRefresh: controller.refresh,
             child: CustomScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
               slivers: [
-                // SliverToBoxAdapter(
-                //   child: Padding(
-                //     padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
-                //     child: Text(
-                //       'Saved',
-                //       style: GoogleFonts.playfairDisplay(
-                //         fontSize: 28,
-                //         fontWeight: FontWeight.w600,
-                //         color: AppColors.headerBrown,
-                //       ),
-                //     ),
-                //   ),
-                // ),
                 SliverList(
                   delegate: SliverChildBuilderDelegate(
-                    (context, index) => _ProductGridRow(products: rows[index]),
+                    (context, index) => _SavedGridRow(entries: rows[index]),
                     childCount: rows.length,
                   ),
                 ),
@@ -86,10 +73,10 @@ class SavedView extends GetView<SavedController> {
   }
 }
 
-class _ProductGridRow extends StatelessWidget {
-  const _ProductGridRow({required this.products});
+class _SavedGridRow extends StatelessWidget {
+  const _SavedGridRow({required this.entries});
 
-  final List<Product> products;
+  final List<SavedEntry> entries;
 
   @override
   Widget build(BuildContext context) {
@@ -100,16 +87,18 @@ class _ProductGridRow extends StatelessWidget {
         children: [
           Expanded(
             child: ProductGridCard(
-              product: products.first,
-              onTap: () => Get.toNamed('/product/${products.first.id}'),
+              product: entries.first.product,
+              highlightVariant: entries.first.variant,
+              onTap: () => Get.toNamed('/product/${entries.first.product.id}'),
             ),
           ),
           const SizedBox(width: 12),
           Expanded(
-            child: products.length > 1
+            child: entries.length > 1
                 ? ProductGridCard(
-                    product: products[1],
-                    onTap: () => Get.toNamed('/product/${products[1].id}'),
+                    product: entries[1].product,
+                    highlightVariant: entries[1].variant,
+                    onTap: () => Get.toNamed('/product/${entries[1].product.id}'),
                   )
                 : const SizedBox.shrink(),
           ),
@@ -141,7 +130,7 @@ class _EmptySavedState extends StatelessWidget {
               style: GoogleFonts.playfairDisplay(
                 fontSize: 22,
                 fontWeight: FontWeight.w600,
-                color: AppColors.headerBrown,
+                color: AppColors.brandBlack,
               ),
             ),
             const SizedBox(height: 12),
@@ -195,8 +184,8 @@ class _CatalogErrorState extends StatelessWidget {
             FilledButton.icon(
               onPressed: onRetry,
               style: FilledButton.styleFrom(
-                backgroundColor: AppColors.headerBrown,
-                foregroundColor: AppColors.gold,
+                backgroundColor: AppColors.brandBlue,
+                foregroundColor: AppColors.brandWhite,
               ),
               icon: const Icon(Icons.refresh),
               label: const Text('Retry'),

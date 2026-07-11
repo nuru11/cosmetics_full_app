@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 
 import '../../core/network/api_client.dart';
 import '../../data/models/product.dart';
+import '../../data/models/product_variant.dart';
 import '../../data/repositories/product_repository.dart';
 
 class ProductDetailController extends GetxController {
@@ -11,6 +12,7 @@ class ProductDetailController extends GetxController {
   final String productId;
 
   final product = Rxn<Product>();
+  final selectedVariant = Rxn<ProductVariant>();
   final isLoading = true.obs;
   final error = RxnString();
 
@@ -18,6 +20,10 @@ class ProductDetailController extends GetxController {
   void onInit() {
     super.onInit();
     loadProduct();
+  }
+
+  void selectVariant(ProductVariant variant) {
+    selectedVariant.value = variant;
   }
 
   Future<void> loadProduct() async {
@@ -30,7 +36,9 @@ class ProductDetailController extends GetxController {
     isLoading.value = true;
     error.value = null;
     try {
-      product.value = await _repository.getProductById(productId);
+      final loaded = await _repository.getProductById(productId);
+      product.value = loaded;
+      selectedVariant.value = loaded.firstInStockVariant ?? loaded.defaultVariant;
     } on ApiException catch (e) {
       error.value = e.message;
     } catch (_) {

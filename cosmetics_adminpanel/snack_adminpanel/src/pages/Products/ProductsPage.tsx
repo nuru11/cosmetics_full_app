@@ -14,19 +14,34 @@ import {
   type ProductGender,
   type ProductRow,
   type ProductStatus,
-  type ProductVersion,
 } from "../../services/product.service";
 import { fetchCategories, type CategoryRow } from "../../services/category.service";
 import { fileToDataUrl, resolveAssetUrl, uploadImageBase64 } from "../../services/upload.service";
+import ProductVariantFields, {
+  emptyVariant,
+  type VariantFormState,
+} from "./ProductVariantFields";
 
 const GENDERS: ProductGender[] = ["UNISEX", "MALE", "FEMALE"];
 const STATUSES: ProductStatus[] = ["ACTIVE", "INACTIVE", "UNAVAILABLE"];
-const VERSIONS: ProductVersion[] = ["ORIGINAL", "TWO_LEVEL", "PREMIUM"];
 
-function formatPrice(p: string | number): string {
+function formatPrice(p: string | number | null | undefined): string {
+  if (p == null) return "—";
   const n = typeof p === "number" ? p : Number(p);
   if (Number.isNaN(n)) return String(p);
   return n.toFixed(2);
+}
+
+function formatPriceRange(row: ProductRow): string {
+  const min = row.displayPrice;
+  const max = row.displayPriceMax;
+  if (min == null) return "—";
+  if (max != null && max !== min) return `${formatPrice(min)} – ${formatPrice(max)}`;
+  return formatPrice(min);
+}
+
+function totalStock(row: ProductRow): number {
+  return row.variants.reduce((sum, v) => sum + (v.stock ?? 0), 0);
 }
 
 function apiErrorMessage(err: unknown, fallback: string): string {
@@ -41,6 +56,21 @@ function apiErrorMessage(err: unknown, fallback: string): string {
 const inputClass =
   "mt-1 w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-800 dark:border-gray-700 dark:bg-gray-900 dark:text-white";
 
+function variantToFormState(v: ProductRow["variants"][number]): VariantFormState {
+  return {
+    id: v.id,
+    variantDescription: v.variantDescription ?? "",
+    size: v.size ?? "",
+    color: v.color ?? "",
+    productVersion: v.productVersion,
+    price: String(v.price),
+    stock: String(v.stock),
+    sku: v.sku ?? "",
+    imageUrls: v.variantImages.join("\n"),
+    imageFile: null,
+  };
+}
+
 export default function ProductsPage() {
   const [rows, setRows] = useState<ProductRow[]>([]);
   const [categories, setCategories] = useState<CategoryRow[]>([]);
@@ -53,17 +83,10 @@ export default function ProductsPage() {
   const [formName, setFormName] = useState("");
   const [formCategoryId, setFormCategoryId] = useState("");
   const [formDescription, setFormDescription] = useState("");
-  const [formPrice, setFormPrice] = useState("");
-  const [formStock, setFormStock] = useState("0");
-  const [formSku, setFormSku] = useState("");
   const [formGender, setFormGender] = useState<ProductGender>("UNISEX");
   const [formStatus, setFormStatus] = useState<ProductStatus>("ACTIVE");
-  const [formVersion, setFormVersion] = useState<ProductVersion>("ORIGINAL");
   const [formBrand, setFormBrand] = useState("");
-  const [formColor, setFormColor] = useState("");
-  const [formSize, setFormSize] = useState("");
-  const [formImageUrls, setFormImageUrls] = useState("");
-  const [formImage, setFormImage] = useState<File | null>(null);
+  const [formVariants, setFormVariants] = useState<VariantFormState[]>([emptyVariant()]);
   const [formSubmitting, setFormSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
@@ -95,17 +118,10 @@ export default function ProductsPage() {
     setFormName("");
     setFormCategoryId(categories[0]?.id ?? "");
     setFormDescription("");
-    setFormPrice("");
-    setFormStock("0");
-    setFormSku("");
     setFormGender("UNISEX");
     setFormStatus("ACTIVE");
-    setFormVersion("ORIGINAL");
     setFormBrand("");
-    setFormColor("");
-    setFormSize("");
-    setFormImageUrls("");
-    setFormImage(null);
+    setFormVariants([emptyVariant()]);
     setFormError(null);
     setFormOpen(true);
   }
@@ -115,17 +131,12 @@ export default function ProductsPage() {
     setFormName(row.productName);
     setFormCategoryId(row.categoryId);
     setFormDescription(row.productDescription ?? "");
-    setFormPrice(String(row.price));
-    setFormStock(String(row.stock));
-    setFormSku(row.sku ?? "");
     setFormGender(row.gender);
     setFormStatus(row.status);
-    setFormVersion(row.productVersion);
     setFormBrand(row.brand ?? "");
-    setFormColor(row.color ?? "");
-    setFormSize(row.size ?? "");
-    setFormImageUrls(row.productImages.join("\n"));
-    setFormImage(null);
+    setFormVariants(
+      row.variants.length > 0 ? row.variants.map(variantToFormState) : [emptyVariant()]
+    );
     setFormError(null);
     setFormOpen(true);
   }
@@ -134,17 +145,16 @@ export default function ProductsPage() {
     setFormOpen(false);
     setEditing(null);
     setFormError(null);
-    setFormImage(null);
   }
 
-  async function buildProductImages(): Promise<string[]> {
-    const fromText = formImageUrls
+  async function buildVariantImages(variant: VariantFormState): Promise<string[]> {
+    const fromText = variant.imageUrls
       .split(/[\n,]+/)
       .map((s) => s.trim())
       .filter(Boolean);
     const images = [...fromText];
-    if (formImage) {
-      const dataUrl = await fileToDataUrl(formImage);
+    if (variant.imageFile) {
+      const dataUrl = await fileToDataUrl(variant.imageFile);
       const url = await uploadImageBase64(dataUrl, "products");
       images.push(url);
     }
@@ -162,35 +172,58 @@ export default function ProductsPage() {
       setFormError("Select a category. Run database seed if none exist.");
       return;
     }
-    const priceNum = Number(formPrice.trim());
-    if (!Number.isFinite(priceNum) || priceNum <= 0) {
-      setFormError("Enter a valid price greater than zero.");
+    if (formVariants.length === 0) {
+      setFormError("Add at least one variant.");
       return;
     }
-    const stockNum = parseInt(formStock.trim(), 10);
-    if (!Number.isFinite(stockNum) || stockNum < 0) {
-      setFormError("Stock must be zero or greater.");
-      return;
+
+    for (let i = 0; i < formVariants.length; i += 1) {
+      const v = formVariants[i];
+      if (!v.variantDescription.trim() && !v.size.trim()) {
+        setFormError(`Variant ${i + 1}: description or size is required.`);
+        return;
+      }
+      const priceNum = Number(v.price.trim());
+      if (!Number.isFinite(priceNum) || priceNum <= 0) {
+        setFormError(`Variant ${i + 1}: enter a valid price greater than zero.`);
+        return;
+      }
+      const stockNum = parseInt(v.stock.trim(), 10);
+      if (!Number.isFinite(stockNum) || stockNum < 0) {
+        setFormError(`Variant ${i + 1}: stock must be zero or greater.`);
+        return;
+      }
     }
 
     setFormSubmitting(true);
     setFormError(null);
     try {
-      const productImages = await buildProductImages();
+      const variants = await Promise.all(
+        formVariants.map(async (variant, index) => {
+          const variantImages = await buildVariantImages(variant);
+          return {
+            ...(variant.id ? { id: variant.id } : {}),
+            variantDescription: variant.variantDescription.trim() || null,
+            size: variant.size.trim() || null,
+            color: variant.color.trim() || null,
+            productVersion: variant.productVersion,
+            price: Number(variant.price.trim()),
+            stock: parseInt(variant.stock.trim(), 10),
+            sku: variant.sku.trim() || null,
+            variantImages,
+            sortOrder: index,
+          };
+        })
+      );
+
       const payload = {
         productName,
         categoryId: formCategoryId,
         productDescription: formDescription.trim() || null,
-        price: priceNum,
-        stock: stockNum,
-        sku: formSku.trim() || null,
         gender: formGender,
         status: formStatus,
-        productVersion: formVersion,
         brand: formBrand.trim() || null,
-        color: formColor.trim() || null,
-        size: formSize.trim() || null,
-        productImages,
+        variants,
       };
 
       if (editing) {
@@ -209,7 +242,7 @@ export default function ProductsPage() {
   }
 
   async function handleDelete(row: ProductRow) {
-    if (!window.confirm(`Delete "${row.productName}"?`)) return;
+    if (!window.confirm(`Delete "${row.productName}" and all its variants?`)) return;
     setSavingId(row.id);
     setError(null);
     try {
@@ -238,8 +271,8 @@ export default function ProductsPage() {
   }
 
   const firstImage = (row: ProductRow) => {
-    const raw = row.productImages[0];
-    return resolveAssetUrl(raw);
+    const raw = row.displayImage ?? row.variants[0]?.variantImages[0];
+    return raw ? resolveAssetUrl(raw) : null;
   };
 
   return (
@@ -252,7 +285,7 @@ export default function ProductsPage() {
       <div className="space-y-6">
         <ComponentCard
           title="Product catalog"
-          desc="Add and edit products for your cosmetics store."
+          desc="Add products with multiple variants (size, color, price, images)."
         >
           <div className="space-y-2 px-6 pb-4">
             {error && <p className="text-sm text-red-500 dark:text-red-400">{error}</p>}
@@ -278,7 +311,10 @@ export default function ProductsPage() {
                     Category
                   </TableCell>
                   <TableCell isHeader className="px-5 py-3 text-right text-sm font-medium">
-                    Price
+                    Variants
+                  </TableCell>
+                  <TableCell isHeader className="px-5 py-3 text-right text-sm font-medium">
+                    Price range
                   </TableCell>
                   <TableCell isHeader className="px-5 py-3 text-left text-sm font-medium">
                     Brand
@@ -300,13 +336,13 @@ export default function ProductsPage() {
               <TableBody className="divide-y divide-gray-200 dark:divide-gray-800">
                 {loading ? (
                   <TableRow>
-                    <TableCell className="px-5 py-8 text-sm text-gray-500" colSpan={8}>
+                    <TableCell className="px-5 py-8 text-sm text-gray-500" colSpan={9}>
                       Loading…
                     </TableCell>
                   </TableRow>
                 ) : rows.length === 0 ? (
                   <TableRow>
-                    <TableCell className="px-5 py-8 text-sm text-gray-500" colSpan={8}>
+                    <TableCell className="px-5 py-8 text-sm text-gray-500" colSpan={9}>
                       No products yet.
                     </TableCell>
                   </TableRow>
@@ -319,14 +355,17 @@ export default function ProductsPage() {
                       <TableCell className="px-5 py-4 text-sm text-gray-600 dark:text-gray-400">
                         {p.categoryName}
                       </TableCell>
+                      <TableCell className="px-5 py-4 text-sm text-right text-gray-600 dark:text-gray-400">
+                        {p.variantCount}
+                      </TableCell>
                       <TableCell className="px-5 py-4 text-sm text-right text-gray-800 dark:text-white/90">
-                        {formatPrice(p.price)}
+                        {formatPriceRange(p)}
                       </TableCell>
                       <TableCell className="px-5 py-4 text-sm text-gray-600 dark:text-gray-400">
                         {p.brand || "—"}
                       </TableCell>
                       <TableCell className="px-5 py-4 text-sm text-gray-600 dark:text-gray-400">
-                        {p.stock}
+                        {totalStock(p)}
                       </TableCell>
                       <TableCell className="px-5 py-4">
                         <select
@@ -379,7 +418,7 @@ export default function ProductsPage() {
         </ComponentCard>
       </div>
 
-      <Modal isOpen={formOpen} onClose={closeForm} className="max-w-lg max-h-[90vh] overflow-y-auto">
+      <Modal isOpen={formOpen} onClose={closeForm} className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <div className="p-6">
           <h3 className="mb-4 text-lg font-semibold text-gray-800 dark:text-white">
             {editing ? "Edit product" : "Add product"}
@@ -415,36 +454,13 @@ export default function ProductsPage() {
               </select>
             </div>
             <div>
-              <Label>Description</Label>
+              <Label>Description (shared)</Label>
               <textarea
                 value={formDescription}
                 onChange={(e) => setFormDescription(e.target.value)}
                 rows={3}
                 className={inputClass}
               />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label>Price</Label>
-                <input
-                  type="text"
-                  inputMode="decimal"
-                  required
-                  value={formPrice}
-                  onChange={(e) => setFormPrice(e.target.value)}
-                  className={inputClass}
-                />
-              </div>
-              <div>
-                <Label>Stock</Label>
-                <input
-                  type="number"
-                  min={0}
-                  value={formStock}
-                  onChange={(e) => setFormStock(e.target.value)}
-                  className={inputClass}
-                />
-              </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -462,22 +478,6 @@ export default function ProductsPage() {
                 </select>
               </div>
               <div>
-                <Label>Version</Label>
-                <select
-                  value={formVersion}
-                  onChange={(e) => setFormVersion(e.target.value as ProductVersion)}
-                  className={inputClass}
-                >
-                  {VERSIONS.map((v) => (
-                    <option key={v} value={v}>
-                      {v}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
                 <Label>Status</Label>
                 <select
                   value={formStatus}
@@ -491,15 +491,6 @@ export default function ProductsPage() {
                   ))}
                 </select>
               </div>
-              <div>
-                <Label>SKU (optional)</Label>
-                <input
-                  type="text"
-                  value={formSku}
-                  onChange={(e) => setFormSku(e.target.value)}
-                  className={inputClass}
-                />
-              </div>
             </div>
             <div>
               <Label>Brand (optional)</Label>
@@ -510,51 +501,19 @@ export default function ProductsPage() {
                 className={inputClass}
               />
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label>Color (optional)</Label>
-                <input
-                  type="text"
-                  value={formColor}
-                  onChange={(e) => setFormColor(e.target.value)}
-                  className={inputClass}
-                />
-              </div>
-              <div>
-                <Label>Size (optional)</Label>
-                <input
-                  type="text"
-                  value={formSize}
-                  onChange={(e) => setFormSize(e.target.value)}
-                  className={inputClass}
-                />
-              </div>
-            </div>
-            <div>
-              <Label>Image URLs (one per line, optional)</Label>
-              <textarea
-                value={formImageUrls}
-                onChange={(e) => setFormImageUrls(e.target.value)}
-                rows={2}
-                placeholder="https://..."
-                className={inputClass}
-              />
-            </div>
-            <div>
-              <Label>Upload image (optional)</Label>
-              <input
-                type="file"
-                accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
-                onChange={(e) => setFormImage(e.target.files?.[0] ?? null)}
-                className="mt-1 block w-full text-sm text-gray-600 file:mr-3 file:rounded file:border-0 file:bg-brand-500 file:px-3 file:py-1.5 file:text-sm file:text-white"
-              />
-            </div>
+
+            <ProductVariantFields
+              variants={formVariants}
+              onChange={setFormVariants}
+              disabled={formSubmitting}
+            />
+
             <div className="flex justify-end gap-2 pt-2">
               <Button type="button" variant="outline" onClick={closeForm}>
                 Cancel
               </Button>
               <Button type="submit" disabled={formSubmitting}>
-                {formSubmitting ? "Saving…" : editing ? "Save changes" : "Create"}
+                {formSubmitting ? "Saving…" : editing ? "Save changes" : "Create product"}
               </Button>
             </div>
           </form>

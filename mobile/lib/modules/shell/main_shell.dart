@@ -75,20 +75,20 @@ class _SahelBottomNav extends StatelessWidget {
       icon: Icons.favorite_border,
       activeIcon: Icons.favorite,
       label: 'SAVED',
-      activeColor: Colors.red,
+      activeColor: AppColors.brandBlue,
     ),
     _NavItem(
       icon: Icons.receipt_long_outlined,
       activeIcon: Icons.receipt_long,
       label: 'ORDERS',
-      activeColor: AppColors.headerBrown,
+      activeColor: AppColors.brandBlue,
       showTopBarWhenSelected: true,
     ),
     _NavItem(
       icon: Icons.person_outline,
       activeIcon: Icons.person,
       label: 'PROFILE',
-      activeColor: AppColors.secondPurple,
+      activeColor: AppColors.brandBlue,
     ),
   ];
 
@@ -129,7 +129,7 @@ class _SahelBottomNav extends StatelessWidget {
                         margin: const EdgeInsets.only(bottom: 4),
                         decoration: BoxDecoration(
                           color: selected && item.showTopBarWhenSelected
-                              ? AppColors.headerBrown
+                              ? AppColors.brandBlue
                               : Colors.transparent,
                           borderRadius: BorderRadius.circular(2),
                         ),
@@ -155,7 +155,7 @@ class _SahelBottomNav extends StatelessWidget {
                         height: 4,
                         decoration: BoxDecoration(
                           color: selected && i == 0
-                              ? AppColors.gold
+                              ? AppColors.brandBlue
                               : Colors.transparent,
                           shape: BoxShape.circle,
                         ),

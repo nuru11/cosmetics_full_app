@@ -1,4 +1,5 @@
 import '../../../data/models/product.dart';
+import '../../../data/models/product_variant.dart';
 
 /// Sort priority for columns in a same-name comparison row.
 const productVersionOrder = ['ORIGINAL', 'TWO_LEVEL', 'PREMIUM'];
@@ -8,12 +9,14 @@ class ProductVersionSlot {
     required this.versionKey,
     required this.displayLabel,
     required this.product,
+    required this.variant,
     required this.defaultSubtitle,
   });
 
   final String versionKey;
   final String displayLabel;
   final Product product;
+  final ProductVariant variant;
   final String defaultSubtitle;
 
   static String labelFor(String versionKey) {
@@ -42,20 +45,26 @@ class ProductVersionSlot {
     }
   }
 
-  factory ProductVersionSlot.fromProduct(Product product) {
-    final key = product.productVersion.toUpperCase();
+  factory ProductVersionSlot.fromVariant({
+    required Product product,
+    required ProductVariant variant,
+    required String displayLabel,
+  }) {
+    final key = variant.productVersion.toUpperCase();
     return ProductVersionSlot(
       versionKey: key,
-      displayLabel: labelFor(key),
+      displayLabel: displayLabel,
       product: product,
-      defaultSubtitle: defaultSubtitleFor(key),
+      variant: variant,
+      defaultSubtitle: variant.variantDescription?.trim().isNotEmpty == true
+          ? variant.variantDescription!.trim()
+          : defaultSubtitleFor(key),
     );
   }
 }
 
-/// One slot per DB row in the group — duplicate versions each get their own column.
-List<ProductVersionSlot> slotsFromProductGroup(List<Product> group) {
-  final indexed = group.asMap().entries.toList();
+List<ProductVersionSlot> slotsFromVariants(Product product) {
+  final indexed = product.variants.asMap().entries.toList();
   indexed.sort((a, b) {
     final va = a.value.productVersion.toUpperCase();
     final vb = b.value.productVersion.toUpperCase();
@@ -69,24 +78,24 @@ List<ProductVersionSlot> slotsFromProductGroup(List<Product> group) {
 
   final versionOccurrence = <String, int>{};
   return indexed.map((entry) {
-    final product = entry.value;
-    final key = product.productVersion.toUpperCase();
+    final variant = entry.value;
+    final key = variant.productVersion.toUpperCase();
     versionOccurrence[key] = (versionOccurrence[key] ?? 0) + 1;
     final n = versionOccurrence[key]!;
     final baseLabel = ProductVersionSlot.labelFor(key);
     final displayLabel = n > 1 ? '$baseLabel · $n' : baseLabel;
 
-    return ProductVersionSlot(
-      versionKey: key,
-      displayLabel: displayLabel,
+    return ProductVersionSlot.fromVariant(
       product: product,
-      defaultSubtitle: ProductVersionSlot.defaultSubtitleFor(key),
+      variant: variant,
+      displayLabel: displayLabel,
     );
   }).toList();
 }
 
 class ProductComparison {
   const ProductComparison({
+    required this.product,
     required this.productName,
     required this.categoryId,
     required this.categoryName,
@@ -94,42 +103,42 @@ class ProductComparison {
     this.brand,
   });
 
+  final Product product;
   final String? brand;
   final String productName;
   final String categoryId;
   final String categoryName;
   final List<ProductVersionSlot> versions;
 
-  factory ProductComparison.fromGroup(List<Product> group) {
-    final first = group.first;
+  factory ProductComparison.fromProduct(Product product) {
     return ProductComparison(
-      brand: first.brand,
-      productName: first.productName,
-      categoryId: first.categoryId,
-      categoryName: first.categoryName,
-      versions: slotsFromProductGroup(group),
+      product: product,
+      brand: product.brand,
+      productName: product.productName,
+      categoryId: product.categoryId,
+      categoryName: product.categoryName,
+      versions: slotsFromVariants(product),
     );
   }
 
   String get displayBrand =>
       (brand != null && brand!.isNotEmpty) ? brand!.toUpperCase() : '—';
 
-  Product? get originalProduct {
+  ProductVariant? get originalVariant {
     for (final slot in versions) {
-      if (slot.versionKey == 'ORIGINAL') return slot.product;
+      if (slot.versionKey == 'ORIGINAL') return slot.variant;
     }
-    return versions.isNotEmpty ? versions.first.product : null;
+    return versions.isNotEmpty ? versions.first.variant : null;
   }
 
-  int? savingsPercentVersusOriginal(Product versionProduct) {
-    final orig = originalProduct?.price;
-    final price = versionProduct.price;
+  int? savingsPercentVersusOriginal(ProductVariant versionVariant) {
+    final orig = originalVariant?.price;
+    final price = versionVariant.price;
     if (orig == null || orig <= 0 || price >= orig) return null;
     return (((orig - price) / orig) * 100).round();
   }
 
-  String? get navigateProductId =>
-      versions.isNotEmpty ? versions.first.product.id : null;
+  String? get navigateProductId => product.id;
 
   bool get showScrollHint => versions.length > 1;
 }
@@ -163,8 +172,4 @@ List<List<Product>> chunkProductsIntoPairs(List<Product> products) {
     }
   }
   return rows;
-}
-
-String productGroupKey(Product p) {
-  return '${p.categoryId}|${p.productName.trim().toLowerCase()}';
 }

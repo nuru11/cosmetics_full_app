@@ -70,7 +70,7 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
               style: GoogleFonts.playfairDisplay(
                 fontSize: 22,
                 fontWeight: FontWeight.w600,
-                color: AppColors.headerBrown,
+                color: AppColors.brandBlack,
               ),
             ),
             const SizedBox(height: 16),
@@ -83,8 +83,8 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
             FilledButton(
               onPressed: widget.isSubmitting ? null : _submit,
               style: FilledButton.styleFrom(
-                backgroundColor: AppColors.headerBrown,
-                foregroundColor: AppColors.gold,
+                backgroundColor: AppColors.brandBlue,
+                foregroundColor: AppColors.brandWhite,
                 padding: const EdgeInsets.symmetric(vertical: 14),
               ),
               child: widget.isSubmitting
@@ -93,7 +93,7 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
                       width: 22,
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
-                        color: AppColors.gold,
+                        color: AppColors.brandWhite,
                       ),
                     )
                   : Text(

@@ -12,17 +12,17 @@ class AddressView extends GetView<AddressController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.cream,
+      backgroundColor: AppColors.brandWhite,
       appBar: AppBar(
         title: Text(
           'My Address',
           style: GoogleFonts.playfairDisplay(
             fontWeight: FontWeight.w600,
-            color: AppColors.gold,
+            color: AppColors.brandWhite,
           ),
         ),
-        backgroundColor: AppColors.headerBrown,
-        foregroundColor: AppColors.gold,
+        backgroundColor: AppColors.brandBlue,
+        foregroundColor: AppColors.brandWhite,
         actions: [
           Obx(
             () => TextButton(
@@ -35,14 +35,14 @@ class AddressView extends GetView<AddressController> {
                       height: 20,
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
-                        color: AppColors.gold,
+                        color: AppColors.brandWhite,
                       ),
                     )
                   : Text(
                       'Save',
                       style: GoogleFonts.montserrat(
                         fontWeight: FontWeight.w700,
-                        color: AppColors.gold,
+                        color: AppColors.brandWhite,
                       ),
                     ),
             ),
@@ -52,7 +52,7 @@ class AddressView extends GetView<AddressController> {
       body: Obx(() {
         if (controller.isLoading.value) {
           return const Center(
-            child: CircularProgressIndicator(color: AppColors.gold),
+            child: CircularProgressIndicator(color: AppColors.brandBlue),
           );
         }
 
@@ -73,7 +73,7 @@ class AddressView extends GetView<AddressController> {
                   style: GoogleFonts.playfairDisplay(
                     fontSize: 22,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.headerBrown,
+                    color: AppColors.brandBlack,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -94,8 +94,8 @@ class AddressView extends GetView<AddressController> {
                 FilledButton(
                   onPressed: controller.isSaving.value ? null : controller.save,
                   style: FilledButton.styleFrom(
-                    backgroundColor: AppColors.headerBrown,
-                    foregroundColor: AppColors.gold,
+                    backgroundColor: AppColors.brandBlue,
+                    foregroundColor: AppColors.brandWhite,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                   ),
                   child: Obx(
@@ -105,7 +105,7 @@ class AddressView extends GetView<AddressController> {
                             width: 22,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              color: AppColors.gold,
+                              color: AppColors.brandWhite,
                             ),
                           )
                         : Text(

@@ -3,10 +3,33 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
+    const [constraints] = await queryInterface.sequelize.query(
+      `SELECT CONSTRAINT_NAME
+       FROM information_schema.TABLE_CONSTRAINTS
+       WHERE TABLE_SCHEMA = DATABASE()
+         AND TABLE_NAME = 'orders'
+         AND CONSTRAINT_TYPE = 'FOREIGN KEY'`
+    );
+
+    for (const row of constraints) {
+      await queryInterface.sequelize.query(
+        `ALTER TABLE \`orders\` DROP FOREIGN KEY \`${row.CONSTRAINT_NAME}\``
+      );
+    }
+
     await queryInterface.changeColumn('orders', 'user_id', {
       type: Sequelize.STRING(36),
       allowNull: true,
-      references: { model: 'users', key: 'id' },
+    });
+
+    await queryInterface.addConstraint('orders', {
+      fields: ['user_id'],
+      type: 'foreign key',
+      name: 'orders_user_id_fk',
+      references: {
+        table: 'users',
+        field: 'id',
+      },
       onUpdate: 'CASCADE',
       onDelete: 'SET NULL',
     });
@@ -47,10 +70,21 @@ module.exports = {
     await queryInterface.removeColumn('orders', 'customer_name');
     await queryInterface.removeColumn('orders', 'client_device_id');
 
+    await queryInterface.removeConstraint('orders', 'orders_user_id_fk');
+
     await queryInterface.changeColumn('orders', 'user_id', {
       type: Sequelize.STRING(36),
       allowNull: false,
-      references: { model: 'users', key: 'id' },
+    });
+
+    await queryInterface.addConstraint('orders', {
+      fields: ['user_id'],
+      type: 'foreign key',
+      name: 'orders_ibfk_1',
+      references: {
+        table: 'users',
+        field: 'id',
+      },
       onUpdate: 'CASCADE',
       onDelete: 'CASCADE',
     });

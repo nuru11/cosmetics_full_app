@@ -12,23 +12,23 @@ abstract final class AppTheme {
           displayLarge: GoogleFonts.playfairDisplay(
             fontSize: 32,
             fontWeight: FontWeight.w700,
-            color: Colors.white,
+            color: AppColors.brandWhite,
           ),
           titleLarge: GoogleFonts.playfairDisplay(
             fontSize: 20,
             fontWeight: FontWeight.w700,
-            color: AppColors.textDark,
+            color: AppColors.brandBlack,
           ),
           titleMedium: GoogleFonts.playfairDisplay(
             fontSize: 18,
             fontWeight: FontWeight.w600,
-            color: AppColors.textDark,
+            color: AppColors.brandBlack,
           ),
           labelSmall: GoogleFonts.montserrat(
             fontSize: 10,
             fontWeight: FontWeight.w600,
             letterSpacing: 1.2,
-            color: AppColors.gold,
+            color: AppColors.brandBlue,
           ),
           bodySmall: GoogleFonts.montserrat(
             fontSize: 12,
@@ -42,10 +42,12 @@ abstract final class AppTheme {
 
     return ThemeData(
       useMaterial3: true,
-      scaffoldBackgroundColor: AppColors.cream,
+      scaffoldBackgroundColor: AppColors.brandWhite,
       colorScheme: ColorScheme.light(
-        primary: AppColors.gold,
-        secondary: AppColors.secondPurple,
+        primary: AppColors.brandBlue,
+        onPrimary: AppColors.brandWhite,
+        secondary: AppColors.brandBlack,
+        onSecondary: AppColors.brandWhite,
         surface: AppColors.cardWhite,
         onSurface: AppColors.textDark,
         outline: AppColors.dividerGrey,
@@ -55,12 +57,12 @@ abstract final class AppTheme {
         centerTitle: true,
         elevation: 0,
         scrolledUnderElevation: 0,
-        backgroundColor: AppColors.cream,
-        foregroundColor: AppColors.textDark,
+        backgroundColor: AppColors.brandBlue,
+        foregroundColor: AppColors.brandWhite,
         titleTextStyle: GoogleFonts.playfairDisplay(
           fontSize: 18,
           fontWeight: FontWeight.w600,
-          color: AppColors.textDark,
+          color: AppColors.brandWhite,
         ),
       ),
       cardTheme: CardThemeData(

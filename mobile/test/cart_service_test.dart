@@ -18,9 +18,9 @@ void main() {
     await service.add('a');
 
     expect(service.lines.length, 2);
-    expect(service.lines[0].productId, 'a');
+    expect(service.lines[0].variantId, 'a');
     expect(service.lines[0].quantity, 2);
-    expect(service.lines[1].productId, 'b');
+    expect(service.lines[1].variantId, 'b');
     expect(service.totalItemCount, 3);
   });
 
@@ -47,7 +47,7 @@ void main() {
     await service.add('b');
     await service.remove('a');
     expect(service.lines.length, 1);
-    expect(service.lines.single.productId, 'b');
+    expect(service.lines.single.variantId, 'b');
 
     await service.clear();
     expect(service.lines, isEmpty);
@@ -57,7 +57,7 @@ void main() {
     expect(reloaded.lines, isEmpty);
   });
 
-  test('pruneInvalid drops unknown product ids', () async {
+  test('pruneInvalid drops unknown variant ids', () async {
     final storage = await CartStorage.create();
     final service = CartService(storage);
     await service.init();
@@ -67,7 +67,7 @@ void main() {
     await service.pruneInvalid({'kept'});
 
     expect(service.lines.length, 1);
-    expect(service.lines.single.productId, 'kept');
-    expect(storage.loadLines().single.productId, 'kept');
+    expect(service.lines.single.variantId, 'kept');
+    expect(storage.loadLines().single.variantId, 'kept');
   });
 }

@@ -71,29 +71,22 @@ class ProductsController extends GetxController {
   List<CategoryProductSection> _buildCategorySections(List<Product> items) {
     if (items.isEmpty) return [];
 
-    final groups = <String, List<Product>>{};
-    for (final p in items) {
-      groups.putIfAbsent(productGroupKey(p), () => []).add(p);
-    }
-
     final comparisonsByCategory = <String, List<ProductComparison>>{};
     final singlesByCategory = <String, List<Product>>{};
     final categoryNames = <String, String>{};
     final categorySlugs = <String, String?>{};
 
-    for (final group in groups.values) {
-      if (group.isEmpty) continue;
-      final first = group.first;
-      final categoryId = first.categoryId;
-      categoryNames[categoryId] = first.categoryName;
-      categorySlugs[categoryId] ??= first.category?.slug;
+    for (final product in items) {
+      final categoryId = product.categoryId;
+      categoryNames[categoryId] = product.categoryName;
+      categorySlugs[categoryId] ??= product.category?.slug;
 
-      if (group.length >= 2) {
+      if (product.variants.length >= 2) {
         comparisonsByCategory
             .putIfAbsent(categoryId, () => [])
-            .add(ProductComparison.fromGroup(group));
+            .add(ProductComparison.fromProduct(product));
       } else {
-        singlesByCategory.putIfAbsent(categoryId, () => []).add(first);
+        singlesByCategory.putIfAbsent(categoryId, () => []).add(product);
       }
     }
 

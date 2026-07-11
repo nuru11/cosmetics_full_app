@@ -17,6 +17,29 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         field: 'product_id',
       },
+      variantId: {
+        type: DataTypes.STRING(36),
+        allowNull: false,
+        field: 'variant_id',
+      },
+      variantDescription: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+        field: 'variant_description',
+      },
+      size: {
+        type: DataTypes.STRING(80),
+        allowNull: true,
+      },
+      color: {
+        type: DataTypes.STRING(80),
+        allowNull: true,
+      },
+      productVersion: {
+        type: DataTypes.ENUM('ORIGINAL', 'TWO_LEVEL', 'PREMIUM'),
+        allowNull: true,
+        field: 'product_version',
+      },
       quantity: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -41,7 +64,11 @@ module.exports = (sequelize, DataTypes) => {
     {
       tableName: 'order_items',
       timestamps: false,
-      indexes: [{ fields: ['order_id'] }, { fields: ['product_id'] }],
+      indexes: [
+        { fields: ['order_id'] },
+        { fields: ['product_id'] },
+        { fields: ['variant_id'] },
+      ],
     }
   );
 };

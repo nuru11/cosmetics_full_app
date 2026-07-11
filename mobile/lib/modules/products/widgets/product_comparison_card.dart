@@ -62,11 +62,11 @@ class ProductComparisonCard extends StatelessWidget {
                         final slot = slots[index];
                         final savings = slot.versionKey != 'ORIGINAL'
                             ? comparison.savingsPercentVersusOriginal(
-                                slot.product,
+                                slot.variant,
                               )
                             : null;
                         return SizedBox(
-                          key: ValueKey(slot.product.id),
+                          key: ValueKey(slot.variant.id),
                           width: _columnWidth,
                           child: _ProductSide(
                             slot: slot,
@@ -125,7 +125,7 @@ class ProductComparisonCard extends StatelessWidget {
                       Icon(
                         Icons.swipe_left,
                         size: 14,
-                        color: AppColors.gold.withValues(alpha: 0.9),
+                        color: AppColors.brandBlue.withValues(alpha: 0.9),
                       ),
                       const SizedBox(width: 6),
                       Text(
@@ -200,7 +200,7 @@ class _CardHeader extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
           decoration: BoxDecoration(
-            color: AppColors.secondPurple.withValues(alpha: 0.25),
+            color: AppColors.brandBlue.withValues(alpha: 0.15),
             borderRadius: BorderRadius.circular(20),
           ),
           child: Text(
@@ -209,7 +209,7 @@ class _CardHeader extends StatelessWidget {
               fontSize: 9,
               fontWeight: FontWeight.w600,
               letterSpacing: 0.5,
-              color: AppColors.secondPurpleDark,
+              color: AppColors.brandBlue,
             ),
           ),
         ),
@@ -233,7 +233,7 @@ class _ColumnSeparator extends StatelessWidget {
                 width: 22,
                 height: 22,
                 decoration: const BoxDecoration(
-                  color: AppColors.textDark,
+                  color: AppColors.brandBlack,
                   shape: BoxShape.circle,
                 ),
                 alignment: Alignment.center,
@@ -242,7 +242,7 @@ class _ColumnSeparator extends StatelessWidget {
                   style: GoogleFonts.playfairDisplay(
                     fontSize: 9,
                     fontStyle: FontStyle.italic,
-                    color: AppColors.gold,
+                    color: AppColors.brandWhite,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -271,10 +271,8 @@ class _ProductSide extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final product = slot.product;
-    final subtitle = (product.productDescription != null &&
-            product.productDescription!.trim().isNotEmpty)
-        ? product.productDescription!.trim()
-        : slot.defaultSubtitle;
+    final variant = slot.variant;
+    final subtitle = slot.defaultSubtitle;
 
     return GestureDetector(
       onTap: onTap,
@@ -289,7 +287,7 @@ class _ProductSide extends StatelessWidget {
             clipBehavior: Clip.none,
             children: [
               ProductImage(
-                imageUrl: product.primaryImage,
+                imageUrl: variant.primaryImage,
                 width: double.infinity,
                 height: 72,
                 borderRadius: BorderRadius.circular(8),
@@ -301,8 +299,9 @@ class _ProductSide extends StatelessWidget {
                   color: AppColors.cardWhite.withValues(alpha: 0.92),
                   shape: const CircleBorder(),
                   child: SaveProductIconButton(
-                    productId: product.id,
+                    variantId: variant.id,
                     iconSize: 16,
+                    savedColor: AppColors.brandBlue,
                     unsavedColor: AppColors.textMuted,
                     padding: const EdgeInsets.all(4),
                     constraints: const BoxConstraints(
@@ -328,7 +327,7 @@ class _ProductSide extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            '\$${product.price.toStringAsFixed(0)}',
+            '\$${variant.price.toStringAsFixed(0)}',
             style: GoogleFonts.playfairDisplay(
               fontSize: 22,
               fontWeight: FontWeight.w700,
@@ -340,9 +339,7 @@ class _ProductSide extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
               decoration: BoxDecoration(
-                color: tierStyle == _TierStyle.premium
-                    ? AppColors.headerBrown
-                    : AppColors.secondPurpleDark,
+                color: AppColors.brandBlue,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
@@ -356,7 +353,11 @@ class _ProductSide extends StatelessWidget {
             ),
           ],
             const Spacer(),
-            ProductAddButton(product: product),
+            ProductAddButton(
+              product: product,
+              variant: variant,
+              useBrandPalette: true,
+            ),
           ],
         ),
       ),
@@ -372,16 +373,29 @@ class _VersionPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final (bg, fg) = switch (style) {
-      _TierStyle.original => (AppColors.textDark, AppColors.gold),
-      _TierStyle.second => (AppColors.secondPurple, Colors.white),
-      _TierStyle.premium => (AppColors.headerBrown, AppColors.gold),
+    final (bg, fg, border) = switch (style) {
+      _TierStyle.original => (
+          AppColors.brandBlack,
+          AppColors.brandWhite,
+          null as Color?,
+        ),
+      _TierStyle.second => (
+          AppColors.brandWhite,
+          AppColors.brandBlue,
+          AppColors.brandBlue,
+        ),
+      _TierStyle.premium => (
+          AppColors.brandBlue,
+          AppColors.brandWhite,
+          null as Color?,
+        ),
     };
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
         color: bg,
+        border: border != null ? Border.all(color: border) : null,
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text(

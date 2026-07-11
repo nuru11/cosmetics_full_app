@@ -31,14 +31,14 @@ function validateItems(items) {
 
   const normalized = [];
   for (const row of items) {
-    const productId = (row.productId || row.product_id || '').trim();
+    const variantId = (row.variantId || row.variant_id || '').trim();
     const quantity = parseInt(row.quantity, 10);
-    if (!productId || !Number.isFinite(quantity) || quantity < 1) {
+    if (!variantId || !Number.isFinite(quantity) || quantity < 1) {
       const err = new Error('Invalid cart item');
       err.status = 400;
       throw err;
     }
-    normalized.push({ productId, quantity });
+    normalized.push({ variantId, quantity });
   }
   return normalized;
 }

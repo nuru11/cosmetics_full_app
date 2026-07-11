@@ -14,55 +14,118 @@ module.exports = {
 
     const productName = 'Miss Dior Blooming Bouquet';
     const brand = 'DIOR';
+    const slug = 'miss-dior-blooming-bouquet';
     const now = new Date();
+
+    const existingProduct = await queryInterface.rawSelect(
+      'products',
+      { where: { slug } },
+      ['id']
+    );
+
+    let productId = existingProduct;
+
+    if (!productId) {
+      const oldSlugs = [
+        'miss-dior-blooming-bouquet-original',
+        'miss-dior-blooming-bouquet-two-level',
+        'miss-dior-blooming-bouquet-premium',
+      ];
+
+      const [oldRows] = await queryInterface.sequelize.query(
+        `SELECT id FROM products WHERE slug IN (:slugs) LIMIT 1`,
+        { replacements: { slugs: oldSlugs } }
+      );
+
+      if (oldRows.length > 0) {
+        productId = oldRows[0].id;
+        await queryInterface.sequelize.query(
+          `UPDATE products SET slug = :slug, product_name = :productName, brand = :brand,
+           product_description = :description, gender = 'FEMALE', status = 'ACTIVE'
+           WHERE id = :id`,
+          {
+            replacements: {
+              slug,
+              productName,
+              brand,
+              description: 'Eau de toilette floral fragrance',
+              id: productId,
+            },
+          }
+        );
+
+        const [otherOld] = await queryInterface.sequelize.query(
+          `SELECT id FROM products WHERE slug IN (:slugs) AND id != :keepId`,
+          { replacements: { slugs: oldSlugs, keepId: productId } }
+        );
+        for (const row of otherOld) {
+          await queryInterface.sequelize.query(
+            `DELETE FROM products WHERE id = :id`,
+            { replacements: { id: row.id } }
+          );
+        }
+      } else {
+        productId = randomUUID();
+        await queryInterface.bulkInsert('products', [
+          {
+            id: productId,
+            category_id: categoryId,
+            product_name: productName,
+            slug,
+            brand,
+            product_description: 'Eau de toilette floral fragrance',
+            gender: 'FEMALE',
+            status: 'ACTIVE',
+            created_at: now,
+            updated_at: now,
+          },
+        ]);
+      }
+    }
 
     const variants = [
       {
         product_version: 'ORIGINAL',
-        slug: 'miss-dior-blooming-bouquet-original',
         sku: 'DIOR-MDBB-ORIG',
         price: 120,
-        product_description: 'Authentic sealed, full box',
+        variant_description: 'Authentic sealed, full box',
+        sort_order: 0,
       },
       {
         product_version: 'TWO_LEVEL',
-        slug: 'miss-dior-blooming-bouquet-two-level',
         sku: 'DIOR-MDBB-2ND',
         price: 45,
-        product_description: 'Same product, no box',
+        variant_description: 'Same product, no box',
+        sort_order: 1,
       },
       {
         product_version: 'PREMIUM',
-        slug: 'miss-dior-blooming-bouquet-premium',
         sku: 'DIOR-MDBB-PREM',
         price: 95,
-        product_description: 'Premium / limited edition',
+        variant_description: 'Premium / limited edition',
+        sort_order: 2,
       },
     ];
 
     for (const v of variants) {
-      const existing = await queryInterface.rawSelect(
-        'products',
-        { where: { slug: v.slug } },
+      const existingSku = await queryInterface.rawSelect(
+        'product_variants',
+        { where: { sku: v.sku } },
         ['id']
       );
-      if (existing) continue;
+      if (existingSku) continue;
 
-      await queryInterface.bulkInsert('products', [
+      await queryInterface.bulkInsert('product_variants', [
         {
           id: randomUUID(),
-          category_id: categoryId,
-          product_name: productName,
-          slug: v.slug,
-          sku: v.sku,
-          brand,
-          product_description: v.product_description,
-          product_images: JSON.stringify([]),
+          product_id: productId,
+          variant_description: v.variant_description,
           price: v.price,
-          gender: 'FEMALE',
-          status: 'ACTIVE',
           product_version: v.product_version,
           stock: 10,
+          sku: v.sku,
+          variant_images: JSON.stringify([]),
+          sort_order: v.sort_order,
           created_at: now,
           updated_at: now,
         },
@@ -71,12 +134,14 @@ module.exports = {
   },
 
   async down(queryInterface) {
-    await queryInterface.bulkDelete('products', {
-      slug: [
-        'miss-dior-blooming-bouquet-original',
-        'miss-dior-blooming-bouquet-two-level',
-        'miss-dior-blooming-bouquet-premium',
-      ],
-    });
+    const productId = await queryInterface.rawSelect(
+      'products',
+      { where: { slug: 'miss-dior-blooming-bouquet' } },
+      ['id']
+    );
+    if (!productId) return;
+
+    await queryInterface.bulkDelete('product_variants', { product_id: productId });
+    await queryInterface.bulkDelete('products', { id: productId });
   },
 };

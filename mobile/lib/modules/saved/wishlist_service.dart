@@ -6,41 +6,44 @@ class WishlistService extends GetxService {
   WishlistService([WishlistStorage? storage]) : _storage = storage;
 
   WishlistStorage? _storage;
-  /// Product IDs, newest saved first.
-  final savedIds = <String>[].obs;
+
+  /// Variant IDs, newest saved first.
+  final savedVariantIds = <String>[].obs;
 
   Future<WishlistService> init() async {
     _storage ??= await WishlistStorage.create();
-    savedIds.assignAll(_storage!.loadIds());
+    savedVariantIds.assignAll(_storage!.loadIds());
     return this;
   }
 
-  bool isSaved(String productId) => savedIds.contains(productId);
+  bool isSaved(String variantId) => savedVariantIds.contains(variantId);
 
-  Future<bool> toggle(String productId) async {
-    final list = savedIds.toList();
-    if (list.contains(productId)) {
-      list.remove(productId);
-      savedIds.assignAll(list);
+  Future<bool> toggle(String variantId) async {
+    if (variantId.isEmpty) return false;
+
+    final list = savedVariantIds.toList();
+    if (list.contains(variantId)) {
+      list.remove(variantId);
+      savedVariantIds.assignAll(list);
       await _persist();
       return false;
     }
 
-    list.insert(0, productId);
-    savedIds.assignAll(list);
+    list.insert(0, variantId);
+    savedVariantIds.assignAll(list);
     await _persist();
     return true;
   }
 
-  Future<void> pruneToValidIds(Set<String> validIds) async {
-    final next = savedIds.where(validIds.contains).toList();
-    if (next.length != savedIds.length) {
-      savedIds.assignAll(next);
+  Future<void> pruneToValidIds(Set<String> validVariantIds) async {
+    final next = savedVariantIds.where(validVariantIds.contains).toList();
+    if (next.length != savedVariantIds.length) {
+      savedVariantIds.assignAll(next);
       await _persist();
     }
   }
 
   Future<void> _persist() async {
-    await _storage?.saveIds(savedIds.toList());
+    await _storage?.saveIds(savedVariantIds.toList());
   }
 }

@@ -10,7 +10,7 @@ class ProfileView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.cream,
+      backgroundColor: AppColors.brandWhite,
       body: CustomScrollView(
         slivers: [
           _ProfileSliverAppBar(),
@@ -29,21 +29,21 @@ class ProfileView extends StatelessWidget {
                       icon: Icons.shopping_bag_outlined,
                       label: 'My Orders',
                       detail: 'Track & manage',
-                      accent: AppColors.gold,
+                      accent: AppColors.brandBlue,
                       onTap: () => Get.toNamed('/profile/my-orders'),
                     ),
                     _MenuItem(
                       icon: Icons.history_rounded,
                       label: 'Order History',
                       detail: 'Past purchases',
-                      accent: AppColors.headerBrown,
+                      accent: AppColors.brandBlue,
                       onTap: () => Get.toNamed('/profile/order-history'),
                     ),
                     _MenuItem(
                       icon: Icons.location_on_outlined,
                       label: 'My Address',
                       detail: 'Saved locations',
-                      accent: AppColors.secondPurple,
+                      accent: AppColors.brandBlue,
                       onTap: () => Get.toNamed('/profile/address'),
                     ),
                   ],
@@ -57,14 +57,14 @@ class ProfileView extends StatelessWidget {
                       icon: Icons.favorite_border_rounded,
                       label: 'Wishlist',
                       detail: '12 saved items',
-                      accent: AppColors.secondPurple,
+                      accent: AppColors.brandBlue,
                       onTap: () {},
                     ),
                     _MenuItem(
                       icon: Icons.auto_awesome_outlined,
                       label: 'Beauty Routine',
                       detail: 'Personalized picks',
-                      accent: AppColors.gold,
+                      accent: AppColors.brandBlue,
                       onTap: () {},
                     ),
                   ],
@@ -86,8 +86,8 @@ class _ProfileSliverAppBar extends StatelessWidget {
     return SliverAppBar(
       expandedHeight: 260,
       pinned: true,
-      backgroundColor: AppColors.headerBrown,
-      foregroundColor: AppColors.gold,
+      backgroundColor: AppColors.brandBlue,
+      foregroundColor: AppColors.brandWhite,
       flexibleSpace: FlexibleSpaceBar(
         collapseMode: CollapseMode.parallax,
         background: Stack(
@@ -99,9 +99,9 @@ class _ProfileSliverAppBar extends StatelessWidget {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [
-                    AppColors.headerBrown,
-                    Color(0xFF5C4A3A),
-                    AppColors.headerBrown,
+                    AppColors.brandBlue,
+                    AppColors.brandBlack,
+                    AppColors.brandBlue,
                   ],
                   stops: [0.0, 0.5, 1.0],
                 ),
@@ -115,7 +115,7 @@ class _ProfileSliverAppBar extends StatelessWidget {
                 height: 200,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: AppColors.gold.withValues(alpha: 0.08),
+                  color: AppColors.brandWhite.withValues(alpha: 0.08),
                 ),
               ),
             ),
@@ -127,7 +127,7 @@ class _ProfileSliverAppBar extends StatelessWidget {
                 height: 140,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: AppColors.secondPurple.withValues(alpha: 0.12),
+                  color: AppColors.brandWhite.withValues(alpha: 0.12),
                 ),
               ),
             ),
@@ -142,7 +142,7 @@ class _ProfileSliverAppBar extends StatelessWidget {
                     decoration: const BoxDecoration(
                       shape: BoxShape.circle,
                       gradient: LinearGradient(
-                        colors: [AppColors.gold, AppColors.secondPurple],
+                        colors: [AppColors.brandWhite, AppColors.brandBlue],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
@@ -152,12 +152,12 @@ class _ProfileSliverAppBar extends StatelessWidget {
                       height: 68,
                       decoration: const BoxDecoration(
                         shape: BoxShape.circle,
-                        color: AppColors.headerBrown,
+                        color: AppColors.brandBlue,
                       ),
                       child: const Icon(
                         Icons.person_outline_rounded,
                         size: 36,
-                        color: AppColors.gold,
+                        color: AppColors.brandWhite,
                       ),
                     ),
                   ),
@@ -172,7 +172,7 @@ class _ProfileSliverAppBar extends StatelessWidget {
                           style: GoogleFonts.montserrat(
                             fontSize: 11,
                             letterSpacing: 2,
-                            color: AppColors.gold.withValues(alpha: 0.85),
+                            color: AppColors.brandWhite.withValues(alpha: 0.85),
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -182,7 +182,7 @@ class _ProfileSliverAppBar extends StatelessWidget {
                           style: GoogleFonts.playfairDisplay(
                             fontSize: 30,
                             fontWeight: FontWeight.w600,
-                            color: AppColors.cream,
+                            color: AppColors.brandWhite,
                             height: 1.1,
                           ),
                         ),
@@ -194,17 +194,17 @@ class _ProfileSliverAppBar extends StatelessWidget {
                           ),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(20),
-                            color: AppColors.gold.withValues(alpha: 0.15),
+                            color: AppColors.brandWhite.withValues(alpha: 0.15),
                             border: Border.all(
-                              color: AppColors.gold.withValues(alpha: 0.4),
+                              color: AppColors.brandWhite.withValues(alpha: 0.4),
                               width: 0.8,
                             ),
                           ),
                           child: Text(
-                            '✦  Sahel Member',
+                            '✦  Alemmart Member',
                             style: GoogleFonts.montserrat(
                               fontSize: 10,
-                              color: AppColors.gold,
+                              color: AppColors.brandWhite,
                               letterSpacing: 0.5,
                               fontWeight: FontWeight.w500,
                             ),
@@ -228,7 +228,7 @@ class _ProfileSliverAppBar extends StatelessWidget {
                       child: const Icon(
                         Icons.edit_outlined,
                         size: 18,
-                        color: AppColors.gold,
+                        color: AppColors.brandWhite,
                       ),
                     ),
                   ),
@@ -243,7 +243,7 @@ class _ProfileSliverAppBar extends StatelessWidget {
         style: GoogleFonts.playfairDisplay(
           fontSize: 20,
           fontWeight: FontWeight.w600,
-          color: AppColors.gold,
+          color: AppColors.brandWhite,
           letterSpacing: 0.5,
         ),
       ),
@@ -295,7 +295,7 @@ class _StatChip extends StatelessWidget {
           borderRadius: BorderRadius.circular(14),
           boxShadow: [
             BoxShadow(
-              color: AppColors.headerBrown.withValues(alpha: 0.06),
+              color: AppColors.brandBlack.withValues(alpha: 0.06),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),
@@ -303,14 +303,14 @@ class _StatChip extends StatelessWidget {
         ),
         child: Column(
           children: [
-            Icon(icon, size: 18, color: AppColors.secondPurple),
+            Icon(icon, size: 18, color: AppColors.brandBlue),
             const SizedBox(height: 8),
             Text(
               value,
               style: GoogleFonts.playfairDisplay(
                 fontSize: 22,
                 fontWeight: FontWeight.w700,
-                color: AppColors.headerBrown,
+                color: AppColors.brandBlack,
               ),
             ),
             const SizedBox(height: 2),
@@ -360,7 +360,7 @@ class _MenuCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: AppColors.headerBrown.withValues(alpha: 0.06),
+            color: AppColors.brandBlack.withValues(alpha: 0.06),
             blurRadius: 16,
             offset: const Offset(0, 4),
           ),
@@ -444,8 +444,8 @@ class _MenuItem extends StatelessWidget {
             Container(
               width: 28,
               height: 28,
-              decoration: const BoxDecoration(
-                color: AppColors.cardHeaderBeige,
+              decoration: BoxDecoration(
+                color: AppColors.brandBlue.withValues(alpha: 0.08),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -472,13 +472,13 @@ class _LoyaltyBanner extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            AppColors.headerBrown,
-            AppColors.secondPurpleDark,
+            AppColors.brandBlue,
+            AppColors.brandBlack,
           ],
         ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.headerBrown.withValues(alpha: 0.35),
+            color: AppColors.brandBlue.withValues(alpha: 0.35),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -491,12 +491,12 @@ class _LoyaltyBanner extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Sahel Tier',
+                  'Alemmart Tier',
                   style: GoogleFonts.montserrat(
                     fontSize: 10,
                     letterSpacing: 2,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.gold.withValues(alpha: 0.9),
+                    color: AppColors.brandWhite.withValues(alpha: 0.9),
                   ),
                 ),
                 const SizedBox(height: 6),
@@ -505,7 +505,7 @@ class _LoyaltyBanner extends StatelessWidget {
                   style: GoogleFonts.playfairDisplay(
                     fontSize: 22,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.cream,
+                    color: AppColors.brandWhite,
                     height: 1.3,
                   ),
                 ),
@@ -517,7 +517,7 @@ class _LoyaltyBanner extends StatelessWidget {
                     minHeight: 5,
                     backgroundColor: Colors.white.withValues(alpha: 0.2),
                     valueColor: const AlwaysStoppedAnimation<Color>(
-                      AppColors.gold,
+                      AppColors.brandWhite,
                     ),
                   ),
                 ),
@@ -535,7 +535,7 @@ class _LoyaltyBanner extends StatelessWidget {
             child: const Icon(
               Icons.workspace_premium_rounded,
               size: 30,
-              color: AppColors.gold,
+              color: AppColors.brandWhite,
             ),
           ),
         ],

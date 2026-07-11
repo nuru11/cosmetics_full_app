@@ -5,6 +5,7 @@ const {
   Order,
   OrderItem,
   Product,
+  ProductVariant,
   sequelize,
 } = require('../../lib/db');
 const { loadCartWithItems } = require('../cart/cart.service');
@@ -15,7 +16,10 @@ const orderIncludes = [
   {
     model: OrderItem,
     as: 'items',
-    include: [{ model: Product, as: 'product' }],
+    include: [
+      { model: Product, as: 'product' },
+      { model: ProductVariant, as: 'variant' },
+    ],
   },
 ];
 
@@ -69,20 +73,25 @@ const orderService = {
       const lineItems = [];
 
       for (const item of items) {
-        const locked = await Product.findOne({
-          where: { id: item.productId },
+        const locked = await ProductVariant.findOne({
+          where: { id: item.variantId },
+          include: [{ model: Product, as: 'product' }],
           lock: t.LOCK.UPDATE,
           transaction: t,
         });
 
-        if (!locked || locked.status !== 'ACTIVE') {
-          const err = new Error(`Product unavailable: ${item.productId}`);
+        if (!locked || !locked.product || locked.product.status !== 'ACTIVE') {
+          const err = new Error(`Variant unavailable: ${item.variantId}`);
           err.status = 400;
           throw err;
         }
 
         if (locked.stock < item.quantity) {
-          const err = new Error(`Insufficient stock for ${locked.name}`);
+          const label =
+            locked.variantDescription ||
+            locked.size ||
+            locked.product.productName;
+          const err = new Error(`Insufficient stock for ${label}`);
           err.status = 400;
           throw err;
         }
@@ -92,7 +101,12 @@ const orderService = {
         totalAmount += lineTotal;
 
         lineItems.push({
-          productId: locked.id,
+          productId: locked.productId,
+          variantId: locked.id,
+          variantDescription: locked.variantDescription,
+          size: locked.size,
+          color: locked.color,
+          productVersion: locked.productVersion,
           quantity: item.quantity,
           unitPrice,
           lineTotal,
@@ -204,7 +218,7 @@ const orderService = {
     }
 
     const snapshot = items.map((item) => ({
-      productId: item.productId,
+      variantId: item.variantId,
       quantity: item.quantity,
     }));
 
