@@ -23,4 +23,13 @@ abstract final class AppColors {
   static const statusPendingText = Color(0xFF4B2C20);
   static const statusNeutralBg = Color(0xFFF0EBE6);
   static const statusNeutralText = Color(0xFF6B5B52);
+
+  // Home & cart semantic tokens
+  static const homeBackground = cream;
+  static const accentGreen = Color(0xFF00897B);
+  static const accentRed = Color(0xFFE53935);
+  static const cartButtonBg = brandBlue;
+  static const headerGradientStart = brandBlue;
+  static const headerGradientEnd = Color(0xFF4A7FE8);
+  static const cartBadgeBg = accentRed;
 }

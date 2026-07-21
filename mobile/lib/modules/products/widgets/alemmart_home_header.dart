@@ -4,73 +4,97 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../cart/cart_service.dart';
+import '../products_controller.dart';
 
-class AlemmartHomeHeader extends StatelessWidget {
-  const AlemmartHomeHeader({
-    super.key,
-    required this.productCount,
-  });
+class AlemmartHomeHeader extends StatefulWidget {
+  const AlemmartHomeHeader({super.key});
 
-  final int productCount;
+  @override
+  State<AlemmartHomeHeader> createState() => _AlemmartHomeHeaderState();
+}
+
+class _AlemmartHomeHeaderState extends State<AlemmartHomeHeader> {
+  late final TextEditingController _searchController;
+  late final FocusNode _searchFocusNode;
+  late final ProductsController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = Get.find<ProductsController>();
+    _searchFocusNode = FocusNode();
+    _searchController =
+        TextEditingController(text: _controller.searchQuery.value);
+    _searchController.addListener(_onSearchChanged);
+  }
+
+  void _onSearchChanged() {
+    _controller.setSearchQuery(_searchController.text);
+  }
+
+  @override
+  void dispose() {
+    _searchController.removeListener(_onSearchChanged);
+    _searchController.dispose();
+    _searchFocusNode.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: AppColors.brandBlue,
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            AppColors.headerGradientStart,
+            AppColors.headerGradientEnd,
+          ],
+        ),
+      ),
       child: SafeArea(
         bottom: false,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
           child: Column(
             children: [
               Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: Image.asset(
-                            'assets/app_logo/logo.png',
-                            width: 44,
-                            height: 44,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Alemmart',
-                                style: GoogleFonts.montserrat(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.w700,
-                                  color: AppColors.brandWhite,
-                                  height: 1.1,
-                                ),
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                'BEAUTY & LUXURY',
-                                style: GoogleFonts.montserrat(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w500,
-                                  letterSpacing: 2.5,
-                                  color: AppColors.brandWhite.withValues(
-                                    alpha: 0.85,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.asset(
+                      'assets/app_logo/logo.png',
+                      width: 36,
+                      height: 36,
+                      fit: BoxFit.cover,
                     ),
                   ),
+                  Expanded(
+                    child: Text(
+                      'Alemmart',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.montserrat(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.brandWhite,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () => _searchFocusNode.requestFocus(),
+                    icon: const Icon(
+                      Icons.search,
+                      color: AppColors.brandWhite,
+                      size: 22,
+                    ),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(
+                      minWidth: 36,
+                      minHeight: 36,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
                   Obx(() {
                     final count =
                         Get.find<CartService>().totalItemCountForHomeCartIcon;
@@ -78,43 +102,50 @@ class AlemmartHomeHeader extends StatelessWidget {
                   }),
                 ],
               ),
-              const SizedBox(height: 20),
-              Text(
-                '✦ ALL CATEGORIES ✦',
-                style: GoogleFonts.montserrat(
-                  fontSize: 10,
-                  fontWeight: FontWeight.w500,
-                  letterSpacing: 2,
-                  color: AppColors.brandWhite.withValues(alpha: 0.9),
-                ),
-              ),
               const SizedBox(height: 12),
-              Text(
-                'Original & 2nd Side by Side',
-                textAlign: TextAlign.center,
-                style: GoogleFonts.playfairDisplay(
-                  fontSize: 26,
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.brandWhite,
-                  height: 1.25,
-                ),
-              ),
-              const SizedBox(height: 14),
-              Row(
-                children: [
-                  Expanded(child: _headerLine()),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: Text(
-                      '• $productCount products •',
-                      style: GoogleFonts.montserrat(
-                        fontSize: 11,
-                        color: AppColors.brandWhite.withValues(alpha: 0.8),
+              Material(
+                elevation: 4,
+                shadowColor: Colors.black.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(24),
+                color: AppColors.brandWhite,
+                child: TextField(
+                  controller: _searchController,
+                  focusNode: _searchFocusNode,
+                  decoration: InputDecoration(
+                    hintText: 'Search',
+                    hintStyle: GoogleFonts.montserrat(
+                      fontSize: 14,
+                      color: AppColors.textMuted,
+                    ),
+                    prefixIcon: const Icon(
+                      Icons.search,
+                      color: AppColors.brandBlue,
+                      size: 20,
+                    ),
+                    filled: true,
+                    fillColor: AppColors.brandWhite,
+                    contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(24),
+                      borderSide: BorderSide.none,
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(24),
+                      borderSide: BorderSide.none,
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(24),
+                      borderSide: const BorderSide(
+                        color: AppColors.brandBlueLight,
+                        width: 2,
                       ),
                     ),
                   ),
-                  Expanded(child: _headerLine()),
-                ],
+                  style: GoogleFonts.montserrat(
+                    fontSize: 14,
+                    color: AppColors.textDark,
+                  ),
+                ),
               ),
             ],
           ),
@@ -132,7 +163,9 @@ class _CartHeaderButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: AppColors.brandWhite.withValues(alpha: 0.15),
+      elevation: 3,
+      shadowColor: Colors.black.withValues(alpha: 0.15),
+      color: AppColors.brandWhite,
       shape: const CircleBorder(),
       child: InkWell(
         onTap: () => Get.toNamed('/cart'),
@@ -146,22 +179,29 @@ class _CartHeaderButton extends StatelessWidget {
             children: [
               const Icon(
                 Icons.shopping_bag_outlined,
-                color: AppColors.brandWhite,
-                size: 20,
+                color: AppColors.brandBlue,
+                size: 22,
               ),
               if (itemCount > 0)
                 Positioned(
-                  right: 4,
-                  top: 4,
+                  right: -2,
+                  top: -2,
                   child: Container(
-                    padding: const EdgeInsets.all(4),
-                    constraints: const BoxConstraints(
-                      minWidth: 16,
-                      minHeight: 16,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 5,
+                      vertical: 2,
                     ),
-                    decoration: const BoxDecoration(
-                      color: AppColors.brandWhite,
-                      shape: BoxShape.circle,
+                    constraints: const BoxConstraints(
+                      minWidth: 18,
+                      minHeight: 18,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.cartBadgeBg,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: AppColors.brandWhite,
+                        width: 1.5,
+                      ),
                     ),
                     child: Text(
                       itemCount > 99 ? '99+' : '$itemCount',
@@ -169,7 +209,7 @@ class _CartHeaderButton extends StatelessWidget {
                       style: GoogleFonts.montserrat(
                         fontSize: 9,
                         fontWeight: FontWeight.w700,
-                        color: AppColors.brandBlue,
+                        color: AppColors.brandWhite,
                         height: 1,
                       ),
                     ),
@@ -179,16 +219,6 @@ class _CartHeaderButton extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-}
-
-class _headerLine extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 1,
-      color: AppColors.brandWhite.withValues(alpha: 0.35),
     );
   }
 }

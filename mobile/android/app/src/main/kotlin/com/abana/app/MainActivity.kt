@@ -1,4 +1,4 @@
-package com.cosmeticsapp.mobile
+package com.abana.app
 
 import io.flutter.embedding.android.FlutterActivity
 

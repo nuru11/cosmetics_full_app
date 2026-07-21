@@ -12,17 +12,37 @@ class CartView extends GetView<CartController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.brandWhite,
+      backgroundColor: AppColors.homeBackground,
       appBar: AppBar(
-        title: Text(
-          'Your bag',
-          style: GoogleFonts.playfairDisplay(
-            fontWeight: FontWeight.w600,
-            color: AppColors.brandWhite,
-          ),
-        ),
+        title: Obx(() {
+          final count = controller.totalItemCount;
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Your bag',
+                style: GoogleFonts.montserrat(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 10,
+                  color: AppColors.brandWhite,
+                ),
+              ),
+              if (count > 0)
+                Text(
+                  '$count item${count == 1 ? '' : 's'}',
+                  style: GoogleFonts.montserrat(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.brandWhite.withValues(alpha: 0.85),
+                  ),
+                ),
+            ],
+          );
+        }),
+        toolbarHeight: 64,
         backgroundColor: AppColors.brandBlue,
         foregroundColor: AppColors.brandWhite,
+        elevation: 0,
       ),
       body: Obx(() {
         if (controller.isEmpty && !controller.isLoading.value) {
@@ -63,7 +83,8 @@ class CartView extends GetView<CartController> {
                   physics: const AlwaysScrollableScrollPhysics(),
                   padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
                   itemCount: entries.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 12),
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(height: 12),
                   itemBuilder: (context, index) {
                     return _CartLineCard(
                       entry: entries[index],
@@ -134,8 +155,12 @@ class _CartLineCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final product = entry.product;
     final variant = entry.variant;
+    final lineTotal = variant.price * entry.quantity;
+
     return Material(
       color: AppColors.cardWhite,
+      elevation: 2,
+      shadowColor: Colors.black.withValues(alpha: 0.08),
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
         onTap: onTap,
@@ -145,12 +170,20 @@ class _CartLineCard extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: ProductImage(
-                  imageUrl: variant.primaryImage ?? product.primaryImage,
-                  width: 72,
-                  height: 72,
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: AppColors.brandBlueLight.withValues(alpha: 0.6),
+                  ),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(7),
+                  child: ProductImage(
+                    imageUrl: variant.primaryImage ?? product.primaryImage,
+                    width: 80,
+                    height: 80,
+                  ),
                 ),
               ),
               const SizedBox(width: 12),
@@ -158,15 +191,31 @@ class _CartLineCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      product.productName,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.playfairDisplay(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textDark,
-                      ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            product.productName,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.montserrat(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.textDark,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          '\$${lineTotal.toStringAsFixed(2)}',
+                          style: GoogleFonts.montserrat(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.brandBlue,
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 2),
                     Text(
@@ -180,11 +229,10 @@ class _CartLineCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '\$${variant.price.toStringAsFixed(2)}',
+                      '\$${variant.price.toStringAsFixed(2)} each',
                       style: GoogleFonts.montserrat(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.brandBlack,
+                        fontSize: 12,
+                        color: AppColors.textMuted,
                       ),
                     ),
                     if (entry.quantity > variant.stock)
@@ -194,11 +242,12 @@ class _CartLineCard extends StatelessWidget {
                           'Only ${variant.stock} in stock',
                           style: GoogleFonts.montserrat(
                             fontSize: 11,
-                            color: Colors.red.shade700,
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.accentRed,
                           ),
                         ),
                       ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 10),
                     Row(
                       children: [
                         _QtyButton(
@@ -211,7 +260,8 @@ class _CartLineCard extends StatelessWidget {
                             '${entry.quantity}',
                             style: GoogleFonts.montserrat(
                               fontSize: 14,
-                              fontWeight: FontWeight.w600,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.textDark,
                             ),
                           ),
                         ),
@@ -223,7 +273,15 @@ class _CartLineCard extends StatelessWidget {
                         const Spacer(),
                         IconButton(
                           icon: const Icon(Icons.delete_outline, size: 20),
-                          color: AppColors.textMuted,
+                          color: AppColors.accentRed,
+                          style: IconButton.styleFrom(
+                            side: BorderSide(
+                              color: AppColors.accentRed.withValues(alpha: 0.4),
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
                           onPressed: onRemove,
                           tooltip: 'Remove',
                         ),
@@ -254,8 +312,15 @@ class _QtyButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: AppColors.dividerGrey,
-      borderRadius: BorderRadius.circular(8),
+      color: AppColors.brandWhite,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+        side: BorderSide(
+          color: enabled
+              ? AppColors.brandBlue.withValues(alpha: 0.5)
+              : AppColors.dividerGrey,
+        ),
+      ),
       child: InkWell(
         onTap: enabled ? onPressed : null,
         borderRadius: BorderRadius.circular(8),
@@ -265,7 +330,7 @@ class _QtyButton extends StatelessWidget {
           child: Icon(
             icon,
             size: 18,
-            color: enabled ? AppColors.textDark : AppColors.textMuted,
+            color: enabled ? AppColors.brandBlue : AppColors.textMuted,
           ),
         ),
       ),
@@ -289,14 +354,15 @@ class _CartFooter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
       decoration: BoxDecoration(
         color: AppColors.cardWhite,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.06),
-            blurRadius: 8,
-            offset: const Offset(0, -2),
+            color: Colors.black.withValues(alpha: 0.08),
+            blurRadius: 12,
+            offset: const Offset(0, -4),
           ),
         ],
       ),
@@ -309,54 +375,55 @@ class _CartFooter extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  '$itemCount item${itemCount == 1 ? '' : 's'}',
-                  style: GoogleFonts.montserrat(
-                    fontSize: 13,
-                    color: AppColors.textMuted,
-                  ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Subtotal',
+                      style: GoogleFonts.montserrat(
+                        fontSize: 13,
+                        color: AppColors.textMuted,
+                      ),
+                    ),
+                    Text(
+                      '$itemCount item${itemCount == 1 ? '' : 's'}',
+                      style: GoogleFonts.montserrat(
+                        fontSize: 11,
+                        color: AppColors.textMuted,
+                      ),
+                    ),
+                  ],
                 ),
-                Text(
-                  'Subtotal',
-                  style: GoogleFonts.montserrat(
-                    fontSize: 13,
-                    color: AppColors.textMuted,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 4),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const SizedBox.shrink(),
                 Text(
                   '\$${subtotal.toStringAsFixed(2)}',
-                  style: GoogleFonts.playfairDisplay(
+                  style: GoogleFonts.montserrat(
                     fontSize: 24,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.brandBlack,
+                    color: AppColors.brandBlue,
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 16),
-            FilledButton(
+            FilledButton.icon(
               onPressed: onCheckout,
               style: FilledButton.styleFrom(
                 backgroundColor: AppColors.brandBlue,
                 foregroundColor: AppColors.brandWhite,
                 padding: const EdgeInsets.symmetric(vertical: 14),
+                minimumSize: const Size.fromHeight(48),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(12),
                 ),
+                elevation: 2,
               ),
-              child: Text(
-                'Checkout',
+              icon: const Icon(Icons.shopping_bag_outlined, size: 20),
+              label: Text(
+                'Proceed to Checkout',
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
-                  letterSpacing: 0.5,
+                  letterSpacing: 0.3,
                 ),
               ),
             ),
@@ -389,18 +456,26 @@ class _EmptyCartState extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
-              Icons.shopping_bag_outlined,
-              size: 56,
-              color: AppColors.textMuted,
+            Container(
+              width: 88,
+              height: 88,
+              decoration: BoxDecoration(
+                color: AppColors.brandBlueLight.withValues(alpha: 0.4),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.shopping_bag_outlined,
+                size: 40,
+                color: AppColors.brandBlue,
+              ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
             Text(
               'Your bag is empty',
-              style: GoogleFonts.playfairDisplay(
+              style: GoogleFonts.montserrat(
                 fontSize: 22,
-                fontWeight: FontWeight.w600,
-                color: AppColors.brandBlack,
+                fontWeight: FontWeight.w700,
+                color: AppColors.textDark,
               ),
             ),
             const SizedBox(height: 12),
@@ -412,14 +487,22 @@ class _EmptyCartState extends StatelessWidget {
                 color: AppColors.textMuted,
               ),
             ),
-            const SizedBox(height: 24),
-            FilledButton(
+            const SizedBox(height: 28),
+            FilledButton.icon(
               onPressed: () => Get.back(),
               style: FilledButton.styleFrom(
                 backgroundColor: AppColors.brandBlue,
                 foregroundColor: AppColors.brandWhite,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
-              child: const Text('Continue shopping'),
+              icon: const Icon(Icons.arrow_back, size: 18),
+              label: const Text('Continue shopping'),
             ),
           ],
         ),

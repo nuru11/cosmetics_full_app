@@ -19,6 +19,7 @@ class ProductsController extends GetxController {
   final products = <Product>[].obs;
   final categories = <Category>[].obs;
   final selectedCategoryId = RxnString();
+  final searchQuery = ''.obs;
   final sections = <CategoryProductSection>[].obs;
   final productCount = 0.obs;
   final isLoading = true.obs;
@@ -56,6 +57,13 @@ class ProductsController extends GetxController {
     _rebuildSections();
   }
 
+  void setSearchQuery(String query) {
+    final trimmed = query.trim();
+    if (searchQuery.value == trimmed) return;
+    searchQuery.value = trimmed;
+    _rebuildSections();
+  }
+
   void _rebuildSections() {
     final filtered = _filteredProducts();
     productCount.value = filtered.length;
@@ -63,16 +71,29 @@ class ProductsController extends GetxController {
   }
 
   List<Product> _filteredProducts() {
+    var result = products.toList();
+
     final id = selectedCategoryId.value;
-    if (id == null) return products.toList();
-    return products.where((p) => p.categoryId == id).toList();
+    if (id != null) {
+      result = result.where((p) => p.categoryId == id).toList();
+    }
+
+    final query = searchQuery.value.toLowerCase();
+    if (query.isNotEmpty) {
+      result = result.where((p) {
+        final name = p.productName.toLowerCase();
+        final brand = p.brand?.toLowerCase() ?? '';
+        return name.contains(query) || brand.contains(query);
+      }).toList();
+    }
+
+    return result;
   }
 
   List<CategoryProductSection> _buildCategorySections(List<Product> items) {
     if (items.isEmpty) return [];
 
-    final comparisonsByCategory = <String, List<ProductComparison>>{};
-    final singlesByCategory = <String, List<Product>>{};
+    final productsByCategory = <String, List<Product>>{};
     final categoryNames = <String, String>{};
     final categorySlugs = <String, String?>{};
 
@@ -80,22 +101,12 @@ class ProductsController extends GetxController {
       final categoryId = product.categoryId;
       categoryNames[categoryId] = product.categoryName;
       categorySlugs[categoryId] ??= product.category?.slug;
-
-      if (product.variants.length >= 2) {
-        comparisonsByCategory
-            .putIfAbsent(categoryId, () => [])
-            .add(ProductComparison.fromProduct(product));
-      } else {
-        singlesByCategory.putIfAbsent(categoryId, () => []).add(product);
-      }
+      productsByCategory.putIfAbsent(categoryId, () => []).add(product);
     }
 
     final categoryOrder = categories.map((c) => c.id).toList();
     final slugById = {for (final c in categories) c.id: c.slug};
-    final allCategoryIds = {
-      ...comparisonsByCategory.keys,
-      ...singlesByCategory.keys,
-    };
+    final allCategoryIds = productsByCategory.keys.toSet();
 
     final selectedId = selectedCategoryId.value;
     final orderedIds = selectedId != null
@@ -107,21 +118,19 @@ class ProductsController extends GetxController {
 
     final result = <CategoryProductSection>[];
     for (final id in orderedIds) {
-      final comparisons = comparisonsByCategory[id] ?? [];
-      comparisons.sort((a, b) => a.productName.compareTo(b.productName));
+      final categoryProducts = List<Product>.from(productsByCategory[id] ?? []);
+      categoryProducts.sort((a, b) => a.productName.compareTo(b.productName));
+      categoryProducts.shuffle(_random);
+      final rows = chunkProductsIntoPairs(categoryProducts);
 
-      final singles = List<Product>.from(singlesByCategory[id] ?? []);
-      singles.shuffle(_random);
-      final rows = chunkProductsIntoPairs(singles);
-
-      if (comparisons.isEmpty && rows.isEmpty) continue;
+      if (rows.isEmpty) continue;
 
       result.add(
         CategoryProductSection(
           categoryId: id,
           categoryName: categoryNames[id] ?? '—',
           categorySlug: slugById[id] ?? categorySlugs[id],
-          comparisons: comparisons,
+          comparisons: const [],
           singleProductRows: rows,
         ),
       );

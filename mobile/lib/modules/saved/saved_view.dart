@@ -82,9 +82,10 @@ class _SavedGridRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 6, 16, 6),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
           Expanded(
             child: ProductGridCard(
               product: entries.first.product,
@@ -103,6 +104,7 @@ class _SavedGridRow extends StatelessWidget {
                 : const SizedBox.shrink(),
           ),
         ],
+        ),
       ),
     );
   }

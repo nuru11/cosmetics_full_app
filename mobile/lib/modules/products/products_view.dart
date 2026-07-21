@@ -8,7 +8,6 @@ import 'models/product_comparison.dart';
 import 'products_controller.dart';
 import 'widgets/category_nav_bar.dart';
 import 'widgets/category_section_header.dart';
-import 'widgets/product_comparison_card.dart';
 import 'widgets/product_grid_card.dart';
 import 'widgets/alemmart_home_header.dart';
 
@@ -18,7 +17,7 @@ class ProductsView extends GetView<ProductsController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.brandWhite,
+      backgroundColor: AppColors.homeBackground,
       body: Obx(() {
         if (controller.isLoading.value && controller.products.isEmpty) {
           return const Center(
@@ -29,7 +28,7 @@ class ProductsView extends GetView<ProductsController> {
         if (controller.error.value != null && controller.products.isEmpty) {
           return Column(
             children: [
-              AlemmartHomeHeader(productCount: 0),
+              const AlemmartHomeHeader(),
               Expanded(
                 child: _ErrorState(
                   message: controller.error.value!,
@@ -46,13 +45,7 @@ class ProductsView extends GetView<ProductsController> {
           child: CustomScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             slivers: [
-              SliverToBoxAdapter(
-                child: Obx(
-                  () => AlemmartHomeHeader(
-                    productCount: controller.productCount.value,
-                  ),
-                ),
-              ),
+              const SliverToBoxAdapter(child: AlemmartHomeHeader()),
               const SliverToBoxAdapter(child: CategoryNavBar()),
               Obx(() {
                 final sections = controller.sections;
@@ -89,7 +82,6 @@ class ProductsView extends GetView<ProductsController> {
     var count = 0;
     for (final section in sections) {
       count += 1; // header
-      count += section.comparisons.length;
       count += section.singleProductRows.length;
     }
     return count;
@@ -100,21 +92,11 @@ class ProductsView extends GetView<ProductsController> {
     for (final section in sections) {
       if (i == 0) {
         return CategorySectionHeader(
+          categoryId: section.categoryId,
           categoryName: section.categoryName,
-          categorySlug: section.categorySlug,
         );
       }
       i--;
-
-      for (final comparison in section.comparisons) {
-        if (i == 0) {
-          return ProductComparisonCard(
-            comparison: comparison,
-            onProductTap: (id) => Get.toNamed('/product/$id'),
-          );
-        }
-        i--;
-      }
 
       for (final row in section.singleProductRows) {
         if (i == 0) {
@@ -136,9 +118,10 @@ class _ProductGridRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 6, 16, 6),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
           Expanded(
             child: ProductGridCard(
               product: products.first,
@@ -155,6 +138,7 @@ class _ProductGridRow extends StatelessWidget {
                 : const SizedBox.shrink(),
           ),
         ],
+        ),
       ),
     );
   }
