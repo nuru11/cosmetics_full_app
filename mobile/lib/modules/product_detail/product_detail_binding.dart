@@ -12,6 +12,7 @@ class ProductDetailBinding extends Bindings {
       () => ProductDetailController(
         Get.find<ProductRepository>(),
         Get.parameters['id'] ?? '',
+        initialVariantId: Get.parameters['variantId'],
       ),
     );
   }

@@ -143,22 +143,73 @@ class ProductComparison {
   bool get showScrollHint => versions.length > 1;
 }
 
+class ProductListingEntry {
+  const ProductListingEntry({
+    required this.product,
+    required this.variant,
+  });
+
+  final Product product;
+  final ProductVariant variant;
+}
+
+List<ProductVariant> sortedVariantsForListing(Product product) {
+  final indexed = product.variants.asMap().entries.toList();
+  indexed.sort((a, b) {
+    final va = a.value.productVersion.toUpperCase();
+    final vb = b.value.productVersion.toUpperCase();
+    final ia = productVersionOrder.indexOf(va);
+    final ib = productVersionOrder.indexOf(vb);
+    final oa = ia >= 0 ? ia : productVersionOrder.length;
+    final ob = ib >= 0 ? ib : productVersionOrder.length;
+    if (oa != ob) return oa.compareTo(ob);
+    final sortCompare = a.value.sortOrder.compareTo(b.value.sortOrder);
+    if (sortCompare != 0) return sortCompare;
+    return a.key.compareTo(b.key);
+  });
+  return indexed.map((entry) => entry.value).toList();
+}
+
+List<ProductListingEntry> expandProductsToListingEntries(List<Product> products) {
+  final entries = <ProductListingEntry>[];
+  for (final product in products) {
+    for (final variant in sortedVariantsForListing(product)) {
+      entries.add(ProductListingEntry(product: product, variant: variant));
+    }
+  }
+  return entries;
+}
+
+List<List<ProductListingEntry>> chunkListingEntriesIntoPairs(
+  List<ProductListingEntry> entries,
+) {
+  final rows = <List<ProductListingEntry>>[];
+  for (var i = 0; i < entries.length; i += 2) {
+    if (i + 1 < entries.length) {
+      rows.add([entries[i], entries[i + 1]]);
+    } else {
+      rows.add([entries[i]]);
+    }
+  }
+  return rows;
+}
+
 class CategoryProductSection {
   const CategoryProductSection({
     required this.categoryId,
     required this.categoryName,
     required this.categorySlug,
     required this.comparisons,
-    required this.singleProductRows,
+    required this.listingRows,
   });
 
   final String categoryId;
   final String categoryName;
   final String? categorySlug;
   final List<ProductComparison> comparisons;
-  final List<List<Product>> singleProductRows;
+  final List<List<ProductListingEntry>> listingRows;
 
-  bool get isEmpty => comparisons.isEmpty && singleProductRows.isEmpty;
+  bool get isEmpty => comparisons.isEmpty && listingRows.isEmpty;
 }
 
 /// Chunks products into rows of 2 for the grid layout.

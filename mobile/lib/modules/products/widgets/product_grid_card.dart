@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/product_image.dart';
+import '../../../core/widgets/product_version_badge.dart';
 import '../../../data/models/product.dart';
 import '../../../data/models/product_variant.dart';
 import 'product_add_button.dart';
@@ -27,16 +28,21 @@ class ProductGridCard extends StatelessWidget {
         highlightVariant ?? product.firstInStockVariant ?? product.defaultVariant;
     final imageUrl = displayVariant?.primaryImage ?? product.primaryImage;
 
-    final minPrice =
-        product.displayPrice ?? displayVariant?.price ?? product.price;
-    final maxPrice = product.displayPriceMax;
-    final hasDiscount =
-        maxPrice != null && maxPrice > minPrice && minPrice > 0;
+    final usingHighlightedVariant = highlightVariant != null;
+    final minPrice = usingHighlightedVariant
+        ? displayVariant!.price
+        : (product.displayPrice ?? displayVariant?.price ?? product.price);
+    final maxPrice = usingHighlightedVariant ? null : product.displayPriceMax;
+    final hasDiscount = !usingHighlightedVariant &&
+        maxPrice != null &&
+        maxPrice > minPrice &&
+        minPrice > 0;
     final discountPercent = hasDiscount
         ? (((maxPrice - minPrice) / maxPrice) * 100).round()
         : null;
 
     final inStock = (displayVariant?.stock ?? 0) > 0;
+    final versionKey = displayVariant?.productVersion ?? 'ORIGINAL';
 
     return Material(
       color: AppColors.cardWhite,
@@ -49,12 +55,14 @@ class ProductGridCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            if (displayVariant != null)
+              ProductVersionCardHeader(versionKey: versionKey),
             Stack(
               children: [
                 ClipRRect(
-                  borderRadius: const BorderRadius.vertical(
-                    top: Radius.circular(4),
-                  ),
+                  borderRadius: displayVariant != null
+                      ? BorderRadius.zero
+                      : const BorderRadius.vertical(top: Radius.circular(4)),
                   child: ProductImage(
                     imageUrl: imageUrl,
                     width: double.infinity,

@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/category_icons.dart';
 import '../products_controller.dart';
 
 class CategorySectionHeader extends GetView<ProductsController> {
@@ -10,24 +11,27 @@ class CategorySectionHeader extends GetView<ProductsController> {
     super.key,
     required this.categoryId,
     required this.categoryName,
+    this.categorySlug,
   });
 
   final String categoryId;
   final String categoryName;
+  final String? categorySlug;
 
   @override
   Widget build(BuildContext context) {
+    final icon = CategoryIcons.forCategory(
+      slug: categorySlug,
+      name: categoryName,
+    );
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 20, 16, 12),
       child: Row(
         children: [
-          Container(
-            width: 8,
-            height: 8,
-            decoration: const BoxDecoration(
-              color: AppColors.brandBlue,
-              shape: BoxShape.circle,
-            ),
+          Text(
+            icon,
+            style: const TextStyle(fontSize: 18, height: 1),
           ),
           const SizedBox(width: 8),
           Expanded(

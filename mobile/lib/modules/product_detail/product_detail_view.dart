@@ -4,10 +4,12 @@ import 'package:get/get.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/widgets/product_image.dart';
+import '../../core/widgets/product_version_badge.dart';
 import '../../core/widgets/save_product_button.dart';
 import '../../data/models/product.dart';
 import '../../data/models/product_variant.dart';
 import '../cart/cart_actions.dart';
+import '../products/models/product_comparison.dart';
 import 'product_detail_controller.dart';
 import 'widgets/variant_picker_grid.dart';
 
@@ -68,7 +70,7 @@ class _GlassAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      backgroundColor: AppColors.brandWhite.withOpacity(0.85),
+      backgroundColor: AppColors.brandWhite.withValues(alpha: 0.85),
       elevation: 0,
       scrolledUnderElevation: 0,
       surfaceTintColor: Colors.transparent,
@@ -214,12 +216,37 @@ class _ProductDetailBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final variant = selectedVariant ?? product.defaultVariant;
     final images = variant?.variantImages ?? const <String>[];
+    final hasMultipleVariants = product.variants.length > 1;
+    final versionSubtitle = variant != null
+        ? _versionSubtitleFor(variant)
+        : null;
 
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          _HeroCarousel(images: images),
+          SizedBox(
+            height: 360,
+            width: double.infinity,
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 300),
+              switchInCurve: Curves.easeOut,
+              switchOutCurve: Curves.easeIn,
+              layoutBuilder: (currentChild, previousChildren) {
+                return Stack(
+                  alignment: Alignment.topCenter,
+                  children: [
+                    ...previousChildren,
+                    if (currentChild != null) currentChild,
+                  ],
+                );
+              },
+              child: _HeroCarousel(
+                key: ValueKey(variant?.id ?? 'hero'),
+                images: images,
+              ),
+            ),
+          ),
 
           Transform.translate(
             offset: const Offset(0, -16),
@@ -258,6 +285,20 @@ class _ProductDetailBody extends StatelessWidget {
                     ),
                   ),
 
+                if (hasMultipleVariants && variant != null) ...[
+                  const SizedBox(height: 16),
+                  _SelectedVersionStrip(
+                    variant: variant,
+                    subtitle: versionSubtitle ?? '',
+                  ),
+                  const SizedBox(height: 16),
+                  VariantPickerGrid(
+                    product: product,
+                    selectedVariant: variant,
+                    onSelect: onSelectVariant,
+                  ),
+                ],
+
                 const SizedBox(height: 20),
 
                 Row(
@@ -278,14 +319,6 @@ class _ProductDetailBody extends StatelessWidget {
                 ),
 
                 const SizedBox(height: 20),
-
-                VariantPickerGrid(
-                  product: product,
-                  selectedVariant: variant,
-                  onSelect: onSelectVariant,
-                ),
-
-                if (product.variants.length > 1) const SizedBox(height: 24),
 
                 Wrap(
                   spacing: 8,
@@ -329,7 +362,12 @@ class _ProductDetailBody extends StatelessWidget {
                   const SizedBox(height: 24),
                 ],
 
-                if (variant != null) _DetailsCard(product: product, variant: variant),
+                if (variant != null)
+                  _DetailsCard(
+                    product: product,
+                    variant: variant,
+                    showVersion: hasMultipleVariants,
+                  ),
 
                 const SizedBox(height: 100),
               ],
@@ -339,12 +377,62 @@ class _ProductDetailBody extends StatelessWidget {
       ),
     );
   }
+
+  static String _versionSubtitleFor(ProductVariant variant) {
+    final description = variant.variantDescription?.trim();
+    if (description != null && description.isNotEmpty) return description;
+    return ProductVersionSlot.defaultSubtitleFor(variant.productVersion);
+  }
+}
+
+class _SelectedVersionStrip extends StatelessWidget {
+  const _SelectedVersionStrip({
+    required this.variant,
+    required this.subtitle,
+  });
+
+  final ProductVariant variant;
+  final String subtitle;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      decoration: BoxDecoration(
+        color: AppColors.cardHeaderBeige.withValues(alpha: 0.55),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: AppColors.dividerGrey.withValues(alpha: 0.8),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ProductVersionBadge(versionKey: variant.productVersion),
+          if (subtitle.isNotEmpty) ...[
+            const SizedBox(height: 6),
+            Text(
+              subtitle,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontSize: 12,
+                color: AppColors.textMuted,
+                height: 1.35,
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
 }
 
 // ─── Hero Carousel ────────────────────────────────────────────────────────────
 
 class _HeroCarousel extends StatefulWidget {
-  const _HeroCarousel({required this.images});
+  const _HeroCarousel({super.key, required this.images});
   final List<String> images;
 
   @override
@@ -353,6 +441,14 @@ class _HeroCarousel extends StatefulWidget {
 
 class _HeroCarouselState extends State<_HeroCarousel> {
   int _current = 0;
+
+  @override
+  void didUpdateWidget(covariant _HeroCarousel oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.images != widget.images) {
+      _current = 0;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -436,7 +532,7 @@ class _CategoryChip extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: AppColors.brandBlue.withOpacity(0.10),
+            color: AppColors.brandBlue.withValues(alpha: 0.10),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -493,14 +589,25 @@ class _AttributePill extends StatelessWidget {
 // ─── Details Card ─────────────────────────────────────────────────────────────
 
 class _DetailsCard extends StatelessWidget {
-  const _DetailsCard({required this.product, required this.variant});
+  const _DetailsCard({
+    required this.product,
+    required this.variant,
+    this.showVersion = false,
+  });
   final Product product;
   final ProductVariant variant;
+  final bool showVersion;
 
   @override
   Widget build(BuildContext context) {
     final rows = <_DetailRow>[];
 
+    if (showVersion) {
+      rows.add(_DetailRow(
+        label: 'Version',
+        value: ProductVersionSlot.labelFor(variant.productVersion),
+      ));
+    }
     rows.add(_DetailRow(label: 'Stock', value: '${variant.stock} units'));
     if (variant.sku != null && variant.sku!.isNotEmpty) {
       rows.add(_DetailRow(label: 'SKU', value: variant.sku!));
@@ -576,12 +683,14 @@ class _AddToBagBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final subtitle = _ProductDetailBody._versionSubtitleFor(variant);
+
     return Container(
       decoration: BoxDecoration(
         color: AppColors.brandWhite,
         boxShadow: [
           BoxShadow(
-            color: AppColors.brandBlack.withOpacity(0.06),
+            color: AppColors.brandBlack.withValues(alpha: 0.06),
             blurRadius: 16,
             offset: const Offset(0, -4),
           ),
@@ -591,43 +700,53 @@ class _AddToBagBar extends StatelessWidget {
       child: SafeArea(
         top: false,
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '\$${variant.price.toStringAsFixed(2)}',
-                  style: const TextStyle(
-                    fontFamily: 'Georgia',
-                    fontSize: 22,
-                    fontWeight: FontWeight.w400,
-                    color: AppColors.brandBlack,
-                    letterSpacing: 0.5,
-                  ),
-                ),
-                if (!_canAdd)
+            Expanded(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
                   Text(
-                    variant.stock <= 0 ? 'Out of stock' : 'Unavailable',
+                    '\$${variant.price.toStringAsFixed(2)}',
                     style: const TextStyle(
-                      fontSize: 11,
-                      color: AppColors.textMuted,
-                      letterSpacing: 0.5,
-                    ),
-                  )
-                else
-                  Text(
-                    variant.displayLabel,
-                    style: const TextStyle(
-                      fontSize: 11,
-                      color: Color(0xFF6BAE75),
+                      fontFamily: 'Georgia',
+                      fontSize: 22,
+                      fontWeight: FontWeight.w400,
+                      color: AppColors.brandBlack,
                       letterSpacing: 0.5,
                     ),
                   ),
-              ],
+                  const SizedBox(height: 6),
+                  ProductVersionBadge(versionKey: variant.productVersion),
+                  if (subtitle.isNotEmpty) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      subtitle,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: _canAdd
+                            ? AppColors.textMuted
+                            : AppColors.accentRed,
+                        letterSpacing: 0.3,
+                      ),
+                    ),
+                  ] else if (!_canAdd)
+                    Text(
+                      variant.stock <= 0 ? 'Out of stock' : 'Unavailable',
+                      style: const TextStyle(
+                        fontSize: 11,
+                        color: AppColors.textMuted,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                ],
+              ),
             ),
 
-            const Spacer(),
+            const SizedBox(width: 12),
 
             GestureDetector(
               onTap: _canAdd

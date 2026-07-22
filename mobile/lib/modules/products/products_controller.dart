@@ -66,8 +66,9 @@ class ProductsController extends GetxController {
 
   void _rebuildSections() {
     final filtered = _filteredProducts();
-    productCount.value = filtered.length;
-    sections.assignAll(_buildCategorySections(filtered));
+    final listings = expandProductsToListingEntries(filtered);
+    productCount.value = listings.length;
+    sections.assignAll(_buildCategorySections(listings));
   }
 
   List<Product> _filteredProducts() {
@@ -90,23 +91,25 @@ class ProductsController extends GetxController {
     return result;
   }
 
-  List<CategoryProductSection> _buildCategorySections(List<Product> items) {
+  List<CategoryProductSection> _buildCategorySections(
+    List<ProductListingEntry> items,
+  ) {
     if (items.isEmpty) return [];
 
-    final productsByCategory = <String, List<Product>>{};
+    final entriesByCategory = <String, List<ProductListingEntry>>{};
     final categoryNames = <String, String>{};
     final categorySlugs = <String, String?>{};
 
-    for (final product in items) {
-      final categoryId = product.categoryId;
-      categoryNames[categoryId] = product.categoryName;
-      categorySlugs[categoryId] ??= product.category?.slug;
-      productsByCategory.putIfAbsent(categoryId, () => []).add(product);
+    for (final entry in items) {
+      final categoryId = entry.product.categoryId;
+      categoryNames[categoryId] = entry.product.categoryName;
+      categorySlugs[categoryId] ??= entry.product.category?.slug;
+      entriesByCategory.putIfAbsent(categoryId, () => []).add(entry);
     }
 
     final categoryOrder = categories.map((c) => c.id).toList();
     final slugById = {for (final c in categories) c.id: c.slug};
-    final allCategoryIds = productsByCategory.keys.toSet();
+    final allCategoryIds = entriesByCategory.keys.toSet();
 
     final selectedId = selectedCategoryId.value;
     final orderedIds = selectedId != null
@@ -118,10 +121,13 @@ class ProductsController extends GetxController {
 
     final result = <CategoryProductSection>[];
     for (final id in orderedIds) {
-      final categoryProducts = List<Product>.from(productsByCategory[id] ?? []);
-      categoryProducts.sort((a, b) => a.productName.compareTo(b.productName));
-      categoryProducts.shuffle(_random);
-      final rows = chunkProductsIntoPairs(categoryProducts);
+      final categoryEntries =
+          List<ProductListingEntry>.from(entriesByCategory[id] ?? []);
+      categoryEntries.sort(
+        (a, b) => a.product.productName.compareTo(b.product.productName),
+      );
+      categoryEntries.shuffle(_random);
+      final rows = chunkListingEntriesIntoPairs(categoryEntries);
 
       if (rows.isEmpty) continue;
 
@@ -131,7 +137,7 @@ class ProductsController extends GetxController {
           categoryName: categoryNames[id] ?? '—',
           categorySlug: slugById[id] ?? categorySlugs[id],
           comparisons: const [],
-          singleProductRows: rows,
+          listingRows: rows,
         ),
       );
     }

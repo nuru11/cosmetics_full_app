@@ -64,7 +64,7 @@ class _AlemmartHomeHeaderState extends State<AlemmartHomeHeader> {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(8),
                     child: Image.asset(
-                      'assets/app_logo/logo.png',
+                      'assets/app_logo/logo.jpg',
                       width: 36,
                       height: 36,
                       fit: BoxFit.cover,

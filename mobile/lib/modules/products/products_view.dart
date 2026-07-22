@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../core/theme/app_colors.dart';
-import '../../data/models/product.dart';
 import 'models/product_comparison.dart';
 import 'products_controller.dart';
 import 'widgets/category_nav_bar.dart';
@@ -82,7 +81,7 @@ class ProductsView extends GetView<ProductsController> {
     var count = 0;
     for (final section in sections) {
       count += 1; // header
-      count += section.singleProductRows.length;
+      count += section.listingRows.length;
     }
     return count;
   }
@@ -94,13 +93,14 @@ class ProductsView extends GetView<ProductsController> {
         return CategorySectionHeader(
           categoryId: section.categoryId,
           categoryName: section.categoryName,
+          categorySlug: section.categorySlug,
         );
       }
       i--;
 
-      for (final row in section.singleProductRows) {
+      for (final row in section.listingRows) {
         if (i == 0) {
-          return _ProductGridRow(products: row);
+          return _ProductGridRow(entries: row);
         }
         i--;
       }
@@ -110,9 +110,9 @@ class ProductsView extends GetView<ProductsController> {
 }
 
 class _ProductGridRow extends StatelessWidget {
-  const _ProductGridRow({required this.products});
+  const _ProductGridRow({required this.entries});
 
-  final List<Product> products;
+  final List<ProductListingEntry> entries;
 
   @override
   Widget build(BuildContext context) {
@@ -124,16 +124,22 @@ class _ProductGridRow extends StatelessWidget {
           children: [
           Expanded(
             child: ProductGridCard(
-              product: products.first,
-              onTap: () => Get.toNamed('/product/${products.first.id}'),
+              product: entries.first.product,
+              highlightVariant: entries.first.variant,
+              onTap: () => Get.toNamed(
+                '/product/${entries.first.product.id}?variantId=${entries.first.variant.id}',
+              ),
             ),
           ),
           const SizedBox(width: 12),
           Expanded(
-            child: products.length > 1
+            child: entries.length > 1
                 ? ProductGridCard(
-                    product: products[1],
-                    onTap: () => Get.toNamed('/product/${products[1].id}'),
+                    product: entries[1].product,
+                    highlightVariant: entries[1].variant,
+                    onTap: () => Get.toNamed(
+                      '/product/${entries[1].product.id}?variantId=${entries[1].variant.id}',
+                    ),
                   )
                 : const SizedBox.shrink(),
           ),

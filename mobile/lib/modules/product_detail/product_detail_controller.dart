@@ -6,10 +6,15 @@ import '../../data/models/product_variant.dart';
 import '../../data/repositories/product_repository.dart';
 
 class ProductDetailController extends GetxController {
-  ProductDetailController(this._repository, this.productId);
+  ProductDetailController(
+    this._repository,
+    this.productId, {
+    this.initialVariantId,
+  });
 
   final ProductRepository _repository;
   final String productId;
+  final String? initialVariantId;
 
   final product = Rxn<Product>();
   final selectedVariant = Rxn<ProductVariant>();
@@ -38,7 +43,7 @@ class ProductDetailController extends GetxController {
     try {
       final loaded = await _repository.getProductById(productId);
       product.value = loaded;
-      selectedVariant.value = loaded.firstInStockVariant ?? loaded.defaultVariant;
+      selectedVariant.value = _resolveInitialVariant(loaded);
     } on ApiException catch (e) {
       error.value = e.message;
     } catch (_) {
@@ -46,5 +51,15 @@ class ProductDetailController extends GetxController {
     } finally {
       isLoading.value = false;
     }
+  }
+
+  ProductVariant? _resolveInitialVariant(Product loaded) {
+    final preferredId = initialVariantId?.trim();
+    if (preferredId != null && preferredId.isNotEmpty) {
+      for (final variant in loaded.variants) {
+        if (variant.id == preferredId) return variant;
+      }
+    }
+    return loaded.firstInStockVariant ?? loaded.defaultVariant;
   }
 }

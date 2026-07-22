@@ -4,6 +4,9 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/widgets/product_image.dart';
+import '../../core/widgets/product_version_badge.dart';
+import '../../data/models/product_variant.dart';
+import '../products/models/product_comparison.dart';
 import 'cart_controller.dart';
 
 class CartView extends GetView<CartController> {
@@ -156,6 +159,7 @@ class _CartLineCard extends StatelessWidget {
     final product = entry.product;
     final variant = entry.variant;
     final lineTotal = variant.price * entry.quantity;
+    final variantSubtitle = _variantSubtitle(variant);
 
     return Material(
       color: AppColors.cardWhite,
@@ -217,17 +221,30 @@ class _CartLineCard extends StatelessWidget {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 2),
-                    Text(
-                      entry.variantLabel,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.montserrat(
-                        fontSize: 12,
-                        color: AppColors.textMuted,
-                      ),
+                    const SizedBox(height: 8),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        ProductVersionBadge(
+                          versionKey: variant.productVersion,
+                        ),
+                        if (variantSubtitle != null) ...[
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              variantSubtitle,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.montserrat(
+                                fontSize: 11,
+                                color: AppColors.textMuted,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ],
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 6),
                     Text(
                       '\$${variant.price.toStringAsFixed(2)} each',
                       style: GoogleFonts.montserrat(
@@ -295,6 +312,18 @@ class _CartLineCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  static String? _variantSubtitle(ProductVariant variant) {
+    final description = variant.variantDescription?.trim();
+    if (description != null && description.isNotEmpty) return description;
+
+    final size = variant.size?.trim();
+    if (size != null && size.isNotEmpty) return size;
+
+    final defaultSubtitle =
+        ProductVersionSlot.defaultSubtitleFor(variant.productVersion);
+    return defaultSubtitle.isNotEmpty ? defaultSubtitle : null;
   }
 }
 

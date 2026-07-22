@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/product_image.dart';
+import '../../../core/widgets/product_version_badge.dart';
 import '../../../core/widgets/save_product_button.dart';
 import '../models/product_comparison.dart';
 import 'product_add_button.dart';
@@ -70,7 +71,6 @@ class ProductComparisonCard extends StatelessWidget {
                           width: _columnWidth,
                           child: _ProductSide(
                             slot: slot,
-                            tierStyle: _tierStyleFor(slot.versionKey),
                             savingsPercent: savings,
                             onTap: onProductTap != null
                                 ? () => onProductTap!(slot.product.id)
@@ -144,19 +144,6 @@ class ProductComparisonCard extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  static _TierStyle _tierStyleFor(String versionKey) {
-    switch (versionKey.toUpperCase()) {
-      case 'ORIGINAL':
-        return _TierStyle.original;
-      case 'TWO_LEVEL':
-        return _TierStyle.second;
-      case 'PREMIUM':
-        return _TierStyle.premium;
-      default:
-        return _TierStyle.second;
-    }
   }
 }
 
@@ -253,18 +240,14 @@ class _ColumnSeparator extends StatelessWidget {
   }
 }
 
-enum _TierStyle { original, second, premium }
-
 class _ProductSide extends StatelessWidget {
   const _ProductSide({
     required this.slot,
-    required this.tierStyle,
     this.savingsPercent,
     this.onTap,
   });
 
   final ProductVersionSlot slot;
-  final _TierStyle tierStyle;
   final int? savingsPercent;
   final VoidCallback? onTap;
 
@@ -281,7 +264,10 @@ class _ProductSide extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 4),
         child: Column(
           children: [
-          _VersionPill(label: slot.displayLabel, style: tierStyle),
+          ProductVersionBadge(
+            versionKey: slot.versionKey,
+            label: slot.displayLabel,
+          ),
           const SizedBox(height: 8),
           Stack(
             clipBehavior: Clip.none,
@@ -359,52 +345,6 @@ class _ProductSide extends StatelessWidget {
               useBrandPalette: true,
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class _VersionPill extends StatelessWidget {
-  const _VersionPill({required this.label, required this.style});
-
-  final String label;
-  final _TierStyle style;
-
-  @override
-  Widget build(BuildContext context) {
-    final (bg, fg, border) = switch (style) {
-      _TierStyle.original => (
-          AppColors.brandBlack,
-          AppColors.brandWhite,
-          null as Color?,
-        ),
-      _TierStyle.second => (
-          AppColors.brandWhite,
-          AppColors.brandBlue,
-          AppColors.brandBlue,
-        ),
-      _TierStyle.premium => (
-          AppColors.brandBlue,
-          AppColors.brandWhite,
-          null as Color?,
-        ),
-    };
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(
-        color: bg,
-        border: border != null ? Border.all(color: border) : null,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Text(
-        label,
-        style: GoogleFonts.montserrat(
-          fontSize: 9,
-          fontWeight: FontWeight.w700,
-          letterSpacing: 0.5,
-          color: fg,
         ),
       ),
     );
