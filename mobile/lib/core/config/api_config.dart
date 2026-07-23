@@ -4,9 +4,6 @@ class ApiConfig {
     defaultValue: 'https://alemmartapi.alemmart.com/api',
   );
 
-  static const String defaultProductImageUrl =
-      'https://assets.easyapplicantflow.com/cosmetics/cosmeticsimg3.png';
-
   static String get origin {
     final trimmed = baseUrl.replaceAll(RegExp(r'/+$'), '');
     if (trimmed.endsWith('/api')) {

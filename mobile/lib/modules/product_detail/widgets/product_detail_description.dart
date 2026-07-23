@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -26,7 +27,7 @@ class _ProductDetailDescriptionState extends State<ProductDetailDescription> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'About this product',
+          'product.about'.tr,
           style: GoogleFonts.montserrat(
             fontSize: 13,
             fontWeight: FontWeight.w600,
@@ -69,7 +70,7 @@ class _ProductDetailDescriptionState extends State<ProductDetailDescription> {
                       foregroundColor: AppColors.brandBlue,
                     ),
                     child: Text(
-                      _expanded ? 'Read less' : 'Read more',
+                      _expanded ? 'product.read_less'.tr : 'product.read_more'.tr,
                       style: GoogleFonts.montserrat(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,

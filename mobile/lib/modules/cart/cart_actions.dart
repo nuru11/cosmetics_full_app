@@ -11,17 +11,17 @@ Future<bool> addVariantToCart(
 }) async {
   if (product.status.toUpperCase() != 'ACTIVE') {
     Get.snackbar(
-      'Unavailable',
-      'This product is not available.',
+      'cart_action.unavailable_title'.tr,
+      'cart_action.unavailable_product'.tr,
       snackPosition: SnackPosition.BOTTOM,
     );
     return false;
   }
 
-  if (variant.stock <= 0) {
+  if (!variant.inStock) {
     Get.snackbar(
-      'Out of stock',
-      'This option is currently unavailable.',
+      'cart_action.out_of_stock_title'.tr,
+      'cart_action.out_of_stock_message'.tr,
       snackPosition: SnackPosition.BOTTOM,
     );
     return false;
@@ -30,24 +30,6 @@ Future<bool> addVariantToCart(
   final cart = Get.find<CartService>();
   final current = cart.quantityFor(variant.id);
   final requested = current + quantity;
-
-  if (requested > variant.stock) {
-    if (current >= variant.stock) {
-      Get.snackbar(
-        'Stock limit',
-        'Only ${variant.stock} available.',
-        snackPosition: SnackPosition.BOTTOM,
-      );
-      return false;
-    }
-    await cart.setQuantity(variant.id, variant.stock);
-    Get.snackbar(
-      'Stock limit',
-      'Quantity adjusted to ${variant.stock}.',
-      snackPosition: SnackPosition.BOTTOM,
-    );
-    return true;
-  }
 
   if (current > 0) {
     await cart.setQuantity(variant.id, requested);
@@ -61,8 +43,8 @@ Future<bool> addProductToCart(Product product, {int quantity = 1}) {
   final variant = product.firstInStockVariant ?? product.defaultVariant;
   if (variant == null) {
     Get.snackbar(
-      'Unavailable',
-      'No purchasable options for this product.',
+      'cart_action.no_options_title'.tr,
+      'cart_action.no_options_message'.tr,
       snackPosition: SnackPosition.BOTTOM,
     );
     return Future.value(false);

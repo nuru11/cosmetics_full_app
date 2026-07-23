@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../data/services/checkout_contact_storage.dart';
 
 String? validateDeliveryName(String? value) {
-  if (value == null || value.trim().isEmpty) return 'Name is required';
+  if (value == null || value.trim().isEmpty) return 'validation.name_required'.tr;
   return null;
 }
 
 String? validateDeliveryPhone(String? value) {
-  if (value == null || value.trim().isEmpty) return 'Phone is required';
+  if (value == null || value.trim().isEmpty) return 'validation.phone_required'.tr;
   return null;
 }
 
 String? validateDeliveryCity(String? value) {
-  if (value == null || value.trim().isEmpty) return 'City is required';
+  if (value == null || value.trim().isEmpty) return 'validation.city_required'.tr;
   return null;
 }
 
@@ -35,12 +36,14 @@ class DeliveryContactFields extends StatelessWidget {
     super.key,
     required this.nameController,
     required this.phoneController,
-    required this.cityController,
+    this.cityController,
+    this.includeCity = true,
   });
 
   final TextEditingController nameController;
   final TextEditingController phoneController;
-  final TextEditingController cityController;
+  final TextEditingController? cityController;
+  final bool includeCity;
 
   @override
   Widget build(BuildContext context) {
@@ -49,22 +52,24 @@ class DeliveryContactFields extends StatelessWidget {
       children: [
         DeliveryContactField(
           controller: nameController,
-          label: 'Full name',
+          label: 'form.full_name'.tr,
           validator: validateDeliveryName,
         ),
         const SizedBox(height: 12),
         DeliveryContactField(
           controller: phoneController,
-          label: 'Phone',
+          label: 'form.phone'.tr,
           keyboardType: TextInputType.phone,
           validator: validateDeliveryPhone,
         ),
-        const SizedBox(height: 12),
-        DeliveryContactField(
-          controller: cityController,
-          label: 'City',
-          validator: validateDeliveryCity,
-        ),
+        if (includeCity && cityController != null) ...[
+          const SizedBox(height: 12),
+          DeliveryContactField(
+            controller: cityController!,
+            label: 'form.city'.tr,
+            validator: validateDeliveryCity,
+          ),
+        ],
       ],
     );
   }

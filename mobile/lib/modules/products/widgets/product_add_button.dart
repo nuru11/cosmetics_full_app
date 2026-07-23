@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../core/theme/app_colors.dart';
@@ -29,7 +30,7 @@ class ProductAddButton extends StatelessWidget {
     }
 
     if (iconOnly) {
-      final enabled = selected.stock > 0;
+      final enabled = selected.inStock;
       return Material(
         elevation: enabled ? 3 : 0,
         shadowColor: AppColors.brandBlue.withValues(alpha: 0.35),
@@ -43,7 +44,11 @@ class ProductAddButton extends StatelessWidget {
                   if (added) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text('${product.productName} added to bag'),
+                        content: Text(
+                          'product.added_to_bag'.trParams(
+                            {'name': product.productName},
+                          ),
+                        ),
                         behavior: SnackBarBehavior.floating,
                         backgroundColor: AppColors.brandBlue,
                       ),
@@ -80,7 +85,11 @@ class ProductAddButton extends StatelessWidget {
           if (added) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('${product.productName} added to bag'),
+                content: Text(
+                  'product.added_to_bag'.trParams(
+                    {'name': product.productName},
+                  ),
+                ),
                 behavior: SnackBarBehavior.floating,
               ),
             );
@@ -96,7 +105,7 @@ class ProductAddButton extends StatelessWidget {
           ),
         ),
         child: Text(
-          '+ ADD',
+          'product.add_button'.tr,
           style: GoogleFonts.montserrat(
             fontSize: 10,
             fontWeight: FontWeight.w700,

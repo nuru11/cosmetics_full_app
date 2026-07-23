@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/format_price.dart';
 import '../../../data/models/product.dart';
 import '../../../data/models/product_variant.dart';
 import '../../cart/cart_actions.dart';
@@ -17,7 +19,7 @@ class ProductDetailBottomBar extends StatelessWidget {
   final ProductVariant variant;
 
   bool get _canAdd =>
-      product.status.toUpperCase() == 'ACTIVE' && variant.stock > 0;
+      product.status.toUpperCase() == 'ACTIVE' && variant.inStock;
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +46,7 @@ class ProductDetailBottomBar extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '\$${variant.price.toStringAsFixed(2)}',
+                    formatPrice(variant.price),
                     style: GoogleFonts.playfairDisplay(
                       fontSize: 20,
                       fontWeight: FontWeight.w700,
@@ -53,7 +55,7 @@ class ProductDetailBottomBar extends StatelessWidget {
                   ),
                   if (!_canAdd)
                     Text(
-                      variant.stock <= 0 ? 'Out of stock' : 'Unavailable',
+                      !variant.inStock ? 'product.out_of_stock'.tr : 'product.unavailable'.tr,
                       style: GoogleFonts.montserrat(
                         fontSize: 11,
                         color: AppColors.textMuted,
@@ -70,22 +72,7 @@ class ProductDetailBottomBar extends StatelessWidget {
                       final added = await addVariantToCart(product, variant);
                       if (!context.mounted) return;
                       if (added) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              'Added to your bag',
-                              style: GoogleFonts.montserrat(
-                                letterSpacing: 0.2,
-                              ),
-                            ),
-                            backgroundColor: AppColors.brandBlue,
-                            behavior: SnackBarBehavior.floating,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            margin: const EdgeInsets.all(12),
-                          ),
-                        );
+                        Get.toNamed('/cart');
                       }
                     }
                   : null,
@@ -105,7 +92,7 @@ class ProductDetailBottomBar extends StatelessWidget {
                 color: _canAdd ? AppColors.brandWhite : AppColors.textMuted,
               ),
               label: Text(
-                'Add to bag',
+                'product.add_to_bag'.tr,
                 style: GoogleFonts.montserrat(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,

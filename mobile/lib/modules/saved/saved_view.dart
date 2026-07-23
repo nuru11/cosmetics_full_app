@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../core/l10n/l10n_helpers.dart';
 import '../../core/theme/app_colors.dart';
 import '../products/widgets/product_grid_card.dart';
 import 'saved_controller.dart';
@@ -16,7 +17,7 @@ class SavedView extends GetView<SavedController> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Saved',
+          'saved.title'.tr,
           style: GoogleFonts.playfairDisplay(
             fontWeight: FontWeight.w600,
             color: AppColors.brandWhite,
@@ -128,7 +129,7 @@ class _EmptySavedState extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             Text(
-              'No saved items yet',
+              'saved.empty_title'.tr,
               style: GoogleFonts.playfairDisplay(
                 fontSize: 22,
                 fontWeight: FontWeight.w600,
@@ -137,7 +138,7 @@ class _EmptySavedState extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              'Tap the heart on any product on Home to save it here.',
+              'saved.empty_message'.tr,
               textAlign: TextAlign.center,
               style: GoogleFonts.montserrat(
                 fontSize: 14,
@@ -175,7 +176,7 @@ class _CatalogErrorState extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              message,
+              trLocalizedError(message),
               textAlign: TextAlign.center,
               style: GoogleFonts.montserrat(
                 fontSize: 14,
@@ -190,7 +191,7 @@ class _CatalogErrorState extends StatelessWidget {
                 foregroundColor: AppColors.brandWhite,
               ),
               icon: const Icon(Icons.refresh),
-              label: const Text('Retry'),
+              label: Text('common.retry'.tr),
             ),
           ],
         ),

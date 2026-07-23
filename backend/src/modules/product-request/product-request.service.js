@@ -13,7 +13,7 @@ const productRequestService = {
       imageUrl,
       customerName: validated.customerName,
       phone: validated.phone,
-      city: validated.city,
+      city: '',
       clientDeviceId,
       userId: userId || null,
       status: 'NEW',

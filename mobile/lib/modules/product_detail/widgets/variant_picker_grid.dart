@@ -1,7 +1,9 @@
+import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/format_price.dart';
 import '../../../core/widgets/product_image.dart';
 import '../../../core/widgets/product_version_badge.dart';
 import '../../../data/models/product.dart';
@@ -31,7 +33,7 @@ class VariantPickerGrid extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Choose version',
+          'product.choose_version'.tr,
           style: GoogleFonts.montserrat(
             fontSize: 13,
             fontWeight: FontWeight.w600,
@@ -41,7 +43,7 @@ class VariantPickerGrid extends StatelessWidget {
         if (slots.length > 1) ...[
           const SizedBox(height: 4),
           Text(
-            '${slots.length} options available',
+            'product.options_available'.trParams({'count': '${slots.length}'}),
             style: GoogleFonts.montserrat(
               fontSize: 11,
               color: AppColors.textMuted,
@@ -83,7 +85,7 @@ class _VersionOptionTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final variant = slot.variant;
-    final inStock = variant.stock > 0;
+    final inStock = variant.inStock;
     final accentColor = ProductVersionBadge.colorsFor(slot.versionKey).$2;
 
     return Material(
@@ -164,7 +166,7 @@ class _VersionOptionTile extends StatelessWidget {
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
-                                  inStock ? 'In stock' : 'Out of stock',
+                                  inStock ? 'product.in_stock'.tr : 'product.out_of_stock'.tr,
                                   style: GoogleFonts.montserrat(
                                     fontSize: 10,
                                     fontWeight: FontWeight.w600,
@@ -190,7 +192,7 @@ class _VersionOptionTile extends StatelessWidget {
                                 const SizedBox(height: 20),
                               const SizedBox(height: 8),
                               Text(
-                                '\$${variant.price.toStringAsFixed(2)}',
+                                formatPrice(variant.price),
                                 style: GoogleFonts.playfairDisplay(
                                   fontSize: 18,
                                   fontWeight: FontWeight.w700,
@@ -209,7 +211,9 @@ class _VersionOptionTile extends StatelessWidget {
                                     borderRadius: BorderRadius.circular(10),
                                   ),
                                   child: Text(
-                                    'Save $savingsPercent%',
+                                    'product.save_percent'.trParams(
+                                      {'percent': '$savingsPercent'},
+                                    ),
                                     style: GoogleFonts.montserrat(
                                       fontSize: 9,
                                       fontWeight: FontWeight.w600,

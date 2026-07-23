@@ -1,44 +1,47 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'app_colors.dart';
 
 abstract final class AppTheme {
-  static ThemeData get light {
-    final playfair = GoogleFonts.playfairDisplayTextTheme();
-    final montserrat = GoogleFonts.montserratTextTheme();
+  static ThemeData lightFor(Locale locale) {
+    final isAmharic = locale.languageCode == 'am';
+    final bodyFont = isAmharic ? GoogleFonts.notoSansEthiopic : GoogleFonts.montserrat;
+    final displayFont =
+        isAmharic ? GoogleFonts.notoSansEthiopic : GoogleFonts.playfairDisplay;
 
-    final textTheme = playfair.merge(montserrat).copyWith(
-          displayLarge: GoogleFonts.playfairDisplay(
-            fontSize: 32,
-            fontWeight: FontWeight.w700,
-            color: AppColors.brandWhite,
-          ),
-          titleLarge: GoogleFonts.playfairDisplay(
-            fontSize: 20,
-            fontWeight: FontWeight.w700,
-            color: AppColors.brandBlack,
-          ),
-          titleMedium: GoogleFonts.playfairDisplay(
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-            color: AppColors.brandBlack,
-          ),
-          labelSmall: GoogleFonts.montserrat(
-            fontSize: 10,
-            fontWeight: FontWeight.w600,
-            letterSpacing: 1.2,
-            color: AppColors.brandBlue,
-          ),
-          bodySmall: GoogleFonts.montserrat(
-            fontSize: 12,
-            color: AppColors.textMuted,
-          ),
-          bodyMedium: GoogleFonts.montserrat(
-            fontSize: 14,
-            color: AppColors.textDark,
-          ),
-        );
+    final textTheme = TextTheme(
+      displayLarge: displayFont(
+        fontSize: 32,
+        fontWeight: FontWeight.w700,
+        color: AppColors.brandWhite,
+      ),
+      titleLarge: displayFont(
+        fontSize: 20,
+        fontWeight: FontWeight.w700,
+        color: AppColors.brandBlack,
+      ),
+      titleMedium: displayFont(
+        fontSize: 18,
+        fontWeight: FontWeight.w600,
+        color: AppColors.brandBlack,
+      ),
+      labelSmall: bodyFont(
+        fontSize: 10,
+        fontWeight: FontWeight.w600,
+        letterSpacing: isAmharic ? 0.4 : 1.2,
+        color: AppColors.brandBlue,
+      ),
+      bodySmall: bodyFont(
+        fontSize: 12,
+        color: AppColors.textMuted,
+      ),
+      bodyMedium: bodyFont(
+        fontSize: 14,
+        color: AppColors.textDark,
+      ),
+    );
 
     return ThemeData(
       useMaterial3: true,
@@ -59,7 +62,7 @@ abstract final class AppTheme {
         scrolledUnderElevation: 0,
         backgroundColor: AppColors.brandBlue,
         foregroundColor: AppColors.brandWhite,
-        titleTextStyle: GoogleFonts.playfairDisplay(
+        titleTextStyle: displayFont(
           fontSize: 18,
           fontWeight: FontWeight.w600,
           color: AppColors.brandWhite,
@@ -74,4 +77,6 @@ abstract final class AppTheme {
       ),
     );
   }
+
+  static ThemeData get light => lightFor(Get.locale ?? const Locale('en', 'US'));
 }

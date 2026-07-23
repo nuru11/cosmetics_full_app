@@ -1,7 +1,9 @@
+import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/format_price.dart';
 import '../../../core/widgets/product_image.dart';
 import '../../../core/widgets/product_version_badge.dart';
 import '../../../core/widgets/save_product_button.dart';
@@ -129,7 +131,7 @@ class ProductComparisonCard extends StatelessWidget {
                       ),
                       const SizedBox(width: 6),
                       Text(
-                        'Swipe for more versions',
+                        'products.swipe_versions'.tr,
                         style: GoogleFonts.montserrat(
                           fontSize: 10,
                           fontWeight: FontWeight.w500,
@@ -225,7 +227,7 @@ class _ColumnSeparator extends StatelessWidget {
                 ),
                 alignment: Alignment.center,
                 child: Text(
-                  'vs',
+                  'common.vs'.tr,
                   style: GoogleFonts.playfairDisplay(
                     fontSize: 9,
                     fontStyle: FontStyle.italic,
@@ -313,7 +315,7 @@ class _ProductSide extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            '\$${variant.price.toStringAsFixed(0)}',
+            formatPrice(variant.price, decimals: 0),
             style: GoogleFonts.playfairDisplay(
               fontSize: 22,
               fontWeight: FontWeight.w700,
@@ -329,7 +331,7 @@ class _ProductSide extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
-                'Save $savingsPercent%',
+                'product.save_percent'.trParams({'percent': '$savingsPercent'}),
                 style: GoogleFonts.montserrat(
                   fontSize: 9,
                   fontWeight: FontWeight.w600,

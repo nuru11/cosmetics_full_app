@@ -1,7 +1,9 @@
+import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/format_price.dart';
 import '../../../core/widgets/product_image.dart';
 import '../../../core/widgets/product_version_badge.dart';
 import '../../../data/models/product.dart';
@@ -41,7 +43,7 @@ class ProductGridCard extends StatelessWidget {
         ? (((maxPrice - minPrice) / maxPrice) * 100).round()
         : null;
 
-    final inStock = (displayVariant?.stock ?? 0) > 0;
+    final inStock = displayVariant?.inStock ?? false;
     final versionKey = displayVariant?.productVersion ?? 'ORIGINAL';
 
     return Material(
@@ -133,7 +135,7 @@ class ProductGridCard extends StatelessWidget {
                       textBaseline: TextBaseline.alphabetic,
                       children: [
                         Text(
-                          '\$${minPrice.toStringAsFixed(2)}',
+                          formatPrice(minPrice),
                           style: GoogleFonts.montserrat(
                             fontSize: 14,
                             fontWeight: FontWeight.w700,
@@ -145,7 +147,7 @@ class ProductGridCard extends StatelessWidget {
                         if (hasDiscount) ...[
                           const SizedBox(width: 6),
                           Text(
-                            '\$${maxPrice.toStringAsFixed(2)}',
+                            formatPrice(maxPrice),
                             style: GoogleFonts.montserrat(
                               fontSize: 11,
                               color: AppColors.textMuted,
@@ -160,7 +162,7 @@ class ProductGridCard extends StatelessWidget {
                     Row(
                       children: [
                         Text(
-                          inStock ? 'In Stock' : 'Out of Stock',
+                          inStock ? 'product.in_stock_title'.tr : 'product.out_of_stock_title'.tr,
                           style: GoogleFonts.montserrat(
                             fontSize: 11,
                             fontWeight: FontWeight.w600,

@@ -9,7 +9,6 @@ import '../../core/network/api_client.dart';
 import '../../core/theme/app_colors.dart';
 import '../../data/repositories/product_request_repository.dart';
 import '../../data/services/checkout_contact_storage.dart';
-import 'ask_product_sheet.dart';
 
 class ProductRequestController extends GetxController {
   ProductRequestController(this._repository);
@@ -17,37 +16,39 @@ class ProductRequestController extends GetxController {
   final ProductRequestRepository _repository;
   final ImagePicker _picker = ImagePicker();
 
+  final formKey = GlobalKey<FormState>();
+  late final TextEditingController descriptionController;
+  late final TextEditingController nameController;
+  late final TextEditingController phoneController;
+
+  final isLoading = true.obs;
   final isSubmitting = false.obs;
   final pickedImage = Rxn<File>();
 
   CheckoutContactStorage? _contactStorage;
 
-  Future<void> openAskProductSheet() async {
-    final storage = _contactStorage ?? await CheckoutContactStorage.create();
-    _contactStorage = storage;
-    final initial = storage.load();
-    pickedImage.value = null;
-
-    await Get.bottomSheet<void>(
-      Obx(
-        () => AskProductSheet(
-          initialContact: initial,
-          isSubmitting: isSubmitting.value,
-          pickedImage: pickedImage.value,
-          onPickImage: _pickImage,
-          onRemoveImage: () => pickedImage.value = null,
-          onSubmit: _submit,
-        ),
-      ),
-      isScrollControlled: true,
-      backgroundColor: AppColors.cardWhite,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
-    );
+  @override
+  void onInit() {
+    super.onInit();
+    descriptionController = TextEditingController();
+    nameController = TextEditingController();
+    phoneController = TextEditingController();
+    _loadContact();
   }
 
-  Future<void> _pickImage() async {
+  Future<void> _loadContact() async {
+    isLoading.value = true;
+    try {
+      _contactStorage = await CheckoutContactStorage.create();
+      final contact = _contactStorage!.load();
+      nameController.text = contact.name;
+      phoneController.text = contact.phone;
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> pickImage() async {
     final file = await _picker.pickImage(
       source: ImageSource.gallery,
       maxWidth: 1920,
@@ -56,12 +57,17 @@ class ProductRequestController extends GetxController {
     );
     if (file == null) return;
     pickedImage.value = File(file.path);
+    formKey.currentState?.validate();
   }
 
-  Future<void> _submit({
-    required String description,
-    required CheckoutContact contact,
-  }) async {
+  void removeImage() {
+    pickedImage.value = null;
+    formKey.currentState?.validate();
+  }
+
+  Future<void> submit() async {
+    if (!(formKey.currentState?.validate() ?? false)) return;
+
     isSubmitting.value = true;
     try {
       String? imageBase64;
@@ -72,22 +78,28 @@ class ProductRequestController extends GetxController {
       }
 
       await _repository.submit(
-        description: description,
-        customerName: contact.name,
-        phone: contact.phone,
-        city: contact.city,
+        description: descriptionController.text.trim(),
+        customerName: nameController.text.trim(),
+        phone: phoneController.text.trim(),
         imageBase64: imageBase64,
       );
 
       final storage = _contactStorage;
       if (storage != null) {
-        await storage.save(contact);
+        final existing = storage.load();
+        await storage.save(
+          CheckoutContact(
+            name: nameController.text.trim(),
+            phone: phoneController.text.trim(),
+            city: existing.city,
+          ),
+        );
       }
 
       Get.back();
       Get.snackbar(
-        'Request sent',
-        'We received your request and will get back to you soon.',
+        'request.sent_title'.tr,
+        'request.sent_message'.tr,
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: AppColors.brandBlue,
         colorText: AppColors.brandWhite,
@@ -95,7 +107,7 @@ class ProductRequestController extends GetxController {
       );
     } on ApiException catch (e) {
       Get.snackbar(
-        'Could not send request',
+        'request.failed_title'.tr,
         e.message,
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: AppColors.accentRed,
@@ -104,8 +116,8 @@ class ProductRequestController extends GetxController {
       );
     } catch (_) {
       Get.snackbar(
-        'Could not send request',
-        'Something went wrong. Please try again.',
+        'request.failed_title'.tr,
+        'request.failed_message'.tr,
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: AppColors.accentRed,
         colorText: AppColors.brandWhite,
@@ -114,5 +126,13 @@ class ProductRequestController extends GetxController {
     } finally {
       isSubmitting.value = false;
     }
+  }
+
+  @override
+  void onClose() {
+    descriptionController.dispose();
+    nameController.dispose();
+    phoneController.dispose();
+    super.onClose();
   }
 }

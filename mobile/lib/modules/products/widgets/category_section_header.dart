@@ -3,7 +3,8 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../core/theme/app_colors.dart';
-import '../../../core/theme/category_icons.dart';
+import '../../../core/widgets/category_avatar.dart';
+import '../../../data/models/category.dart';
 import '../products_controller.dart';
 
 class CategorySectionHeader extends GetView<ProductsController> {
@@ -20,18 +21,23 @@ class CategorySectionHeader extends GetView<ProductsController> {
 
   @override
   Widget build(BuildContext context) {
-    final icon = CategoryIcons.forCategory(
-      slug: categorySlug,
-      name: categoryName,
-    );
+    Category? category;
+    for (final c in controller.categories) {
+      if (c.id == categoryId) {
+        category = c;
+        break;
+      }
+    }
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 20, 16, 12),
       child: Row(
         children: [
-          Text(
-            icon,
-            style: const TextStyle(fontSize: 18, height: 1),
+          CategoryAvatar(
+            imageUrl: category?.imageUrl,
+            slug: categorySlug,
+            name: categoryName,
+            size: 24,
           ),
           const SizedBox(width: 8),
           Expanded(
@@ -55,7 +61,7 @@ class CategorySectionHeader extends GetView<ProductsController> {
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
                 child: Text(
-                  'Clear',
+                  'common.clear'.tr,
                   style: GoogleFonts.montserrat(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
@@ -73,7 +79,7 @@ class CategorySectionHeader extends GetView<ProductsController> {
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
               ),
               child: Text(
-                'See All',
+                'common.see_all'.tr,
                 style: GoogleFonts.montserrat(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,

@@ -11,10 +11,3 @@ String resolveImageUrl(String? url) {
   }
   return '${ApiConfig.origin}/$trimmed';
 }
-
-/// Resolves a product image URL, falling back to the app default placeholder.
-String resolveProductImageUrl(String? url) {
-  final resolved = resolveImageUrl(url);
-  if (resolved.isEmpty) return ApiConfig.defaultProductImageUrl;
-  return resolved;
-}

@@ -6,8 +6,8 @@ import '../../modules/saved/wishlist_service.dart';
 
 void showSavedFeedback({required bool saved}) {
   Get.snackbar(
-    saved ? 'Saved' : 'Removed from saved',
-    saved ? 'Added to your saved items' : 'Removed from your saved items',
+    saved ? 'saved.saved_title'.tr : 'saved.removed_title'.tr,
+    saved ? 'saved.saved_message'.tr : 'saved.removed_message'.tr,
     snackPosition: SnackPosition.BOTTOM,
     margin: const EdgeInsets.all(16),
     duration: const Duration(seconds: 2),

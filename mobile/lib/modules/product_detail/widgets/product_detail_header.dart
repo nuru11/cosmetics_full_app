@@ -1,7 +1,9 @@
+import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/format_price.dart';
 import '../../../core/widgets/product_version_badge.dart';
 import '../../../data/models/product.dart';
 import '../../../data/models/product_variant.dart';
@@ -32,7 +34,7 @@ class ProductDetailHeader extends StatelessWidget {
     final showCompareAt = savingsPercent != null &&
         originalPrice != null &&
         originalPrice > variant.price;
-    final inStock = variant.stock > 0 &&
+    final inStock = variant.inStock &&
         product.status.toUpperCase() == 'ACTIVE';
     final hasMultipleVariants = product.variants.length > 1;
 
@@ -75,7 +77,7 @@ class ProductDetailHeader extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
-              '\$${variant.price.toStringAsFixed(2)}',
+              formatPrice(variant.price),
               style: GoogleFonts.montserrat(
                 fontSize: 20,
                 fontWeight: FontWeight.w700,
@@ -85,7 +87,7 @@ class ProductDetailHeader extends StatelessWidget {
             if (showCompareAt) ...[
               const SizedBox(width: 8),
               Text(
-                '\$${originalPrice.toStringAsFixed(2)}',
+                formatPrice(originalPrice),
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   color: AppColors.textMuted,
@@ -103,7 +105,7 @@ class ProductDetailHeader extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Text(
-                  'Save $savingsPercent%',
+                  'product.save_percent'.trParams({'percent': '$savingsPercent'}),
                   style: GoogleFonts.montserrat(
                     fontSize: 10,
                     fontWeight: FontWeight.w700,
@@ -127,7 +129,7 @@ class ProductDetailHeader extends StatelessWidget {
             ),
             const SizedBox(width: 6),
             Text(
-              inStock ? 'In stock' : 'Out of stock',
+              inStock ? 'product.in_stock'.tr : 'product.out_of_stock'.tr,
               style: GoogleFonts.montserrat(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,

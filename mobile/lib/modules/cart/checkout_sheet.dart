@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../core/theme/app_colors.dart';
@@ -55,10 +56,10 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
+    final bottomSafe = MediaQuery.paddingOf(context).bottom;
 
     return Padding(
-      padding: EdgeInsets.fromLTRB(20, 16, 20, 16 + bottomInset),
+      padding: EdgeInsets.fromLTRB(20, 16, 20, 16 + bottomSafe),
       child: Form(
         key: _formKey,
         child: Column(
@@ -66,7 +67,7 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              'Delivery details',
+              'checkout.delivery_details'.tr,
               style: GoogleFonts.playfairDisplay(
                 fontSize: 22,
                 fontWeight: FontWeight.w600,
@@ -97,7 +98,7 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
                       ),
                     )
                   : Text(
-                      'Place order',
+                      'checkout.place_order'.tr,
                       style: GoogleFonts.montserrat(
                         fontWeight: FontWeight.w700,
                       ),

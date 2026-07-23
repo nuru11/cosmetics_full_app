@@ -33,7 +33,7 @@ class ProductDetailController extends GetxController {
 
   Future<void> loadProduct() async {
     if (productId.isEmpty) {
-      error.value = 'Invalid product';
+      error.value = 'error.invalid_product';
       isLoading.value = false;
       return;
     }
@@ -47,7 +47,7 @@ class ProductDetailController extends GetxController {
     } on ApiException catch (e) {
       error.value = e.message;
     } catch (_) {
-      error.value = 'Could not load product.';
+      error.value = 'error.load_product';
     } finally {
       isLoading.value = false;
     }

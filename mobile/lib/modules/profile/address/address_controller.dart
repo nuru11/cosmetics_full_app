@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../data/services/checkout_contact_storage.dart';
+import '../profile_controller.dart';
 
 class AddressController extends GetxController {
   final formKey = GlobalKey<FormState>();
@@ -52,14 +53,17 @@ class AddressController extends GetxController {
         ),
       );
       Get.snackbar(
-        'Saved',
-        'Delivery details updated.',
+        'address.saved_title'.tr,
+        'address.saved_message'.tr,
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: AppColors.brandBlue,
         colorText: AppColors.brandWhite,
         margin: const EdgeInsets.all(16),
         duration: const Duration(seconds: 2),
       );
+      if (Get.isRegistered<ProfileController>()) {
+        await Get.find<ProfileController>().reload();
+      }
     } finally {
       isSaving.value = false;
     }

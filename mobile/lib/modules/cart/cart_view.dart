@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../core/l10n/l10n_helpers.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/format_price.dart';
 import '../../core/widgets/product_image.dart';
 import '../../core/widgets/product_version_badge.dart';
 import '../../data/models/product_variant.dart';
@@ -23,7 +25,7 @@ class CartView extends GetView<CartController> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Your bag',
+                'cart.your_bag'.tr,
                 style: GoogleFonts.montserrat(
                   fontWeight: FontWeight.w700,
                   fontSize: 10,
@@ -32,7 +34,7 @@ class CartView extends GetView<CartController> {
               ),
               if (count > 0)
                 Text(
-                  '$count item${count == 1 ? '' : 's'}',
+                  trItemCount(count),
                   style: GoogleFonts.montserrat(
                     fontSize: 12,
                     fontWeight: FontWeight.w500,
@@ -117,12 +119,12 @@ class CartView extends GetView<CartController> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Clear bag?'),
-        content: const Text('Remove all items from your bag?'),
+        title: Text('cart.clear_bag_title'.tr),
+        content: Text('cart.clear_bag_message'.tr),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel'),
+            child: Text('common.cancel'.tr),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(ctx, true),
@@ -130,7 +132,7 @@ class CartView extends GetView<CartController> {
               backgroundColor: AppColors.brandBlue,
               foregroundColor: AppColors.brandWhite,
             ),
-            child: const Text('Clear'),
+            child: Text('common.clear'.tr),
           ),
         ],
       ),
@@ -212,7 +214,7 @@ class _CartLineCard extends StatelessWidget {
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          '\$${lineTotal.toStringAsFixed(2)}',
+                          formatPrice(lineTotal),
                           style: GoogleFonts.montserrat(
                             fontSize: 15,
                             fontWeight: FontWeight.w700,
@@ -246,24 +248,12 @@ class _CartLineCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      '\$${variant.price.toStringAsFixed(2)} each',
+                      'cart.each_price'.trParams({'price': formatPrice(variant.price)}),
                       style: GoogleFonts.montserrat(
                         fontSize: 12,
                         color: AppColors.textMuted,
                       ),
                     ),
-                    if (entry.quantity > variant.stock)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 4),
-                        child: Text(
-                          'Only ${variant.stock} in stock',
-                          style: GoogleFonts.montserrat(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w500,
-                            color: AppColors.accentRed,
-                          ),
-                        ),
-                      ),
                     const SizedBox(height: 10),
                     Row(
                       children: [
@@ -285,7 +275,6 @@ class _CartLineCard extends StatelessWidget {
                         _QtyButton(
                           icon: Icons.add,
                           onPressed: onIncrement,
-                          enabled: entry.quantity < variant.stock,
                         ),
                         const Spacer(),
                         IconButton(
@@ -300,7 +289,7 @@ class _CartLineCard extends StatelessWidget {
                             ),
                           ),
                           onPressed: onRemove,
-                          tooltip: 'Remove',
+                          tooltip: 'common.remove'.tr,
                         ),
                       ],
                     ),
@@ -408,14 +397,14 @@ class _CartFooter extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Subtotal',
+                      'cart.subtotal'.tr,
                       style: GoogleFonts.montserrat(
                         fontSize: 13,
                         color: AppColors.textMuted,
                       ),
                     ),
                     Text(
-                      '$itemCount item${itemCount == 1 ? '' : 's'}',
+                      trItemCount(itemCount),
                       style: GoogleFonts.montserrat(
                         fontSize: 11,
                         color: AppColors.textMuted,
@@ -424,7 +413,7 @@ class _CartFooter extends StatelessWidget {
                   ],
                 ),
                 Text(
-                  '\$${subtotal.toStringAsFixed(2)}',
+                  formatPrice(subtotal),
                   style: GoogleFonts.montserrat(
                     fontSize: 24,
                     fontWeight: FontWeight.w700,
@@ -448,7 +437,7 @@ class _CartFooter extends StatelessWidget {
               ),
               icon: const Icon(Icons.shopping_bag_outlined, size: 20),
               label: Text(
-                'Proceed to Checkout',
+                'cart.proceed_checkout'.tr,
                 style: GoogleFonts.montserrat(
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
@@ -460,7 +449,7 @@ class _CartFooter extends StatelessWidget {
             TextButton(
               onPressed: onClear,
               child: Text(
-                'Clear bag',
+                'cart.clear_bag'.tr,
                 style: GoogleFonts.montserrat(
                   fontSize: 13,
                   color: AppColors.textMuted,
@@ -500,7 +489,7 @@ class _EmptyCartState extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             Text(
-              'Your bag is empty',
+              'cart.empty_title'.tr,
               style: GoogleFonts.montserrat(
                 fontSize: 22,
                 fontWeight: FontWeight.w700,
@@ -509,7 +498,7 @@ class _EmptyCartState extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              'Add products from Home to see them here.',
+              'cart.empty_message'.tr,
               textAlign: TextAlign.center,
               style: GoogleFonts.montserrat(
                 fontSize: 14,
@@ -531,7 +520,7 @@ class _EmptyCartState extends StatelessWidget {
                 ),
               ),
               icon: const Icon(Icons.arrow_back, size: 18),
-              label: const Text('Continue shopping'),
+              label: Text('cart.continue_shopping'.tr),
             ),
           ],
         ),
@@ -564,7 +553,7 @@ class _CatalogErrorState extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              message,
+              trLocalizedError(message),
               textAlign: TextAlign.center,
               style: GoogleFonts.montserrat(
                 fontSize: 14,
@@ -579,7 +568,7 @@ class _CatalogErrorState extends StatelessWidget {
                 foregroundColor: AppColors.brandWhite,
               ),
               icon: const Icon(Icons.refresh),
-              label: const Text('Retry'),
+              label: Text('common.retry'.tr),
             ),
           ],
         ),

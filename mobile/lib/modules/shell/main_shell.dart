@@ -3,48 +3,36 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../core/theme/app_colors.dart';
+import '../orders/orders_binding.dart';
+import '../orders/orders_view.dart';
 import '../products/products_binding.dart';
 import '../products/products_view.dart';
-import '../orders/orders_binding.dart';
-import '../orders/orders_controller.dart';
-import '../orders/orders_view.dart';
 import '../profile/profile_binding.dart';
 import '../profile/profile_view.dart';
 import '../saved/saved_binding.dart';
 import '../saved/saved_view.dart';
+import 'main_shell_controller.dart';
 
-class MainShell extends StatefulWidget {
+class MainShell extends GetView<MainShellController> {
   const MainShell({super.key});
 
   @override
-  State<MainShell> createState() => _MainShellState();
-}
-
-class _MainShellState extends State<MainShell> {
-  int _index = 0;
-
-  void _onTabSelected(int index) {
-    setState(() => _index = index);
-    if (index == 2) {
-      OrdersController.refreshIfRegistered();
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: IndexedStack(
-        index: _index,
-        children: [
-          const ProductsView(),
-          const SavedView(),
-          const OrdersView(),
-          const ProfileView(),
-        ],
-      ),
-      bottomNavigationBar: _SahelBottomNav(
-        currentIndex: _index,
-        onTap: _onTabSelected,
+    return Obx(
+      () => Scaffold(
+        body: IndexedStack(
+          index: controller.selectedIndex.value,
+          children: const [
+            ProductsView(),
+            SavedView(),
+            OrdersView(),
+            ProfileView(),
+          ],
+        ),
+        bottomNavigationBar: _SahelBottomNav(
+          currentIndex: controller.selectedIndex.value,
+          onTap: controller.switchToTab,
+        ),
       ),
     );
   }
@@ -53,6 +41,7 @@ class _MainShellState extends State<MainShell> {
 class MainShellBinding extends Bindings {
   @override
   void dependencies() {
+    Get.put(MainShellController(), permanent: true);
     ProductsBinding().dependencies();
     SavedBinding().dependencies();
     OrdersBinding().dependencies();
@@ -69,28 +58,28 @@ class _SahelBottomNav extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int> onTap;
 
-  static const _items = [
-    _NavItem(icon: Icons.home_outlined, activeIcon: Icons.home, label: 'HOME'),
-    _NavItem(
-      icon: Icons.favorite_border,
-      activeIcon: Icons.favorite,
-      label: 'SAVED',
-      activeColor: AppColors.brandBlue,
-    ),
-    _NavItem(
-      icon: Icons.receipt_long_outlined,
-      activeIcon: Icons.receipt_long,
-      label: 'ORDERS',
-      activeColor: AppColors.brandBlue,
-      showTopBarWhenSelected: true,
-    ),
-    _NavItem(
-      icon: Icons.person_outline,
-      activeIcon: Icons.person,
-      label: 'PROFILE',
-      activeColor: AppColors.brandBlue,
-    ),
-  ];
+  List<_NavItem> get _items => [
+        _NavItem(icon: Icons.home_outlined, activeIcon: Icons.home, label: 'nav.home'.tr),
+        _NavItem(
+          icon: Icons.favorite_border,
+          activeIcon: Icons.favorite,
+          label: 'nav.saved'.tr,
+          activeColor: AppColors.brandBlue,
+        ),
+        _NavItem(
+          icon: Icons.receipt_long_outlined,
+          activeIcon: Icons.receipt_long,
+          label: 'nav.orders'.tr,
+          activeColor: AppColors.brandBlue,
+          showTopBarWhenSelected: true,
+        ),
+        _NavItem(
+          icon: Icons.person_outline,
+          activeIcon: Icons.person,
+          label: 'nav.profile'.tr,
+          activeColor: AppColors.brandBlue,
+        ),
+      ];
 
   @override
   Widget build(BuildContext context) {

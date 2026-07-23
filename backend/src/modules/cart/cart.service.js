@@ -55,8 +55,8 @@ const cartService = {
       err.status = 404;
       throw err;
     }
-    if (variant.stock < quantity) {
-      const err = new Error('Insufficient stock');
+    if (!variant.inStock) {
+      const err = new Error('Variant out of stock');
       err.status = 400;
       throw err;
     }
@@ -68,11 +68,6 @@ const cartService = {
 
     if (existing) {
       const newQty = existing.quantity + quantity;
-      if (variant.stock < newQty) {
-        const err = new Error('Insufficient stock');
-        err.status = 400;
-        throw err;
-      }
       await existing.update({ quantity: newQty });
     } else {
       await CartItem.create({ cartId: cart.id, variantId, quantity });
@@ -98,9 +93,17 @@ const cartService = {
       throw err;
     }
 
-    const variant = await ProductVariant.findOne({ where: { id: variantId } });
-    if (!variant || variant.stock < quantity) {
-      const err = new Error('Insufficient stock');
+    const variant = await ProductVariant.findOne({
+      where: { id: variantId },
+      include: [{ model: Product, as: 'product' }],
+    });
+    if (
+      !variant ||
+      !variant.product ||
+      variant.product.status !== 'ACTIVE' ||
+      !variant.inStock
+    ) {
+      const err = new Error('Variant not found or not available');
       err.status = 400;
       throw err;
     }

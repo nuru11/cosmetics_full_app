@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../core/l10n/l10n_helpers.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/format_price.dart';
 import '../../data/models/order.dart';
 
 const _monthAbbrev = [
@@ -32,11 +35,7 @@ String formatOrderShortId(String id) {
   return '#${slice.toUpperCase()}';
 }
 
-String formatOrderStatusLabel(String status) {
-  final s = status.trim();
-  if (s.isEmpty) return 'Unknown';
-  return s[0].toUpperCase() + s.substring(1).toLowerCase();
-}
+String formatOrderStatusLabel(String status) => trOrderStatus(status);
 
 ({Color bg, Color fg}) orderStatusBadgeColors(String status) {
   switch (status.trim().toUpperCase()) {
@@ -151,7 +150,7 @@ class OrderCard extends StatelessWidget {
                     const SizedBox(height: 10),
                   ],
                   Text(
-                    '\$${order.totalAmount.toStringAsFixed(2)}',
+                    formatPrice(order.totalAmount),
                     style: GoogleFonts.playfairDisplay(
                       fontSize: 24,
                       fontWeight: FontWeight.w700,
@@ -281,7 +280,7 @@ class OrderListErrorState extends StatelessWidget {
                 backgroundColor: AppColors.brandBlue,
                 foregroundColor: AppColors.brandWhite,
               ),
-              child: const Text('Retry'),
+              child: Text('common.retry'.tr),
             ),
           ],
         ),

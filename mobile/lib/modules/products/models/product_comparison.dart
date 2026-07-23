@@ -1,3 +1,4 @@
+import '../../../core/l10n/l10n_helpers.dart';
 import '../../../data/models/product.dart';
 import '../../../data/models/product_variant.dart';
 
@@ -19,31 +20,10 @@ class ProductVersionSlot {
   final ProductVariant variant;
   final String defaultSubtitle;
 
-  static String labelFor(String versionKey) {
-    switch (versionKey.toUpperCase()) {
-      case 'ORIGINAL':
-        return 'ORIGINAL';
-      case 'TWO_LEVEL':
-        return '2ND';
-      case 'PREMIUM':
-        return 'PREMIUM';
-      default:
-        return versionKey;
-    }
-  }
+  static String labelFor(String versionKey) => trVersionLabel(versionKey);
 
-  static String defaultSubtitleFor(String versionKey) {
-    switch (versionKey.toUpperCase()) {
-      case 'ORIGINAL':
-        return 'Authentic sealed, full box';
-      case 'TWO_LEVEL':
-        return 'Same product, no box';
-      case 'PREMIUM':
-        return 'Premium / limited edition';
-      default:
-        return '';
-    }
-  }
+  static String defaultSubtitleFor(String versionKey) =>
+      trVersionSubtitle(versionKey);
 
   factory ProductVersionSlot.fromVariant({
     required Product product,

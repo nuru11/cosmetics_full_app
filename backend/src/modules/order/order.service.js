@@ -86,12 +86,12 @@ const orderService = {
           throw err;
         }
 
-        if (locked.stock < item.quantity) {
+        if (!locked.inStock) {
           const label =
             locked.variantDescription ||
             locked.size ||
             locked.product.productName;
-          const err = new Error(`Insufficient stock for ${label}`);
+          const err = new Error(`${label} is out of stock`);
           err.status = 400;
           throw err;
         }
@@ -111,11 +111,6 @@ const orderService = {
           unitPrice,
           lineTotal,
         });
-
-        await locked.update(
-          { stock: locked.stock - item.quantity },
-          { transaction: t }
-        );
       }
 
       const order = await Order.create(

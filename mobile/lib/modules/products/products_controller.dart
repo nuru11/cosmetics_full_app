@@ -46,7 +46,7 @@ class ProductsController extends GetxController {
       error.value = e.message;
     } catch (_) {
       error.value =
-          'Could not load products. Check your connection and API URL.';
+          'error.load_products';
     } finally {
       isLoading.value = false;
     }
@@ -62,6 +62,21 @@ class ProductsController extends GetxController {
     if (searchQuery.value == trimmed) return;
     searchQuery.value = trimmed;
     _rebuildSections();
+  }
+
+  /// Search all products for the dedicated search screen (ignores category filter).
+  List<List<ProductListingEntry>> searchListingRows(String query) {
+    final q = query.trim().toLowerCase();
+    if (q.isEmpty) return [];
+
+    final filtered = products.where((p) {
+      final name = p.productName.toLowerCase();
+      final brand = p.brand?.toLowerCase() ?? '';
+      return name.contains(q) || brand.contains(q);
+    }).toList();
+
+    final listings = expandProductsToListingEntries(filtered);
+    return chunkListingEntriesIntoPairs(listings);
   }
 
   void _rebuildSections() {

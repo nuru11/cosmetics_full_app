@@ -21,6 +21,20 @@ const productIncludes = [
   },
 ];
 
+function parseInStock(value) {
+  if (value == null) return true;
+  if (typeof value === 'boolean') return value;
+  if (typeof value === 'number') return value !== 0;
+  if (typeof value === 'string') {
+    const normalized = value.trim().toLowerCase();
+    if (normalized === 'true' || normalized === '1') return true;
+    if (normalized === 'false' || normalized === '0') return false;
+    const asNumber = parseInt(normalized, 10);
+    if (Number.isFinite(asNumber)) return asNumber > 0;
+  }
+  return Boolean(value);
+}
+
 function normalizeVariantInput(raw, index = 0) {
   const variant = raw || {};
   assertProductEnums(variant, { partial: true });
@@ -48,18 +62,15 @@ function normalizeVariantInput(raw, index = 0) {
     throw err;
   }
 
-  const stock = variant.stock == null ? 0 : parseInt(variant.stock, 10);
-  if (!Number.isFinite(stock) || stock < 0) {
-    const err = new Error(`Variant ${index + 1}: stock must be zero or greater`);
-    err.status = 400;
-    throw err;
-  }
+  const inStock = parseInStock(
+    variant.inStock ?? variant.in_stock ?? variant.stock
+  );
 
   return {
     id: variant.id || null,
     variantDescription: variantDescription || null,
     price,
-    stock,
+    inStock,
     sku: (variant.sku || '').trim() || null,
     color: color || null,
     size: size || null,
@@ -209,7 +220,7 @@ const productService = {
             productId: product.id,
             variantDescription: variant.variantDescription,
             price: variant.price,
-            stock: variant.stock,
+            inStock: variant.inStock,
             sku: variant.sku,
             color: variant.color,
             size: variant.size,
@@ -281,7 +292,7 @@ const productService = {
               {
                 variantDescription: variant.variantDescription,
                 price: variant.price,
-                stock: variant.stock,
+                inStock: variant.inStock,
                 sku: variant.sku,
                 color: variant.color,
                 size: variant.size,
@@ -297,7 +308,7 @@ const productService = {
                 productId: id,
                 variantDescription: variant.variantDescription,
                 price: variant.price,
-                stock: variant.stock,
+                inStock: variant.inStock,
                 sku: variant.sku,
                 color: variant.color,
                 size: variant.size,

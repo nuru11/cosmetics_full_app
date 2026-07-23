@@ -21,10 +21,11 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.DECIMAL(12, 2),
         allowNull: false,
       },
-      stock: {
-        type: DataTypes.INTEGER,
+      inStock: {
+        type: DataTypes.BOOLEAN,
         allowNull: false,
-        defaultValue: 0,
+        defaultValue: true,
+        field: 'in_stock',
       },
       sku: {
         type: DataTypes.STRING(80),

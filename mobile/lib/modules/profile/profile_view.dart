@@ -2,77 +2,70 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../core/l10n/locale_service.dart';
 import '../../core/theme/app_colors.dart';
+import '../orders/orders_controller.dart';
+import '../saved/wishlist_service.dart';
+import 'profile_controller.dart';
 
-class ProfileView extends StatelessWidget {
+class ProfileView extends GetView<ProfileController> {
   const ProfileView({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.brandWhite,
-      body: CustomScrollView(
-        slivers: [
-          _ProfileSliverAppBar(),
-          SliverPadding(
-            padding: const EdgeInsets.fromLTRB(20, 0, 20, 32),
-            sliver: SliverList(
-              delegate: SliverChildListDelegate([
-                const SizedBox(height: 24),
-                _BeautyStatsRow(),
-                const SizedBox(height: 28),
-                _SectionLabel('MY ACCOUNT'),
-                const SizedBox(height: 12),
-                _MenuCard(
-                  items: [
-                    _MenuItem(
-                      icon: Icons.shopping_bag_outlined,
-                      label: 'My Orders',
-                      detail: 'Track & manage',
-                      accent: AppColors.brandBlue,
-                      onTap: () => Get.toNamed('/profile/my-orders'),
-                    ),
-                    _MenuItem(
-                      icon: Icons.history_rounded,
-                      label: 'Order History',
-                      detail: 'Past purchases',
-                      accent: AppColors.brandBlue,
-                      onTap: () => Get.toNamed('/profile/order-history'),
-                    ),
-                    _MenuItem(
-                      icon: Icons.location_on_outlined,
-                      label: 'My Address',
-                      detail: 'Saved locations',
-                      accent: AppColors.brandBlue,
-                      onTap: () => Get.toNamed('/profile/address'),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 28),
-                _SectionLabel('BEAUTY PROFILE'),
-                const SizedBox(height: 12),
-                _MenuCard(
-                  items: [
-                    _MenuItem(
-                      icon: Icons.favorite_border_rounded,
-                      label: 'Wishlist',
-                      detail: '12 saved items',
-                      accent: AppColors.brandBlue,
-                      onTap: () {},
-                    ),
-                    _MenuItem(
-                      icon: Icons.auto_awesome_outlined,
-                      label: 'Beauty Routine',
-                      detail: 'Personalized picks',
-                      accent: AppColors.brandBlue,
-                      onTap: () {},
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 28),
-                _LoyaltyBanner(),
-              ]),
-            ),
+      appBar: AppBar(
+        centerTitle: true,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        title: Text(
+          'profile.title'.tr,
+          style: GoogleFonts.playfairDisplay(
+            fontSize: 24,
+            fontWeight: FontWeight.w600,
+            color: AppColors.brandWhite,
+          ),
+        ),
+        backgroundColor: AppColors.brandBlue,
+        foregroundColor: AppColors.brandWhite,
+      ),
+      body: ListView(
+        padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
+        children: [
+          _ProfileIdentityCard(controller: controller),
+          const SizedBox(height: 20),
+          _AccountStatsRow(controller: controller),
+          const SizedBox(height: 28),
+          _SectionLabel('profile.section_account'.tr),
+          const SizedBox(height: 12),
+          _MenuCard(
+            items: [
+              _MenuItem(
+                icon: Icons.shopping_bag_outlined,
+                label: 'profile.orders'.tr,
+                detail: 'profile.orders_detail'.tr,
+                accent: AppColors.brandBlue,
+                onTap: controller.switchToOrdersTab,
+              ),
+              _MenuItem(
+                icon: Icons.location_on_outlined,
+                label: 'profile.my_address'.tr,
+                detail: 'profile.my_address_detail'.tr,
+                accent: AppColors.brandBlue,
+                onTap: () => Get.toNamed('/profile/address'),
+              ),
+            ],
+          ),
+          const SizedBox(height: 28),
+          _SectionLabel('profile.section_preferences'.tr),
+          const SizedBox(height: 12),
+          _MenuCard(
+            items: [
+              _LanguageMenuItem(
+                onTap: () => _showLanguagePicker(context),
+              ),
+            ],
           ),
         ],
       ),
@@ -80,196 +73,206 @@ class ProfileView extends StatelessWidget {
   }
 }
 
-class _ProfileSliverAppBar extends StatelessWidget {
+void _showLanguagePicker(BuildContext context) {
+  final localeService = Get.find<LocaleService>();
+
+  showModalBottomSheet<void>(
+    context: context,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    ),
+    builder: (ctx) {
+      return SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                'profile.choose_language'.tr,
+                style: GoogleFonts.playfairDisplay(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.brandBlack,
+                ),
+              ),
+              const SizedBox(height: 16),
+              _LanguageOption(
+                label: 'profile.language_english'.tr,
+                selected: localeService.locale.value.languageCode == 'en',
+                onTap: () async {
+                  await localeService.setEnglish();
+                  if (ctx.mounted) Navigator.pop(ctx);
+                },
+              ),
+              const SizedBox(height: 8),
+              _LanguageOption(
+                label: 'profile.language_amharic'.tr,
+                selected: localeService.locale.value.languageCode == 'am',
+                onTap: () async {
+                  await localeService.setAmharic();
+                  if (ctx.mounted) Navigator.pop(ctx);
+                },
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}
+
+class _LanguageOption extends StatelessWidget {
+  const _LanguageOption({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
   @override
   Widget build(BuildContext context) {
-    return SliverAppBar(
-      expandedHeight: 260,
-      pinned: true,
-      backgroundColor: AppColors.brandBlue,
-      foregroundColor: AppColors.brandWhite,
-      flexibleSpace: FlexibleSpaceBar(
-        collapseMode: CollapseMode.parallax,
-        background: Stack(
-          fit: StackFit.expand,
-          children: [
-            Container(
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    AppColors.brandBlue,
-                    AppColors.brandBlack,
-                    AppColors.brandBlue,
-                  ],
-                  stops: [0.0, 0.5, 1.0],
+    return Material(
+      color: selected
+          ? AppColors.brandBlue.withValues(alpha: 0.08)
+          : AppColors.cardWhite,
+      borderRadius: BorderRadius.circular(12),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  label,
+                  style: GoogleFonts.montserrat(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textDark,
+                  ),
                 ),
               ),
-            ),
-            Positioned(
-              top: -40,
-              right: -40,
-              child: Container(
-                width: 200,
-                height: 200,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: AppColors.brandWhite.withValues(alpha: 0.08),
-                ),
-              ),
-            ),
-            Positioned(
-              bottom: 20,
-              left: -30,
-              child: Container(
-                width: 140,
-                height: 140,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: AppColors.brandWhite.withValues(alpha: 0.12),
-                ),
-              ),
-            ),
-            Positioned(
-              bottom: 28,
-              left: 24,
-              right: 24,
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(3),
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: LinearGradient(
-                        colors: [AppColors.brandWhite, AppColors.brandBlue],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                    ),
-                    child: Container(
-                      width: 68,
-                      height: 68,
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: AppColors.brandBlue,
-                      ),
-                      child: const Icon(
-                        Icons.person_outline_rounded,
-                        size: 36,
-                        color: AppColors.brandWhite,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 18),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          'Welcome Back',
-                          style: GoogleFonts.montserrat(
-                            fontSize: 11,
-                            letterSpacing: 2,
-                            color: AppColors.brandWhite.withValues(alpha: 0.85),
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'Guest',
-                          style: GoogleFonts.playfairDisplay(
-                            fontSize: 30,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.brandWhite,
-                            height: 1.1,
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            color: AppColors.brandWhite.withValues(alpha: 0.15),
-                            border: Border.all(
-                              color: AppColors.brandWhite.withValues(alpha: 0.4),
-                              width: 0.8,
-                            ),
-                          ),
-                          child: Text(
-                            '✦  Alemmart Member',
-                            style: GoogleFonts.montserrat(
-                              fontSize: 10,
-                              color: AppColors.brandWhite,
-                              letterSpacing: 0.5,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () {},
-                    child: Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.white.withValues(alpha: 0.08),
-                        border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.15),
-                        ),
-                      ),
-                      child: const Icon(
-                        Icons.edit_outlined,
-                        size: 18,
-                        color: AppColors.brandWhite,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-      title: Text(
-        'My Profile',
-        style: GoogleFonts.playfairDisplay(
-          fontSize: 20,
-          fontWeight: FontWeight.w600,
-          color: AppColors.brandWhite,
-          letterSpacing: 0.5,
+              if (selected)
+                const Icon(Icons.check_circle, color: AppColors.brandBlue),
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-class _BeautyStatsRow extends StatelessWidget {
+class _ProfileIdentityCard extends StatelessWidget {
+  const _ProfileIdentityCard({required this.controller});
+
+  final ProfileController controller;
+
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        _StatChip(value: '240', label: 'Points', icon: Icons.star_rounded),
-        const SizedBox(width: 12),
-        _StatChip(
-          value: '8',
-          label: 'Orders',
-          icon: Icons.shopping_bag_outlined,
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: AppColors.cardWhite,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.dividerGrey),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.brandBlack.withValues(alpha: 0.04),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Obx(
+        () => Row(
+          children: [
+            Container(
+              width: 56,
+              height: 56,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppColors.brandBlue.withValues(alpha: 0.1),
+              ),
+              child: const Icon(
+                Icons.person_outline_rounded,
+                size: 28,
+                color: AppColors.brandBlue,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    controller.displayName.value,
+                    style: GoogleFonts.playfairDisplay(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.brandBlack,
+                      height: 1.2,
+                    ),
+                  ),
+                  if (!controller.hasContactName.value) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      'profile.guest_hint'.tr,
+                      style: GoogleFonts.montserrat(
+                        fontSize: 13,
+                        color: AppColors.textMuted,
+                        height: 1.3,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ],
         ),
-        const SizedBox(width: 12),
-        _StatChip(
-          value: '12',
-          label: 'Wishlist',
-          icon: Icons.favorite_border_rounded,
-        ),
-      ],
+      ),
+    );
+  }
+}
+
+class _AccountStatsRow extends StatelessWidget {
+  const _AccountStatsRow({required this.controller});
+
+  final ProfileController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    final ordersController = Get.find<OrdersController>();
+    final wishlist = Get.find<WishlistService>();
+
+    return Obx(
+      () {
+        final orderCount = ordersController.orders.length;
+        final savedCount = wishlist.savedVariantIds.length;
+
+        return Row(
+          children: [
+            _StatChip(
+              value: '$orderCount',
+              label: 'profile.orders_stat'.tr,
+              icon: Icons.shopping_bag_outlined,
+              onTap: controller.switchToOrdersTab,
+            ),
+            const SizedBox(width: 12),
+            _StatChip(
+              value: '$savedCount',
+              label: 'profile.saved_stat'.tr,
+              icon: Icons.favorite_border_rounded,
+              onTap: controller.switchToSavedTab,
+            ),
+          ],
+        );
+      },
     );
   }
 }
@@ -279,51 +282,60 @@ class _StatChip extends StatelessWidget {
     required this.value,
     required this.label,
     required this.icon,
+    required this.onTap,
   });
 
   final String value;
   final String label;
   final IconData icon;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        decoration: BoxDecoration(
-          color: AppColors.cardWhite,
-          borderRadius: BorderRadius.circular(14),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.brandBlack.withValues(alpha: 0.06),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
+      child: Material(
+        color: AppColors.cardWhite,
+        borderRadius: BorderRadius.circular(14),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(14),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.brandBlack.withValues(alpha: 0.06),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
-          ],
-        ),
-        child: Column(
-          children: [
-            Icon(icon, size: 18, color: AppColors.brandBlue),
-            const SizedBox(height: 8),
-            Text(
-              value,
-              style: GoogleFonts.playfairDisplay(
-                fontSize: 22,
-                fontWeight: FontWeight.w700,
-                color: AppColors.brandBlack,
-              ),
+            child: Column(
+              children: [
+                Icon(icon, size: 18, color: AppColors.brandBlue),
+                const SizedBox(height: 8),
+                Text(
+                  value,
+                  style: GoogleFonts.playfairDisplay(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.brandBlack,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  label,
+                  style: GoogleFonts.montserrat(
+                    fontSize: 10,
+                    color: AppColors.textMuted,
+                    letterSpacing: 0.5,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 2),
-            Text(
-              label,
-              style: GoogleFonts.montserrat(
-                fontSize: 10,
-                color: AppColors.textMuted,
-                letterSpacing: 0.5,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
@@ -350,7 +362,7 @@ class _SectionLabel extends StatelessWidget {
 
 class _MenuCard extends StatelessWidget {
   const _MenuCard({required this.items});
-  final List<_MenuItem> items;
+  final List<Widget> items;
 
   @override
   Widget build(BuildContext context) {
@@ -379,6 +391,26 @@ class _MenuCard extends StatelessWidget {
               ),
           ],
         ],
+      ),
+    );
+  }
+}
+
+class _LanguageMenuItem extends StatelessWidget {
+  const _LanguageMenuItem({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final localeService = Get.find<LocaleService>();
+    return Obx(
+      () => _MenuItem(
+        icon: Icons.language_rounded,
+        label: 'profile.language'.tr,
+        detail: localeService.currentLanguageLabel,
+        accent: AppColors.brandBlue,
+        onTap: onTap,
       ),
     );
   }
@@ -456,89 +488,6 @@ class _MenuItem extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _LoyaltyBanner extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(22),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            AppColors.brandBlue,
-            AppColors.brandBlack,
-          ],
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.brandBlue.withValues(alpha: 0.35),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Alemmart Tier',
-                  style: GoogleFonts.montserrat(
-                    fontSize: 10,
-                    letterSpacing: 2,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.brandWhite.withValues(alpha: 0.9),
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  '240 / 500 pts\nto Gold',
-                  style: GoogleFonts.playfairDisplay(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.brandWhite,
-                    height: 1.3,
-                  ),
-                ),
-                const SizedBox(height: 14),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(4),
-                  child: LinearProgressIndicator(
-                    value: 0.48,
-                    minHeight: 5,
-                    backgroundColor: Colors.white.withValues(alpha: 0.2),
-                    valueColor: const AlwaysStoppedAnimation<Color>(
-                      AppColors.brandWhite,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 20),
-          Container(
-            width: 56,
-            height: 56,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.white.withValues(alpha: 0.12),
-            ),
-            child: const Icon(
-              Icons.workspace_premium_rounded,
-              size: 30,
-              color: AppColors.brandWhite,
-            ),
-          ),
-        ],
       ),
     );
   }

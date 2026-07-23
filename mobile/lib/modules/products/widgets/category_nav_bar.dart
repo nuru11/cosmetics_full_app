@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/category_icons.dart';
+import '../../../core/widgets/category_avatar.dart';
 import '../products_controller.dart';
 
 class CategoryNavBar extends GetView<ProductsController> {
@@ -22,7 +23,7 @@ class CategoryNavBar extends GetView<ProductsController> {
 
         final items = <_CategoryCardData>[
           _CategoryCardData(
-            label: 'All',
+            label: 'common.all'.tr,
             icon: CategoryIcons.all,
             tintColor: AppColors.cardHeaderBeige,
             isSelected: selected == null,
@@ -31,10 +32,8 @@ class CategoryNavBar extends GetView<ProductsController> {
           ...cats.map(
             (cat) => _CategoryCardData(
               label: cat.name,
-              icon: CategoryIcons.forCategory(
-                slug: cat.slug,
-                name: cat.name,
-              ),
+              slug: cat.slug,
+              imageUrl: cat.imageUrl,
               tintColor: CategoryIcons.backgroundTintFor(
                 slug: cat.slug,
                 name: cat.name,
@@ -59,6 +58,8 @@ class CategoryNavBar extends GetView<ProductsController> {
                 width: _cardWidth,
                 label: item.label,
                 icon: item.icon,
+                slug: item.slug,
+                imageUrl: item.imageUrl,
                 tintColor: item.tintColor,
                 isSelected: item.isSelected,
                 onTap: item.onTap,
@@ -74,14 +75,18 @@ class CategoryNavBar extends GetView<ProductsController> {
 class _CategoryCardData {
   const _CategoryCardData({
     required this.label,
-    required this.icon,
     required this.tintColor,
     required this.isSelected,
     required this.onTap,
+    this.icon,
+    this.slug,
+    this.imageUrl,
   });
 
   final String label;
-  final String icon;
+  final String? icon;
+  final String? slug;
+  final String? imageUrl;
   final Color tintColor;
   final bool isSelected;
   final VoidCallback onTap;
@@ -91,15 +96,19 @@ class _CategoryCard extends StatelessWidget {
   const _CategoryCard({
     required this.width,
     required this.label,
-    required this.icon,
     required this.tintColor,
     required this.isSelected,
     required this.onTap,
+    this.icon,
+    this.slug,
+    this.imageUrl,
   });
 
   final double width;
   final String label;
-  final String icon;
+  final String? icon;
+  final String? slug;
+  final String? imageUrl;
   final Color tintColor;
   final bool isSelected;
   final VoidCallback onTap;
@@ -139,20 +148,13 @@ class _CategoryCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Container(
-                  width: 36,
-                  height: 36,
-                  decoration: BoxDecoration(
-                    color: isSelected
-                        ? AppColors.brandBlue.withValues(alpha: 0.12)
-                        : tintColor,
-                    shape: BoxShape.circle,
-                  ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    icon,
-                    style: const TextStyle(fontSize: 20, height: 1),
-                  ),
+                CategoryAvatar(
+                  imageUrl: imageUrl,
+                  slug: slug,
+                  name: label,
+                  icon: icon,
+                  tintColor: tintColor,
+                  isSelected: isSelected,
                 ),
                 const SizedBox(height: 4),
                 Text(

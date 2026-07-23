@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:shimmer/shimmer.dart';
 
-import '../config/api_config.dart';
 import '../utils/image_url.dart';
 
 class ProductImage extends StatelessWidget {
@@ -23,78 +23,76 @@ class ProductImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final resolved = resolveImageUrl(imageUrl);
-    final displayUrl = resolveProductImageUrl(imageUrl);
-    final usesDefaultOnly = resolved.isEmpty;
-
-    Widget image(String url, {bool showLoading = false}) {
-      return CachedNetworkImage(
-        imageUrl: url,
-        height: height,
-        width: width,
-        fit: fit,
-        placeholder: showLoading
-            ? (context, _) => _DefaultProductImage(
-                  height: height,
-                  width: width,
-                  fit: fit,
-                )
-            : null,
-        errorWidget: (context, _, __) => _DefaultProductImage(
-          height: height,
-          width: width,
-          fit: fit,
-        ),
-      );
-    }
 
     return ClipRRect(
       borderRadius: borderRadius ?? BorderRadius.zero,
-      child: usesDefaultOnly
-          ? image(ApiConfig.defaultProductImageUrl)
-          : image(displayUrl, showLoading: true),
+      child: resolved.isEmpty
+          ? _ProductDefaultPlaceholder(
+              height: height,
+              width: width,
+            )
+          : CachedNetworkImage(
+              imageUrl: resolved,
+              height: height,
+              width: width,
+              fit: fit,
+              placeholder: (context, _) => _ProductShimmerPlaceholder(
+                height: height,
+                width: width,
+              ),
+              errorWidget: (context, _, __) => _ProductDefaultPlaceholder(
+                height: height,
+                width: width,
+              ),
+            ),
     );
   }
 }
 
-class _DefaultProductImage extends StatelessWidget {
-  const _DefaultProductImage({
+class _ProductShimmerPlaceholder extends StatelessWidget {
+  const _ProductShimmerPlaceholder({
     this.height,
     this.width,
-    this.fit = BoxFit.cover,
   });
 
   final double? height;
   final double? width;
-  final BoxFit fit;
 
   @override
   Widget build(BuildContext context) {
-    return CachedNetworkImage(
-      imageUrl: ApiConfig.defaultProductImageUrl,
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Shimmer.fromColors(
+      baseColor: colorScheme.surfaceContainerHighest,
+      highlightColor: colorScheme.surfaceContainerHigh,
+      child: Container(
+        height: height,
+        width: width,
+        color: colorScheme.surfaceContainerHighest,
+      ),
+    );
+  }
+}
+
+class _ProductDefaultPlaceholder extends StatelessWidget {
+  const _ProductDefaultPlaceholder({
+    this.height,
+    this.width,
+  });
+
+  final double? height;
+  final double? width;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
       height: height,
       width: width,
-      fit: fit,
-      placeholder: (context, _) => Container(
-        height: height,
-        width: width,
-        color: Theme.of(context).colorScheme.surfaceContainerHighest,
-        child: const Center(
-          child: SizedBox(
-            width: 24,
-            height: 24,
-            child: CircularProgressIndicator(strokeWidth: 2),
-          ),
-        ),
-      ),
-      errorWidget: (context, _, __) => Container(
-        height: height,
-        width: width,
-        color: Theme.of(context).colorScheme.surfaceContainerHighest,
-        child: Icon(
-          Icons.image_outlined,
-          size: 40,
-          color: Theme.of(context).colorScheme.outline,
-        ),
+      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+      child: Icon(
+        Icons.image_outlined,
+        size: 40,
+        color: Theme.of(context).colorScheme.outline,
       ),
     );
   }

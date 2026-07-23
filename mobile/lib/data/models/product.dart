@@ -42,14 +42,14 @@ class Product {
 
   ProductVariant? get firstInStockVariant {
     for (final variant in variants) {
-      if (variant.stock > 0) return variant;
+      if (variant.inStock) return variant;
     }
     return defaultVariant;
   }
 
   double get price => displayPrice ?? defaultVariant?.price ?? 0;
 
-  int get stock => variants.fold<int>(0, (sum, v) => sum + v.stock);
+  bool get hasInStockVariant => variants.any((v) => v.inStock);
 
   String? get primaryImage => displayImage ?? defaultVariant?.primaryImage;
 

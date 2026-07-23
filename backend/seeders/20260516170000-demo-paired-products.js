@@ -122,7 +122,7 @@ module.exports = {
           variant_description: v.variant_description,
           price: v.price,
           product_version: v.product_version,
-          stock: 10,
+          in_stock: true,
           sku: v.sku,
           variant_images: JSON.stringify([]),
           sort_order: v.sort_order,

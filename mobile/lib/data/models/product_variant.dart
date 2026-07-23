@@ -7,7 +7,7 @@ class ProductVariant {
     required this.id,
     required this.price,
     required this.productVersion,
-    required this.stock,
+    required this.inStock,
     required this.variantImages,
     this.variantDescription,
     this.color,
@@ -19,7 +19,7 @@ class ProductVariant {
   final String id;
   final String? variantDescription;
   final double price;
-  final int stock;
+  final bool inStock;
   final String? sku;
   final String? color;
   final String? size;
@@ -44,7 +44,7 @@ class ProductVariant {
       variantDescription:
           (json['variantDescription'] ?? json['variant_description']) as String?,
       price: _parsePrice(json['price']),
-      stock: json['stock'] as int? ?? 0,
+      inStock: _parseInStock(json['inStock'] ?? json['in_stock'] ?? json['stock']),
       sku: json['sku'] as String?,
       color: json['color'] as String?,
       size: json['size'] as String?,
@@ -57,6 +57,20 @@ class ProductVariant {
       ),
       sortOrder: json['sortOrder'] as int? ?? json['sort_order'] as int? ?? 0,
     );
+  }
+
+  static bool _parseInStock(dynamic value) {
+    if (value == null) return true;
+    if (value is bool) return value;
+    if (value is num) return value > 0;
+    if (value is String) {
+      final normalized = value.trim().toLowerCase();
+      if (normalized == 'true' || normalized == '1') return true;
+      if (normalized == 'false' || normalized == '0') return false;
+      final asNumber = int.tryParse(normalized);
+      if (asNumber != null) return asNumber > 0;
+    }
+    return true;
   }
 
   static double _parsePrice(dynamic value) {

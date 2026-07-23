@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../core/l10n/l10n_helpers.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/widgets/save_product_button.dart';
 import '../../data/models/product.dart';
@@ -88,7 +89,7 @@ class _ProductDetailAppBar extends StatelessWidget implements PreferredSizeWidge
       title: Obx(() {
         final name = controller.product.value?.productName ?? '';
         return Text(
-          name.isEmpty ? 'Product' : name,
+          name.isEmpty ? 'product.title_fallback'.tr : name,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: GoogleFonts.montserrat(
@@ -136,7 +137,7 @@ class _LoadingState extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            'Loading...',
+            'common.loading'.tr,
             style: GoogleFonts.montserrat(
               fontSize: 13,
               letterSpacing: 0.5,
@@ -168,7 +169,7 @@ class _ErrorState extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             Text(
-              controller.error.value!,
+              trLocalizedError(controller.error.value),
               textAlign: TextAlign.center,
               style: GoogleFonts.montserrat(
                 fontSize: 14,
@@ -188,7 +189,7 @@ class _ErrorState extends StatelessWidget {
                 ),
               ),
               child: Text(
-                'Try again',
+                'common.try_again'.tr,
                 style: GoogleFonts.montserrat(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
@@ -210,7 +211,7 @@ class _EmptyState extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Text(
-        'Product not found',
+        'product.not_found'.tr,
         style: GoogleFonts.montserrat(
           fontSize: 15,
           fontStyle: FontStyle.italic,

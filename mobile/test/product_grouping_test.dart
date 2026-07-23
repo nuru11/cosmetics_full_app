@@ -32,7 +32,7 @@ ProductVariant _variant({
     id: id,
     price: price,
     productVersion: version,
-    stock: 1,
+    inStock: true,
     variantImages: const [],
     variantDescription: description,
   );

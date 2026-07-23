@@ -125,15 +125,6 @@ class CartController extends GetxController {
   }
 
   Future<void> increment(CartEntry entry) async {
-    final max = entry.variant.stock;
-    if (entry.quantity >= max) {
-      Get.snackbar(
-        'Stock limit',
-        'Only $max available.',
-        snackPosition: SnackPosition.BOTTOM,
-      );
-      return;
-    }
     await _cart.setQuantity(entry.variant.id, entry.quantity + 1);
   }
 
@@ -196,21 +187,21 @@ class CartController extends GetxController {
       }
 
       Get.snackbar(
-        'Order placed',
-        'Thank you! We will contact you soon.',
+        'checkout.order_placed'.tr,
+        'checkout.order_placed_message'.tr,
         snackPosition: SnackPosition.BOTTOM,
         duration: const Duration(seconds: 4),
       );
     } on ApiException catch (e) {
       Get.snackbar(
-        'Checkout failed',
+        'checkout.failed'.tr,
         e.message,
         snackPosition: SnackPosition.BOTTOM,
       );
     } catch (_) {
       Get.snackbar(
-        'Checkout failed',
-        'Could not place your order. Try again.',
+        'checkout.failed'.tr,
+        'checkout.failed_message'.tr,
         snackPosition: SnackPosition.BOTTOM,
       );
     } finally {

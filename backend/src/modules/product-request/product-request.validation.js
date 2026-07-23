@@ -1,9 +1,13 @@
-const { validateContact } = require('../order/order.validation');
+function hasReferenceImage(body = {}) {
+  return Boolean((body.imageBase64 || '').trim());
+}
 
 function validateDescription(body = {}) {
   const description = (body.description || '').trim();
-  if (!description || description.length < 10) {
-    const err = new Error('Description is required (min 10 characters)');
+  const hasImage = hasReferenceImage(body);
+
+  if (!description && !hasImage) {
+    const err = new Error('Description or reference photo is required');
     err.status = 400;
     throw err;
   }
@@ -15,10 +19,33 @@ function validateDescription(body = {}) {
   return description;
 }
 
+function validateProductRequestContact(body = {}) {
+  const name = (body.customerName || body.customer_name || '').trim();
+  const phoneVal = (body.phone || '').trim();
+
+  if (!name || name.length > 120) {
+    const err = new Error('Customer name is required (max 120 characters)');
+    err.status = 400;
+    throw err;
+  }
+  if (!phoneVal || phoneVal.length > 20) {
+    const err = new Error('Phone is required (max 20 characters)');
+    err.status = 400;
+    throw err;
+  }
+
+  return { customerName: name, phone: phoneVal };
+}
+
 function validateCreateBody(body = {}) {
   const description = validateDescription(body);
-  const contact = validateContact(body);
+  const contact = validateProductRequestContact(body);
   return { description, ...contact };
 }
 
-module.exports = { validateCreateBody, validateDescription };
+module.exports = {
+  validateCreateBody,
+  validateDescription,
+  validateProductRequestContact,
+  hasReferenceImage,
+};

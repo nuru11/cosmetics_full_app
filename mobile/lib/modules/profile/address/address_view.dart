@@ -15,7 +15,7 @@ class AddressView extends GetView<AddressController> {
       backgroundColor: AppColors.brandWhite,
       appBar: AppBar(
         title: Text(
-          'My Address',
+          'address.title'.tr,
           style: GoogleFonts.playfairDisplay(
             fontWeight: FontWeight.w600,
             color: AppColors.brandWhite,
@@ -23,31 +23,6 @@ class AddressView extends GetView<AddressController> {
         ),
         backgroundColor: AppColors.brandBlue,
         foregroundColor: AppColors.brandWhite,
-        actions: [
-          Obx(
-            () => TextButton(
-              onPressed: controller.isSaving.value || controller.isLoading.value
-                  ? null
-                  : controller.save,
-              child: controller.isSaving.value
-                  ? const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: AppColors.brandWhite,
-                      ),
-                    )
-                  : Text(
-                      'Save',
-                      style: GoogleFonts.montserrat(
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.brandWhite,
-                      ),
-                    ),
-            ),
-          ),
-        ],
       ),
       body: Obx(() {
         if (controller.isLoading.value) {
@@ -69,7 +44,7 @@ class AddressView extends GetView<AddressController> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
-                  'Delivery address',
+                  'address.delivery_address'.tr,
                   style: GoogleFonts.playfairDisplay(
                     fontSize: 22,
                     fontWeight: FontWeight.w600,
@@ -78,7 +53,7 @@ class AddressView extends GetView<AddressController> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Used to pre-fill checkout. We deliver to your city with name and phone.',
+                  'address.description'.tr,
                   style: GoogleFonts.montserrat(
                     fontSize: 14,
                     color: AppColors.textMuted,
@@ -109,7 +84,7 @@ class AddressView extends GetView<AddressController> {
                             ),
                           )
                         : Text(
-                            'Save address',
+                            'address.save_address'.tr,
                             style: GoogleFonts.montserrat(
                               fontWeight: FontWeight.w700,
                             ),

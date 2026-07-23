@@ -4,42 +4,10 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../cart/cart_service.dart';
-import '../../product_request/product_request_controller.dart';
-import '../products_controller.dart';
+import 'ask_product_cta.dart';
 
-class AlemmartHomeHeader extends StatefulWidget {
+class AlemmartHomeHeader extends StatelessWidget {
   const AlemmartHomeHeader({super.key});
-
-  @override
-  State<AlemmartHomeHeader> createState() => _AlemmartHomeHeaderState();
-}
-
-class _AlemmartHomeHeaderState extends State<AlemmartHomeHeader> {
-  late final TextEditingController _searchController;
-  late final FocusNode _searchFocusNode;
-  late final ProductsController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = Get.find<ProductsController>();
-    _searchFocusNode = FocusNode();
-    _searchController =
-        TextEditingController(text: _controller.searchQuery.value);
-    _searchController.addListener(_onSearchChanged);
-  }
-
-  void _onSearchChanged() {
-    _controller.setSearchQuery(_searchController.text);
-  }
-
-  @override
-  void dispose() {
-    _searchController.removeListener(_onSearchChanged);
-    _searchController.dispose();
-    _searchFocusNode.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -74,7 +42,7 @@ class _AlemmartHomeHeaderState extends State<AlemmartHomeHeader> {
                   ),
                   Expanded(
                     child: Text(
-                      'Alemmart',
+                      'app.title'.tr,
                       textAlign: TextAlign.center,
                       style: GoogleFonts.montserrat(
                         fontSize: 18,
@@ -84,7 +52,7 @@ class _AlemmartHomeHeaderState extends State<AlemmartHomeHeader> {
                     ),
                   ),
                   IconButton(
-                    onPressed: () => _searchFocusNode.requestFocus(),
+                    onPressed: () => Get.toNamed('/search'),
                     icon: const Icon(
                       Icons.search,
                       color: AppColors.brandWhite,
@@ -105,76 +73,8 @@ class _AlemmartHomeHeaderState extends State<AlemmartHomeHeader> {
                 ],
               ),
               const SizedBox(height: 12),
-              Material(
-                elevation: 4,
-                shadowColor: Colors.black.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(24),
-                color: AppColors.brandWhite,
-                child: TextField(
-                  controller: _searchController,
-                  focusNode: _searchFocusNode,
-                  decoration: InputDecoration(
-                    hintText: 'Search',
-                    hintStyle: GoogleFonts.montserrat(
-                      fontSize: 14,
-                      color: AppColors.textMuted,
-                    ),
-                    prefixIcon: const Icon(
-                      Icons.search,
-                      color: AppColors.brandBlue,
-                      size: 20,
-                    ),
-                    filled: true,
-                    fillColor: AppColors.brandWhite,
-                    contentPadding: const EdgeInsets.symmetric(vertical: 12),
-                    isDense: true,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(24),
-                      borderSide: BorderSide.none,
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(24),
-                      borderSide: BorderSide.none,
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(24),
-                      borderSide: const BorderSide(
-                        color: AppColors.brandBlueLight,
-                        width: 2,
-                      ),
-                    ),
-                  ),
-                  style: GoogleFonts.montserrat(
-                    fontSize: 14,
-                    color: AppColors.textDark,
-                  ),
-                ),
-              ),
+              const AskProductCta(),
               const SizedBox(height: 10),
-              SizedBox(
-                width: double.infinity,
-                child: OutlinedButton.icon(
-                  onPressed: () =>
-                      Get.find<ProductRequestController>().openAskProductSheet(),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: AppColors.brandWhite,
-                    side: const BorderSide(color: AppColors.brandWhite),
-                    backgroundColor: Colors.white.withValues(alpha: 0.12),
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(24),
-                    ),
-                  ),
-                  icon: const Icon(Icons.help_outline, size: 18),
-                  label: Text(
-                    'Ask for a product',
-                    style: GoogleFonts.montserrat(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ),
             ],
           ),
         ),

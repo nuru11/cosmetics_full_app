@@ -21,7 +21,7 @@ void main() {
           'id': 'var-1',
           'variantDescription': '3.3 Oz',
           'price': '19.99',
-          'stock': 10,
+          'inStock': true,
           'productVersion': 'ORIGINAL',
           'variantImages': ['/uploads/products/img.jpg'],
         },
@@ -46,7 +46,7 @@ void main() {
           'id': 'v1',
           'price': 99,
           'product_version': 'PREMIUM',
-          'stock': 1,
+          'inStock': true,
         },
       ],
     });
@@ -78,15 +78,10 @@ void main() {
     );
   });
 
-  test('resolveProductImageUrl uses default when empty', () {
-    expect(
-      resolveProductImageUrl(null),
-      ApiConfig.defaultProductImageUrl,
-    );
-    expect(
-      resolveProductImageUrl(''),
-      ApiConfig.defaultProductImageUrl,
-    );
+  test('resolveImageUrl returns empty for missing urls', () {
+    expect(resolveImageUrl(null), '');
+    expect(resolveImageUrl(''), '');
+    expect(resolveImageUrl('   '), '');
   });
 
   test('resolveImageUrl prepends origin for relative paths', () {

@@ -8,10 +8,14 @@ if (!process.env.DATABASE_URL && process.env.DB_HOST && process.env.DB_USER && p
   process.env.DATABASE_URL = `mysql://${process.env.DB_USER}:${pass}@${process.env.DB_HOST}:${port}/${process.env.DB_NAME}`;
 }
 
-const corsOrigins = (process.env.CORS_ORIGINS || 'http://localhost:5173')
+const configuredCorsOrigins = (process.env.CORS_ORIGINS || 'http://localhost:5173')
   .split(',')
   .map((o) => o.trim())
   .filter(Boolean);
+
+const productionCorsOrigins = ['https://adminpanel.alemmart.com'];
+
+const corsOrigins = [...new Set([...configuredCorsOrigins, ...productionCorsOrigins])];
 
 const config = {
   port: parseInt(process.env.PORT || '3000', 10),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../core/l10n/l10n_helpers.dart';
 import '../../core/theme/app_colors.dart';
 import 'models/product_comparison.dart';
 import 'products_controller.dart';
@@ -56,7 +57,7 @@ class ProductsView extends GetView<ProductsController> {
                           hasScrollBody: false,
                           child: Center(
                             child: Text(
-                              'No products yet',
+                              'products.no_products'.tr,
                               style: GoogleFonts.montserrat(
                                 color: AppColors.textMuted,
                               ),
@@ -178,7 +179,7 @@ class _ErrorState extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              message,
+              trLocalizedError(message),
               textAlign: TextAlign.center,
               style: GoogleFonts.montserrat(
                 fontSize: 14,
@@ -193,7 +194,7 @@ class _ErrorState extends StatelessWidget {
                 foregroundColor: AppColors.brandWhite,
               ),
               icon: const Icon(Icons.refresh),
-              label: const Text('Retry'),
+              label: Text('common.retry'.tr),
             ),
           ],
         ),
