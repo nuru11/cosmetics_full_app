@@ -38,40 +38,47 @@ class ProductsView extends GetView<ProductsController> {
           );
         }
 
-        return RefreshIndicator(
-          color: AppColors.brandBlue,
-          onRefresh: controller.refresh,
-          child: CustomScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            slivers: [
-              const SliverToBoxAdapter(child: AlemmartHomeHeader()),
-              const SliverToBoxAdapter(child: CategoryNavBar()),
-              Obx(() {
-                final sections = controller.sections;
-                if (sections.isEmpty) {
-                  return SliverFillRemaining(
-                    hasScrollBody: false,
-                    child: Center(
-                      child: Text(
-                        'No products yet',
-                        style: GoogleFonts.montserrat(
-                          color: AppColors.textMuted,
-                        ),
-                      ),
-                    ),
-                  );
-                }
+        return Column(
+          children: [
+            const AlemmartHomeHeader(),
+            Expanded(
+              child: RefreshIndicator(
+                color: AppColors.brandBlue,
+                onRefresh: controller.refresh,
+                child: CustomScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  slivers: [
+                    const SliverToBoxAdapter(child: CategoryNavBar()),
+                    Obx(() {
+                      final sections = controller.sections;
+                      if (sections.isEmpty) {
+                        return SliverFillRemaining(
+                          hasScrollBody: false,
+                          child: Center(
+                            child: Text(
+                              'No products yet',
+                              style: GoogleFonts.montserrat(
+                                color: AppColors.textMuted,
+                              ),
+                            ),
+                          ),
+                        );
+                      }
 
-                return SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) => _buildSectionItem(sections, index),
-                    childCount: _sectionItemCount(sections),
-                  ),
-                );
-              }),
-              const SliverPadding(padding: EdgeInsets.only(bottom: 24)),
-            ],
-          ),
+                      return SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                          (context, index) =>
+                              _buildSectionItem(sections, index),
+                          childCount: _sectionItemCount(sections),
+                        ),
+                      );
+                    }),
+                    const SliverPadding(padding: EdgeInsets.only(bottom: 24)),
+                  ],
+                ),
+              ),
+            ),
+          ],
         );
       }),
     );

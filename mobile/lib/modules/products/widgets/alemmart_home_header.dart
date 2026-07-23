@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../cart/cart_service.dart';
+import '../../product_request/product_request_controller.dart';
 import '../products_controller.dart';
 
 class AlemmartHomeHeader extends StatefulWidget {
@@ -58,6 +59,7 @@ class _AlemmartHomeHeaderState extends State<AlemmartHomeHeader> {
         child: Padding(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
               Row(
                 children: [
@@ -125,6 +127,7 @@ class _AlemmartHomeHeaderState extends State<AlemmartHomeHeader> {
                     filled: true,
                     fillColor: AppColors.brandWhite,
                     contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                    isDense: true,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(24),
                       borderSide: BorderSide.none,
@@ -144,6 +147,31 @@ class _AlemmartHomeHeaderState extends State<AlemmartHomeHeader> {
                   style: GoogleFonts.montserrat(
                     fontSize: 14,
                     color: AppColors.textDark,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  onPressed: () =>
+                      Get.find<ProductRequestController>().openAskProductSheet(),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppColors.brandWhite,
+                    side: const BorderSide(color: AppColors.brandWhite),
+                    backgroundColor: Colors.white.withValues(alpha: 0.12),
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                  ),
+                  icon: const Icon(Icons.help_outline, size: 18),
+                  label: Text(
+                    'Ask for a product',
+                    style: GoogleFonts.montserrat(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ),

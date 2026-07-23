@@ -2,7 +2,9 @@ import 'package:get/get.dart';
 
 import '../../core/bindings/api_bindings.dart';
 import '../../data/repositories/category_repository.dart';
+import '../../data/repositories/product_request_repository.dart';
 import '../../data/repositories/product_repository.dart';
+import '../product_request/product_request_controller.dart';
 import 'products_controller.dart';
 
 class ProductsBinding extends Bindings {
@@ -14,6 +16,9 @@ class ProductsBinding extends Bindings {
         Get.find<ProductRepository>(),
         Get.find<CategoryRepository>(),
       ),
+    );
+    Get.lazyPut<ProductRequestController>(
+      () => ProductRequestController(Get.find<ProductRequestRepository>()),
     );
   }
 }

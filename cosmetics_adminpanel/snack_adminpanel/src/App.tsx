@@ -11,6 +11,7 @@ import ProductsPage from "./pages/Products/ProductsPage";
 import CategoriesPage from "./pages/Categories/CategoriesPage";
 import OrdersPage from "./pages/Orders/OrdersPage";
 import OrderDetailPage from "./pages/Orders/OrderDetailPage";
+import ProductRequestsPage from "./pages/ProductRequests/ProductRequestsPage";
 
 export default function App() {
   return (
@@ -25,6 +26,7 @@ export default function App() {
             <Route path="/categories" element={<CategoriesPage />} />
             <Route path="/orders" element={<OrdersPage />} />
             <Route path="/orders/:id" element={<OrderDetailPage />} />
+            <Route path="/product-requests" element={<ProductRequestsPage />} />
             <Route path="/not-authorized" element={<NotAuthorized />} />
           </Route>
         </Route>

@@ -13,6 +13,8 @@ const cartRoutes = require('./modules/cart/cart.routes');
 const orderRoutes = require('./modules/order/order.routes');
 const adminOrderRoutes = require('./modules/order/admin.order.routes');
 const uploadRoutes = require('./modules/upload/upload.routes');
+const productRequestRoutes = require('./modules/product-request/product-request.routes');
+const adminProductRequestRoutes = require('./modules/product-request/admin.product-request.routes');
 
 function createApp() {
   const app = express();
@@ -46,6 +48,8 @@ function createApp() {
   app.use('/api/cart', cartRoutes);
   app.use('/api/orders', orderRoutes);
   app.use('/api/admin/orders', adminOrderRoutes);
+  app.use('/api/product-requests', productRequestRoutes);
+  app.use('/api/admin/product-requests', adminProductRequestRoutes);
   app.use('/api/uploads', uploadRoutes);
 
   app.use(errorHandler);

@@ -31,12 +31,11 @@ class VariantPickerGrid extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'CHOOSE VERSION',
+          'Choose version',
           style: GoogleFonts.montserrat(
-            fontSize: 10,
-            letterSpacing: 2,
+            fontSize: 13,
             fontWeight: FontWeight.w600,
-            color: AppColors.textMuted,
+            color: AppColors.textDark,
           ),
         ),
         if (slots.length > 1) ...[
@@ -49,10 +48,10 @@ class VariantPickerGrid extends StatelessWidget {
             ),
           ),
         ],
-        const SizedBox(height: 12),
+        const SizedBox(height: 10),
         ...slots.map(
           (slot) => Padding(
-            padding: const EdgeInsets.only(bottom: 10),
+            padding: const EdgeInsets.only(bottom: 8),
             child: _VersionOptionTile(
               slot: slot,
               isSelected: selectedVariant?.id == slot.variant.id,
