@@ -90,7 +90,7 @@ export function HomeHeader({ compact = false }: { compact?: boolean }) {
   return (
     <div className="bg-gradient-to-br from-brand-blue to-[#4A7FE8] px-4 pb-4 pt-3 text-white">
       <div className="mx-auto flex max-w-7xl items-center gap-2">
-        <img src="/logo.jpg" alt="" className="h-9 w-9 rounded-lg object-cover" />
+        <img src="/logo.png" alt="" className="h-9 w-9 rounded-lg object-cover" />
         <h1 className="flex-1 text-center text-lg font-bold">{t("app.title")}</h1>
         <button
           type="button"

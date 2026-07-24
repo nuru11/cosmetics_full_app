@@ -33,7 +33,7 @@ export function SiteFooter() {
         <div className="hidden lg:grid lg:grid-cols-3 lg:gap-10">
           <div>
             <div className="flex items-center gap-3">
-              <img src="/logo.jpg" alt="" className="h-10 w-10 rounded-lg object-cover" />
+              <img src="/logo.png" alt="" className="h-10 w-10 rounded-lg object-cover" />
               <span className="font-display text-xl font-semibold text-text-dark">
                 {t("app.title")}
               </span>
@@ -63,7 +63,7 @@ export function SiteFooter() {
 
         <div className="lg:hidden">
           <div className="flex items-center gap-3">
-            <img src="/logo.jpg" alt="" className="h-9 w-9 rounded-lg object-cover" />
+            <img src="/logo.png" alt="" className="h-9 w-9 rounded-lg object-cover" />
             <span className="text-lg font-bold text-text-dark">{t("app.title")}</span>
           </div>
           <AskProductFooterButton className="mt-4" />

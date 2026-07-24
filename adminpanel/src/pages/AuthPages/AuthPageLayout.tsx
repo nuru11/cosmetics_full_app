@@ -21,7 +21,7 @@ export default function AuthLayout({
                 <img
                   width={231}
                   height={48}
-                  src="/logo/logo.jpg"
+                  src="/logo/logo.png"
                   alt="ABANA"
                   className="h-12 w-auto object-contain"
                 />

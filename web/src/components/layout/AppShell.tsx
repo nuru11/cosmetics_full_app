@@ -49,7 +49,7 @@ function DesktopHeader() {
     <header className="sticky top-0 z-30 border-b border-divider-grey/60 bg-white/95 backdrop-blur">
       <div className="mx-auto flex max-w-7xl items-center gap-6 px-6 py-3">
         <button type="button" onClick={() => navigate("/")} className="flex items-center gap-3">
-          <img src="/logo.jpg" alt="" className="h-10 w-10 rounded-lg object-cover" />
+          <img src="/logo.png" alt="" className="h-10 w-10 rounded-lg object-cover" />
           <span className="text-lg font-bold text-text-dark">{t("app.title")}</span>
         </button>
         <nav className="flex flex-1 items-center gap-1">

@@ -79,7 +79,7 @@ const Header: React.FC<HeaderProps> = ({ onClick, onToggle }) => {
           </button>
 
           {/* <Link to="/" className="lg:hidden">
-            <img src="/logo/logo.jpg" alt="ABANA" className="h-8 w-auto object-contain" />
+            <img src="/logo/logo.png" alt="ABANA" className="h-8 w-auto object-contain" />
           </Link> */}
 
           <button

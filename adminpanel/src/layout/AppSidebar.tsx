@@ -235,13 +235,13 @@ const AppSidebar: React.FC = () => {
         <Link to="/">
           {isExpanded || isHovered || isMobileOpen ? (
             <img
-              src="/logo/logo.jpg"
+              src="/logo/logo.png"
               alt="ABANA"
               className="h-12 w-auto object-contain"
             />
           ) : (
             <img
-              src="/logo/logo.jpg"
+              src="/logo/logo.png"
               alt="ABANA"
               className="hidden h-10 w-10 object-contain lg:block"
             />
