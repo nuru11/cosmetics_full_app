@@ -1,0 +1,191 @@
+{
+  "common": {
+    "retry": "Retry",
+    "cancel": "Cancel",
+    "save": "Save",
+    "clear": "Clear",
+    "remove": "Remove",
+    "loading": "Loading...",
+    "try_again": "Try again",
+    "search": "Search",
+    "all": "All",
+    "see_all": "See All",
+    "vs": "vs",
+    "main": "Main",
+    "unknown": "Unknown",
+    "back": "Back"
+  },
+  "nav": {
+    "home": "HOME",
+    "saved": "SAVED",
+    "orders": "ORDERS",
+    "profile": "PROFILE"
+  },
+  "app": {
+    "title": "Abana"
+  },
+  "footer": {
+    "tagline": "Curated cosmetics, delivered with care.",
+    "shop": "Shop",
+    "help": "Help",
+    "cart": "Cart",
+    "rights": "All rights reserved."
+  },
+  "products": {
+    "no_products": "No products yet",
+    "no_search_results": "No products found",
+    "search_hint": "Start typing to search products",
+    "ask_for_product": "Ask for a product",
+    "ask_subtitle": "Describe or upload what you need",
+    "swipe_versions": "Swipe for more versions"
+  },
+  "product": {
+    "title_fallback": "Product",
+    "not_found": "Product not found",
+    "in_stock": "In stock",
+    "in_stock_title": "In Stock",
+    "out_of_stock": "Out of stock",
+    "out_of_stock_title": "Out of Stock",
+    "unavailable": "Unavailable",
+    "add_to_bag": "Add to bag",
+    "added_to_bag": "{{name}} added to bag",
+    "add_button": "+ ADD",
+    "choose_version": "Choose version",
+    "options_available": "{{count}} options available",
+    "about": "About this product",
+    "read_more": "Read more",
+    "read_less": "Read less",
+    "save_percent": "Save {{percent}}%"
+  },
+  "version": {
+    "original": "ORIGINAL",
+    "two_level": "2ND",
+    "premium": "PREMIUM",
+    "original_subtitle": "Authentic sealed, full box",
+    "two_level_subtitle": "Same product, no box",
+    "premium_subtitle": "Premium / limited edition"
+  },
+  "cart": {
+    "your_bag": "Your bag",
+    "one_item": "{{count}} item",
+    "n_items": "{{count}} items",
+    "clear_bag_title": "Clear bag?",
+    "clear_bag_message": "Remove all items from your bag?",
+    "clear_bag": "Clear bag",
+    "subtotal": "Subtotal",
+    "proceed_checkout": "Proceed to Checkout",
+    "empty_title": "Your bag is empty",
+    "empty_message": "Add products from Home to see them here.",
+    "continue_shopping": "Continue shopping",
+    "each_price": "{{price}} each"
+  },
+  "checkout": {
+    "delivery_details": "Delivery details",
+    "place_order": "Place order",
+    "order_placed": "Order placed",
+    "order_placed_message": "Thank you! We will contact you soon.",
+    "failed": "Checkout failed",
+    "failed_message": "Could not place your order. Try again."
+  },
+  "cart_action": {
+    "unavailable_title": "Unavailable",
+    "unavailable_product": "This product is not available.",
+    "out_of_stock_title": "Out of stock",
+    "out_of_stock_message": "This option is currently unavailable.",
+    "no_options_title": "Unavailable",
+    "no_options_message": "No purchasable options for this product."
+  },
+  "validation": {
+    "name_required": "Name is required",
+    "phone_required": "Phone is required",
+    "city_required": "City is required",
+    "description_or_photo": "Add a description or upload a photo",
+    "description_too_long": "Description is too long (max 2000 characters)"
+  },
+  "form": {
+    "full_name": "Full name",
+    "phone": "Phone",
+    "city": "City"
+  },
+  "saved": {
+    "title": "Saved",
+    "empty_title": "No saved items yet",
+    "empty_message": "Tap the heart on any product on Home to save it here.",
+    "saved_title": "Saved",
+    "saved_message": "Added to your saved items",
+    "removed_title": "Removed from saved",
+    "removed_message": "Removed from your saved items"
+  },
+  "orders": {
+    "title": "Orders",
+    "filter_all": "All",
+    "filter_active": "Active",
+    "filter_past": "Past",
+    "empty_title": "No orders yet",
+    "empty_message": "Your placed orders will appear here.",
+    "my_orders": "My Orders",
+    "order_history": "Order History",
+    "no_active": "No active orders",
+    "no_active_message": "Orders in progress will appear here.",
+    "no_past": "No past orders",
+    "no_past_message": "Delivered and cancelled orders appear here.",
+    "status": {
+      "pending": "Pending",
+      "paid": "Paid",
+      "shipped": "Shipped",
+      "delivered": "Delivered",
+      "cancelled": "Cancelled",
+      "unknown": "Unknown"
+    }
+  },
+  "error": {
+    "load_products": "Could not load products. Check your connection and API URL.",
+    "load_product": "Could not load product.",
+    "invalid_product": "Invalid product",
+    "load_orders": "Could not load orders. Check your connection."
+  },
+  "profile": {
+    "title": "My Profile",
+    "welcome_back": "Welcome Back",
+    "guest": "Guest",
+    "guest_hint": "Add your name in Delivery Address",
+    "section_account": "MY ACCOUNT",
+    "section_preferences": "PREFERENCES",
+    "orders": "Orders",
+    "orders_detail": "View & track purchases",
+    "my_address": "Delivery Address",
+    "my_address_detail": "Name, phone & city for delivery",
+    "orders_stat": "Orders",
+    "saved_stat": "Saved",
+    "language": "Language",
+    "language_detail": "App display language",
+    "language_english": "English",
+    "language_amharic": "አማርኛ",
+    "choose_language": "Choose language"
+  },
+  "address": {
+    "title": "My Address",
+    "delivery_address": "Delivery address",
+    "description": "Used to pre-fill checkout. We deliver to your city with name and phone.",
+    "save_address": "Save address",
+    "saved_title": "Saved",
+    "saved_message": "Delivery details updated."
+  },
+  "request": {
+    "title": "Ask for a product",
+    "heading": "Tell us what you need",
+    "description": "Describe the product you are looking for and we will try to find it for you.",
+    "product_description": "Product description",
+    "product_description_optional": "Product description (optional)",
+    "hint": "Brand, name, shade, size...",
+    "reference_photo": "Reference photo (optional)",
+    "add_photo": "Add photo",
+    "remove_photo": "Remove photo",
+    "contact_details": "Your contact details",
+    "send": "Send request",
+    "sent_title": "Request sent",
+    "sent_message": "We received your request and will get back to you soon.",
+    "failed_title": "Could not send request",
+    "failed_message": "Something went wrong. Please try again."
+  }
+}

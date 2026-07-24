@@ -1,0 +1,191 @@
+{
+  "common": {
+    "retry": "እንደገና ይሞክሩ",
+    "cancel": "ሰርዝ",
+    "save": "አስቀምጥ",
+    "clear": "አጽዳ",
+    "remove": "አስወግድ",
+    "loading": "በመጫን ላይ...",
+    "try_again": "እንደገና ይሞክሩ",
+    "search": "ፈልግ",
+    "all": "ሁሉም",
+    "see_all": "ሁሉንም ይመልከቱ",
+    "vs": "በ",
+    "main": "ዋና",
+    "unknown": "ያልታወቀ",
+    "back": "ተመለስ"
+  },
+  "nav": {
+    "home": "መነሻ",
+    "saved": "ተቀምጧል",
+    "orders": "ትዕዛዞች",
+    "profile": "መገለጫ"
+  },
+  "app": {
+    "title": "Abana"
+  },
+  "footer": {
+    "tagline": "የተመረጡ የኮስሜቲክስ ምርቶች፣ በጥንቃቄ የሚደርሱ።",
+    "shop": "ግዢ",
+    "help": "እገዛ",
+    "cart": "ቦርሳ",
+    "rights": "ሁሉም መብቶች የተጠበቁ ናቸው።"
+  },
+  "products": {
+    "no_products": "ምርቶች ገና የሉም",
+    "no_search_results": "ምርት አልተገኘም",
+    "search_hint": "ምርቶችን ለመፈለግ መተየብ ይเริጀሉ",
+    "ask_for_product": "ምርት ይጠይቁ",
+    "ask_subtitle": "የሚፈልጉትን ይግለጹ ወይም ፎቶ ይስቀሉ",
+    "swipe_versions": "ተጨማሪ ስሪቶች ለማየት ይንሸራተቱ"
+  },
+  "product": {
+    "title_fallback": "ምርት",
+    "not_found": "ምርት አልተገኘም",
+    "in_stock": "በመጋዘን ውስጥ",
+    "in_stock_title": "በመጋዘን ውስጥ",
+    "out_of_stock": "ከመጋዘን ውጭ",
+    "out_of_stock_title": "ከመጋዘን ውጭ",
+    "unavailable": "አይገኝም",
+    "add_to_bag": "ወደ ቦርሳ ጨምር",
+    "added_to_bag": "{{name}} ወደ ቦርሳ ታክሏል",
+    "add_button": "+ ጨምር",
+    "choose_version": "ስሪት ይምረጡ",
+    "options_available": "{{count}} አማራጮች አሉ",
+    "about": "ስለዚህ ምርት",
+    "read_more": "ተጨማሪ ያንብቡ",
+    "read_less": "ያነሱ",
+    "save_percent": "{{percent}}% ቁጠብ"
+  },
+  "version": {
+    "original": "ORIGINAL",
+    "two_level": "2ND",
+    "premium": "PREMIUM",
+    "original_subtitle": "እውነተኛ sealed፣ ሙሉ ሳጥን",
+    "two_level_subtitle": "ተመሳሳይ ምርት፣ ሳጥን የለም",
+    "premium_subtitle": "ፕሪሚየም / ልዩ ስሪት"
+  },
+  "cart": {
+    "your_bag": "የእርስዎ ቦርሳ",
+    "one_item": "{{count}} ንጥል",
+    "n_items": "{{count}} ንጥሎች",
+    "clear_bag_title": "ቦርሳ ይጸዳ?",
+    "clear_bag_message": "ሁሉንም ንጥሎች ከቦርሳዎ ይወገዱ?",
+    "clear_bag": "ቦርሳ አጽዳ",
+    "subtotal": "ንዑስ ድምር",
+    "proceed_checkout": "ወደ ክፍያ ይቀጥሉ",
+    "empty_title": "ቦርሳዎ ባዶ ነው",
+    "empty_message": "ከመነሻ ገጽ ምርቶችን ይጨምሩ እዚህ ለማየት።",
+    "continue_shopping": "ግዢ ይቀጥሉ",
+    "each_price": "{{price}} በአንድ"
+  },
+  "checkout": {
+    "delivery_details": "የማድረሻ ዝርዝሮች",
+    "place_order": "ትዕዛዝ ይስጡ",
+    "order_placed": "ትዕዛዝ ተሰጥቷል",
+    "order_placed_message": "አመሰግናለሁ! በቅርቡ እንገናኝዎታለን።",
+    "failed": "ክፍያ አልተሳካም",
+    "failed_message": "ትዕዛዝ መስጠት አልተቻለም። እንደገና ይሞክሩ።"
+  },
+  "cart_action": {
+    "unavailable_title": "አይገኝም",
+    "unavailable_product": "ይህ ምርት አይገኝም።",
+    "out_of_stock_title": "ከመጋዘን ውጭ",
+    "out_of_stock_message": "ይህ አማራጭ በአሁኑ ጊዜ አይገኝም።",
+    "no_options_title": "አይገኝም",
+    "no_options_message": "ለዚህ ምርት የሚገዙ አማራጮች የሉም።"
+  },
+  "validation": {
+    "name_required": "ስም ያስፈልጋል",
+    "phone_required": "ስልክ ያስፈልጋል",
+    "city_required": "ከተማ ያስፈልጋል",
+    "description_or_photo": "መግለጫ ያክሉ ወይም ፎቶ ይስቀሉ",
+    "description_too_long": "መግለጫ በጣም ረጅም ነው (ከፍተኛ 2000 ቁምፊ)"
+  },
+  "form": {
+    "full_name": "ሙሉ ስም",
+    "phone": "ስልክ",
+    "city": "ከተማ"
+  },
+  "saved": {
+    "title": "ተቀምጧል",
+    "empty_title": "የተቀመጡ ንጥሎች ገና የሉም",
+    "empty_message": "በመነሻ ገጽ ላይ በማንኛውም ምርት ላይ ልብን ይጫኑ እዚህ ለማየት።",
+    "saved_title": "ተቀምጧል",
+    "saved_message": "ወደ የተቀመጡ ንጥሎችዎ ታክሏል",
+    "removed_title": "ከተቀመጡ ተወግዷል",
+    "removed_message": "ከተቀመጡ ንጥሎችዎ ተወግዷል"
+  },
+  "orders": {
+    "title": "ትዕዛዞች",
+    "filter_all": "ሁሉም",
+    "filter_active": "ንቁ",
+    "filter_past": "ያለፉ",
+    "empty_title": "ትዕዛዞች ገና የሉም",
+    "empty_message": "የተሰጡ ትዕዛዞችዎ እዚህ ይታያሉ።",
+    "my_orders": "የእኔ ትዕዛዞች",
+    "order_history": "የትዕዛዝ ታሪክ",
+    "no_active": "ንቁ ትዕዛዞች የሉም",
+    "no_active_message": "በሂደት ላይ ያሉ ትዕዛዞች እዚህ ይታያሉ።",
+    "no_past": "ያለፉ ትዕዛዞች የሉም",
+    "no_past_message": "የተላኩ እና የተሰረዙ ትዕዛዞች እዚህ ይታያሉ።",
+    "status": {
+      "pending": "በመጠባበቅ ላይ",
+      "paid": "ተከፍሏል",
+      "shipped": "ተልኳል",
+      "delivered": "ደርሷል",
+      "cancelled": "ተሰርዟል",
+      "unknown": "ያልታወቀ"
+    }
+  },
+  "error": {
+    "load_products": "ምርቶችን መጫን አልተቻለም። ግንኙነትዎን እና API URL ይፈትሹ።",
+    "load_product": "ምርት መጫን አልተቻለም።",
+    "invalid_product": "ልክ ያልሆነ ምርት",
+    "load_orders": "ትዕዛዞችን መጫን አልተቻለም። ግንኙነትዎን ይፈትሹ።"
+  },
+  "profile": {
+    "title": "የእኔ መገለጫ",
+    "welcome_back": "እንኳን በደህና መጡ",
+    "guest": "እንግዳ",
+    "guest_hint": "ስምዎን በየማድረሻ አድራሻ ውስጥ ያክሉ",
+    "section_account": "የእኔ መለያ",
+    "section_preferences": "ምርጫዎች",
+    "orders": "ትዕዛዞች",
+    "orders_detail": "ትዕዛዞችን ይመልከቱ እና ይከታተሉ",
+    "my_address": "የማድረሻ አድራሻ",
+    "my_address_detail": "ስም፣ ስልክ እና ከተማ ለማድረስ",
+    "orders_stat": "ትዕዛዞች",
+    "saved_stat": "የተቀመጡ",
+    "language": "ቋንቋ",
+    "language_detail": "የመተግበሪያ ቋንቋ",
+    "language_english": "English",
+    "language_amharic": "አማርኛ",
+    "choose_language": "ቋንቋ ይምረጡ"
+  },
+  "address": {
+    "title": "የእኔ አድራሻ",
+    "delivery_address": "የማድረሻ አድራሻ",
+    "description": "ለክፍያ ለመሙላት ጥቅም ላይ ይውላል። ወደ ከተማዎ በስም እና ስልክ እናደርሳለን።",
+    "save_address": "አድራሻ አስቀምጥ",
+    "saved_title": "ተቀምጧል",
+    "saved_message": "የማድረሻ ዝርዝሮች ተዘምነዋል።"
+  },
+  "request": {
+    "title": "ምርት ይጠይቁ",
+    "heading": "የሚፈልጉትን ይንገሩን",
+    "description": "የሚፈልጉትን ምርት ይግለጹ እና ለማግኘት እንሞክራለን።",
+    "product_description": "የምርት መግለጫ",
+    "product_description_optional": "የምርት መግለጫ (አማራጭ)",
+    "hint": "ብራንድ፣ ስም፣ ቀለም፣ መጠን...",
+    "reference_photo": "የማጣቀሻ ፎቶ (አማራጭ)",
+    "add_photo": "ፎቶ ጨምር",
+    "remove_photo": "ፎቶ አስወግድ",
+    "contact_details": "የእርስዎ የመገናኛ ዝርዝሮች",
+    "send": "ጥያቄ ላክ",
+    "sent_title": "ጥያቄ ተልኳል",
+    "sent_message": "ጥያቄዎን ተቀብለናል፣ በቅርቡ እንመለስልዎታለን።",
+    "failed_title": "ጥያቄ መላክ አልተቻለም",
+    "failed_message": "አንድ ነገር ተሳስቷል። እባክዎ እንደገና ይሞክሩ።"
+  }
+}

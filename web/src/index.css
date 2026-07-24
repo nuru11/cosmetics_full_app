@@ -1,0 +1,62 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-blue: #034bde;
+  --color-brand-blue-light: #b3ccf7;
+  --color-brand-black: #000000;
+  --color-brand-white: #ffffff;
+  --color-cream: #faf8f6;
+  --color-text-dark: #1a1a1a;
+  --color-text-muted: #6b6b6b;
+  --color-divider-grey: #e0e0e0;
+  --color-accent-green: #00897b;
+  --color-accent-red: #e53935;
+  --color-second-purple: #9b8ab8;
+  --color-second-purple-dark: #5c4a78;
+  --color-card-header-beige: #f5f0e9;
+  --color-status-delivered-bg: #e8f5e9;
+  --color-status-delivered-text: #4caf50;
+  --color-status-pending-bg: #fff8e1;
+  --color-status-pending-text: #4b2c20;
+  --color-status-neutral-bg: #f0ebe6;
+  --color-status-neutral-text: #6b5b52;
+  --font-sans: "Montserrat", "Noto Sans Ethiopic", system-ui, sans-serif;
+  --font-display: "Playfair Display", serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background: var(--color-cream);
+  color: var(--color-text-dark);
+  -webkit-font-smoothing: antialiased;
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.shimmer {
+  background: linear-gradient(90deg, #ece8e4 25%, #f5f2ef 50%, #ece8e4 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+}
