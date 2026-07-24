@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useLocation } from "react-router";
 
-import { ChevronDownIcon, GridIcon, BoxCubeIcon } from "../icons";
+import { ChevronDownIcon, GridIcon, BoxCubeIcon, PlugInIcon } from "../icons";
+import { isSuperAdmin } from "../utils/auth";
 
 import { useSidebar } from "../context/SidebarContext";
 
@@ -34,6 +35,11 @@ const navItems: NavItem[] = [
       { name: "Product requests", path: "/product-requests", pro: false },
     ],
   },
+  {
+    name: "Settings",
+    icon: <PlugInIcon />,
+    subItems: [{ name: "Contact Us", path: "/settings/contact-us", pro: false }],
+  },
 ];
 
 const othersItems: NavItem[] = [];
@@ -41,7 +47,10 @@ const othersItems: NavItem[] = [];
 const AppSidebar: React.FC = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
   const location = useLocation();
-  const filteredNavItems = useMemo(() => navItems, []);
+  const filteredNavItems = useMemo(() => {
+    if (isSuperAdmin()) return navItems;
+    return navItems.filter((item) => item.name !== "Settings");
+  }, []);
 
   const [openSubmenu, setOpenSubmenu] = useState<{
     type: "main" | "others";

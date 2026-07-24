@@ -31,6 +31,18 @@
     "cart": "Cart",
     "rights": "All rights reserved."
   },
+  "contact": {
+    "title": "Contact Us",
+    "subtitle": "Reach us by phone, email, or Telegram.",
+    "phone1": "Phone",
+    "phone2": "Phone 2",
+    "email": "Email",
+    "telegram": "Telegram",
+    "address": "Address",
+    "empty_title": "Contact details coming soon",
+    "empty_message": "We have not published contact details yet. You can still send us a product request.",
+    "load_error": "Could not load contact details."
+  },
   "products": {
     "no_products": "No products yet",
     "no_search_results": "No products found",

@@ -12,6 +12,8 @@ import CategoriesPage from "./pages/Categories/CategoriesPage";
 import OrdersPage from "./pages/Orders/OrdersPage";
 import OrderDetailPage from "./pages/Orders/OrderDetailPage";
 import ProductRequestsPage from "./pages/ProductRequests/ProductRequestsPage";
+import ContactUsPage from "./pages/Settings/ContactUsPage";
+import SuperAdminRoute from "./routes/SuperAdminRoute";
 
 export default function App() {
   return (
@@ -27,6 +29,9 @@ export default function App() {
             <Route path="/orders" element={<OrdersPage />} />
             <Route path="/orders/:id" element={<OrderDetailPage />} />
             <Route path="/product-requests" element={<ProductRequestsPage />} />
+            <Route element={<SuperAdminRoute />}>
+              <Route path="/settings/contact-us" element={<ContactUsPage />} />
+            </Route>
             <Route path="/not-authorized" element={<NotAuthorized />} />
           </Route>
         </Route>

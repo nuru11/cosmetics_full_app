@@ -15,6 +15,8 @@ const adminOrderRoutes = require('./modules/order/admin.order.routes');
 const uploadRoutes = require('./modules/upload/upload.routes');
 const productRequestRoutes = require('./modules/product-request/product-request.routes');
 const adminProductRequestRoutes = require('./modules/product-request/admin.product-request.routes');
+const settingsRoutes = require('./modules/settings/settings.routes');
+const adminSettingsRoutes = require('./modules/settings/admin.settings.routes');
 
 function createApp() {
   const app = express();
@@ -50,6 +52,8 @@ function createApp() {
   app.use('/api/admin/orders', adminOrderRoutes);
   app.use('/api/product-requests', productRequestRoutes);
   app.use('/api/admin/product-requests', adminProductRequestRoutes);
+  app.use('/api/settings', settingsRoutes);
+  app.use('/api/admin/settings', adminSettingsRoutes);
   app.use('/api/uploads', uploadRoutes);
 
   app.use(errorHandler);

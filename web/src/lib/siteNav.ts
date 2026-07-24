@@ -18,6 +18,7 @@ export const shopFooterLinks = [
 ] as const;
 
 export const helpFooterLinks = [
+  { to: "/contact", labelKey: "contact.title" },
   { to: "/product-request", labelKey: "products.ask_for_product" },
   { to: "/cart", labelKey: "footer.cart" },
 ] as const;
@@ -25,5 +26,6 @@ export const helpFooterLinks = [
 export const mobileFooterLinks = [
   ...tabRoutes.map(({ to, labelKey }) => ({ to, labelKey })),
   { to: "/search", labelKey: "common.search" },
+  { to: "/contact", labelKey: "contact.title" },
   { to: "/cart", labelKey: "footer.cart" },
 ] as const;

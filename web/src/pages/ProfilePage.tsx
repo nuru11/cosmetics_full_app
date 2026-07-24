@@ -95,6 +95,11 @@ export default function ProfilePage() {
               detail={t("profile.my_address_detail")}
               to="/profile/address"
             />
+            <ProfileRow
+              title={t("contact.title")}
+              detail={t("contact.subtitle")}
+              to="/contact"
+            />
           </div>
         </div>
 

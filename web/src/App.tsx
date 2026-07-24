@@ -9,6 +9,7 @@ import OrdersPage from "@/pages/OrdersPage";
 import ProfilePage from "@/pages/ProfilePage";
 import AddressPage from "@/pages/AddressPage";
 import AskProductPage from "@/pages/AskProductPage";
+import ContactUsPage from "@/pages/ContactUsPage";
 
 export default function App() {
   return (
@@ -23,6 +24,7 @@ export default function App() {
           <Route path="cart" element={<CartPage />} />
           <Route path="search" element={<SearchPage />} />
           <Route path="product-request" element={<AskProductPage />} />
+          <Route path="contact" element={<ContactUsPage />} />
           <Route path="profile/address" element={<AddressPage />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />

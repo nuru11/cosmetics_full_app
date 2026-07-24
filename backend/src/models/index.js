@@ -10,6 +10,7 @@ const defineCartItem = require('./cart_item.model');
 const defineOrder = require('./order.model');
 const defineOrderItem = require('./order_item.model');
 const defineProductRequest = require('./product_request.model');
+const defineAppSetting = require('./app_setting.model');
 
 function initModels(sequelize) {
   const User = defineUser(sequelize, DataTypes);
@@ -23,6 +24,7 @@ function initModels(sequelize) {
   const Order = defineOrder(sequelize, DataTypes);
   const OrderItem = defineOrderItem(sequelize, DataTypes);
   const ProductRequest = defineProductRequest(sequelize, DataTypes);
+  const AppSetting = defineAppSetting(sequelize, DataTypes);
 
   User.hasMany(RefreshToken, { as: 'refreshTokens', foreignKey: 'userId' });
   RefreshToken.belongsTo(User, { as: 'user', foreignKey: 'userId' });
@@ -69,6 +71,7 @@ function initModels(sequelize) {
     Order,
     OrderItem,
     ProductRequest,
+    AppSetting,
   };
 }
 

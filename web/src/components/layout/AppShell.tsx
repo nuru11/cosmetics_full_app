@@ -133,6 +133,7 @@ export function AppShell() {
     location.pathname === "/cart" ||
     location.pathname === "/search" ||
     location.pathname === "/product-request" ||
+    location.pathname === "/contact" ||
     location.pathname.startsWith("/profile/address");
 
   if (isStandalone) {

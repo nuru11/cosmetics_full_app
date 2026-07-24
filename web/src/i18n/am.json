@@ -31,6 +31,18 @@
     "cart": "ቦርሳ",
     "rights": "ሁሉም መብቶች የተጠበቁ ናቸው።"
   },
+  "contact": {
+    "title": "አግኙን",
+    "subtitle": "በስልክ፣ ኢሜይል ወይም ቴሌግራም ያግኙን።",
+    "phone1": "ስልክ",
+    "phone2": "ስልክ 2",
+    "email": "ኢሜይል",
+    "telegram": "ቴሌግራም",
+    "address": "አድራሻ",
+    "empty_title": "የመገናኛ መረጃ በቅርቡ",
+    "empty_message": "የመገናኛ መረጃ ገና አልተለቀቀም። ምርት መጠየቅን ሊልኩ ይችላሉ።",
+    "load_error": "የመገናኛ መረጃ መጫን አልተቻለም።"
+  },
   "products": {
     "no_products": "ምርቶች ገና የሉም",
     "no_search_results": "ምርት አልተገኘም",
